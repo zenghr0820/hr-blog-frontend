@@ -11,6 +11,7 @@
   *::before,
   *::after {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
     border-color: currentColor;
     border-style: solid;
     border-width: 0;
@@ -571,16 +572,30 @@ html {
 
 body {
   background-color: var(--background);
-  color: var(--foreground);
+  color: var(--font-color);
+  font-size: var(--global-font-size);
   /* 字体设置 - 与 anheyu-app 保持一致 */
-  font-family: "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", Helvetica, "Microsoft YaHei", "微软雅黑", Arial,
+  /* font-family: "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", Helvetica, "Microsoft YaHei", "微软雅黑", Arial, */
+  font-family:
+    'LXGW WenKai Lite',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
     sans-serif;
-  line-height: inherit;
+  /* line-height: inherit; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizelegibility;
   /* 只为 body 添加背景色过渡 */
   transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 2;
+  margin: 0;
+  padding: 0;
+}
+
+a:hover {
+  color: var(--primary);
 }
 
 code,
@@ -1008,6 +1023,7 @@ html.dark [data-slot="content"][role="tooltip"] {
 
 /* ===================== AnHeYu Pro 变量映射 ===================== */
 :root {
+  --global-font-size: 0.9375rem;
   /* 主题色（从 --primary 派生，确保颜色一致性） */
   --anzhiyu-theme: var(--primary);
   --anzhiyu-theme-op: var(--primary-op);
@@ -1044,7 +1060,9 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-vip: #e5a80d;
 
   /* 文字色 */
-  --anzhiyu-fontcolor: #363636;
+  /* --anzhiyu-fontcolor: #363636; */
+  --anzhiyu-fontcolor: var(--font-color);
+  --anzhiyu-btn-fontcolor: #fff;
   --anzhiyu-secondtext: rgb(60 60 67 / 80%);
   --anzhiyu-lighttext: var(--anzhiyu-main);
   --anzhiyu-hovertext: var(--anzhiyu-main);
@@ -1055,7 +1073,9 @@ html.dark [data-slot="content"][role="tooltip"] {
   /* 背景色 */
   --anzhiyu-background: #f7f9fe;
   --anzhiyu-secondbg: #f1f3f8;
-  --anzhiyu-card-bg: #fff;
+  --card-bg: #fff;
+  --anzhiyu-btn-bg: #0083ff;
+  --anzhiyu-card-bg: rgba(255, 255, 255, 0.7);
   --anzhiyu-card-bg-op: var(--anzhiyu-black-op);
   --anzhiyu-card-bg-none: rgb(255 255 255 / 0%);
   --anzhiyu-card-bg-grey: #f0f2f5;
@@ -1064,8 +1084,10 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-ahoverbg: #f7f7fa;
   --anzhiyu-post-blockquote-bg: #fafcff;
   --anzhiyu-post-tabs-bg: #f2f5f8;
+  --anzhiyu-nav-bg: #fffc;
 
   /* 遮罩 */
+  --anzhiyu-head-maskbg: rgb(0 0 0 / 30%);
   --anzhiyu-maskbg: rgb(255 255 255 / 60%);
   --anzhiyu-maskbgdeep: rgb(255 255 255 / 85%);
 
@@ -1090,6 +1112,9 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-shadow-nav: 0 5px 12px -5px rgb(102 68 68 / 5%);
   --anzhiyu-shadow-lightblack: 0 5px 12px -5px rgb(102 68 68 / 0%);
   --anzhiyu-shadow-light2black: 0 5px 12px -5px rgb(102 68 68 / 0%);
+  --anzhiyu-shadow-card: 0 3px 8px 6px rgba(7, 17, 27, 0.09);
+  --anzhiyu-shadow-card-hover: 0 3px 8px 6px rgba(7, 17, 27, 0.2);
+  
 
   /* 边框样式 */
   --style-border: 1px solid var(--anzhiyu-card-border);
@@ -1114,9 +1139,9 @@ html.dark [data-slot="content"][role="tooltip"] {
     --anzhiyu-main-op-deep 0.3s ease-in-out, --anzhiyu-main-op-light 0.3s ease-in-out;
 
   /* 评论区样式（默认独立卡片模式，文章详情页重写为内嵌模式） */
-  --comment-form-bg: var(--anzhiyu-card-bg);
+  --comment-form-bg: var(--card-bg);
   --comment-form-quote-bg: var(--anzhiyu-secondbg);
-  --comment-item-bg: var(--anzhiyu-card-bg);
+  --comment-item-bg: var(--card-bg);
   --comment-item-border: 1px solid var(--anzhiyu-card-border);
   --comment-item-radius: 12px;
   --comment-item-padding: 1.25rem;
@@ -1152,11 +1177,14 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-purple: #7a60d2;
 
   /* 基础色 */
-  --anzhiyu-white: #f7f7fa;
+  /* --anzhiyu-white: #f7f7fa; */
+  --anzhiyu-white: rgba(255, 255, 255, 0.9);
   --anzhiyu-white-op: rgba(247, 247, 250, 0.2);
 
   /* 文字色 */
-  --anzhiyu-fontcolor: #f7f7fa;
+  /* --anzhiyu-fontcolor: #f7f7fa; */
+  --anzhiyu-fontcolor: var(--font-color);
+  --anzhiyu-btn-fontcolor: rgba(255, 255, 255, 0.8);
   --anzhiyu-secondtext: #a1a2b8;
   --anzhiyu-hovertext: #0a84ff;
   --anzhiyu-lighttext: var(--anzhiyu-theme);
@@ -1167,17 +1195,21 @@ html.dark [data-slot="content"][role="tooltip"] {
   /* 背景色 */
   --anzhiyu-background: #18171d;
   --anzhiyu-secondbg: #21232a;
-  --anzhiyu-card-bg: #1d1e22;
+  --card-bg: #2d2d2d;
+  --anzhiyu-btn-bg: #0083ff;
+  --anzhiyu-card-bg: rgba(35, 37, 58, 0.8);
   --anzhiyu-card-bg-op: var(--anzhiyu-white-op);
   --anzhiyu-card-bg-none: #1d1b2600;
   --anzhiyu-card-bg-grey: #27282a;
   --anzhiyu-card-btn-bg: #30343f;
-  --anzhiyu-card-border: #3d3d3f;
+  --anzhiyu-card-border: #42444a;
   --anzhiyu-ahoverbg: #fff;
   --anzhiyu-post-blockquote-bg: #000;
   --anzhiyu-post-tabs-bg: #121212;
+  --anzhiyu-nav-bg: hsla(0, 0%, 7%, .8);
 
   /* 遮罩 */
+  --anzhiyu-head-maskbg: rgb(0 0 0 / 60%);
   --anzhiyu-maskbg: rgb(0 0 0 / 60%);
   --anzhiyu-maskbgdeep: rgb(0 0 0 / 85%);
 
@@ -1194,6 +1226,8 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-shadow-nav: 0 5px 20px 0px rgb(28 28 28 / 40%);
   --anzhiyu-shadow-lightblack: 0 5px 12px -5px rgb(102 68 68 / 0%);
   --anzhiyu-shadow-light2black: 0 5px 12px -5px rgb(102 68 68 / 0%);
+  --anzhiyu-shadow-card: 0 3px 8px 6px rgba(7, 17, 27, 0.09);
+  --anzhiyu-shadow-card-hover: 0 3px 8px 6px rgba(7, 17, 27, 0.09);
 
   /* 边框样式 */
   --style-border: 1px solid var(--anzhiyu-card-border);
@@ -1214,7 +1248,7 @@ html.dark [data-slot="content"][role="tooltip"] {
   display: flex;
   gap: 0.625rem;
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   padding: 0.5rem 1.5rem 1rem;
   margin: 0 auto;
 }
@@ -1248,27 +1282,22 @@ html.dark [data-slot="content"][role="tooltip"] {
   min-height: 100vh;
   /* 建立层叠上下文，避免 ::before（z-index: -1）落到 body 背景下方导致一图流图片不可见 */
   isolation: isolate;
+  padding-top: 100px;
 }
 
-.frontend-layout::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-image: var(--one-image-background);
-  background-attachment: local;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.6s ease;
+/* ===================== Blog 专用 Yozai 字体 ===================== */
+/* 为 blog 布局设置 Tailwind 的 font-sans 变量 */
+#frontend-layout,
+.frontend-layout {
+  --font-sans: "Yozai Medium", "LXGW WenKai Lite", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.frontend-layout.one-image-active::before {
-  opacity: 1;
+:root:has(.frontend-layout) {
+  --font-sans: "Yozai Medium", "LXGW WenKai Lite", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+:root:has(.frontend-layout) body {
+  font-family: "Yozai Medium", "LXGW WenKai Lite", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
 #frontend-main {
@@ -1679,4 +1708,18 @@ html.with-fancybox body.hide-scrollbar {
   .frontend-layout::before {
     display: none !important;
   }
+}
+
+/* ===================== cardWidget 统一样式 ===================== */
+.cardWidget {
+  position: relative;
+  overflow: hidden;
+  background: var(--anzhiyu-card-bg);
+  border-radius: 12px;
+  box-shadow: var(--anzhiyu-shadow-card);
+  transition: box-shadow 0.3s ease;
+}
+
+.cardWidget:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
 }

@@ -18,5 +18,8 @@ export { Sidebar } from "./Sidebar";
 export { AuthorInfoCard } from "./Sidebar/AuthorInfoCard";
 export { CardWechat } from "./Sidebar/CardWechat";
 
+// MomentWidget - 即刻条
+export { MomentWidget } from "./MomentWidget";
+
 // HomePageContent - 首页内容（带动画）
 export { HomePageContent } from "./HomePageContent";

@@ -5,6 +5,7 @@ import { LinkTopBanner } from "./LinkTopBanner";
 import { LinkListSection } from "./LinkListSection";
 import { ApplyLink } from "./ApplyLink";
 import { CommentSection } from "@/components/post/Comment";
+import { scrollTo } from "@/store/scroll-store";
 import "../_styles/flink.scss";
 import "../_styles/post-content.scss";
 
@@ -15,7 +16,7 @@ export function FriendLinkPageClient() {
     if (applyRef.current) {
       const offset = 80;
       const top = applyRef.current.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top, behavior: "smooth" });
+      scrollTo(top);
     }
   };
 

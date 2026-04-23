@@ -195,9 +195,9 @@
   transition: border 0.2s;
 }
 
-.textareaWrapper:focus-within {
+/* .textareaWrapper:focus-within {
   border: var(--style-border-hover, 1px solid var(--primary));
-}
+} */
 
 .textareaWrapperLoggedIn .inputCount {
   display: none;
@@ -453,6 +453,7 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  cursor: pointer;
 }
 
 .loggedInSubmitButton {

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCommentsByPath } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { useUiStore } from "@/store/ui-store";
+import { scrollTo } from "@/store/scroll-store";
 import { addToast } from "@heroui/react";
 import { gsap } from "gsap";
 import md5 from "blueimp-md5";
@@ -201,7 +202,7 @@ export function CommentBarrage({
       };
 
       const scrollToTop = (top: number, smooth = true) => {
-        window.scrollTo({ top, behavior: smooth ? "smooth" : "auto" });
+        scrollTo(top, { immediate: !smooth });
       };
 
       const startStabilizer = () => {

@@ -18,9 +18,10 @@ import { useArticleForEdit, useCreateArticle, useUpdateArticle } from "@/hooks/q
 import { processHtmlForSave } from "@/lib/content-processor";
 import { turndownArticleMarkdown } from "@/lib/editor-tabs-export";
 import { registerCustomRules } from "@/lib/turndown-rules";
-import { registerMarkedExtensions, fixTaskListHtml } from "@/lib/marked-extensions";
+import { registerMarkedExtensions, fixTaskListHtml, setContainerAliases } from "@/lib/marked-extensions";
 import { MobileToolbar } from "./MobileToolbar";
 import { articleApi } from "@/lib/api/article";
+import { metaMappingApi } from "@/lib/api/meta-mapping";
 import { plainTextFromHtmlSource, roughPlainTextFromMarkdown } from "@/lib/article-summary";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -68,6 +69,10 @@ const turndownService = new TurndownService({
 });
 registerCustomRules(turndownService);
 registerMarkedExtensions(marked);
+
+metaMappingApi.getActiveContainerMappings().then(mappings => {
+  setContainerAliases(mappings.map(m => ({ name: m.name, target: m.target, params: m.params })));
+}).catch(() => {});
 
 export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
   const router = useRouter();
@@ -246,8 +251,8 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
 
     if (editorMode === "visual") {
       const rawHtml = editor?.getHTML() ?? "";
-      html = processHtmlForSave(rawHtml);
-      markdown = turndownArticleMarkdown(editor, turndownService, html);
+      markdown = turndownArticleMarkdown(editor, turndownService, processHtmlForSave(rawHtml));
+      html = processHtmlForSave(fixTaskListHtml(marked.parse(markdown, { async: false }) as string));
     } else if (editorMode === "html") {
       html = processHtmlForSave(sourceContent);
       markdown = turndownService.turndown(html);

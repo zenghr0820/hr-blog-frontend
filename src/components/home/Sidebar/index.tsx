@@ -3,7 +3,8 @@
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { AuthorInfoCard } from "./AuthorInfoCard";
+// import { AuthorInfoCard } from "./AuthorInfoCard";
+import { AuthorInfoCardCur } from "./AuthorInfoCardCur";
 import { CardWechat } from "./CardWechat";
 import { CustomSidebarBlocks } from "./CustomSidebarBlocks";
 import { StickyCards } from "./StickyCards";
@@ -27,6 +28,7 @@ export function Sidebar() {
       userAvatar: siteConfig.USER_AVATAR || "",
       ownerName: siteConfig.frontDesk?.siteOwner?.name || "",
       subTitle: siteConfig.SUB_TITLE || "",
+      totalPostCount: siteConfig?.sidebar?.siteinfo?.totalPostCount || 0,
     };
   }, [siteConfig]);
 
@@ -57,7 +59,7 @@ export function Sidebar() {
 
   return (
     <aside className={styles.asideContent}>
-      {authorInfoConfig && <AuthorInfoCard config={authorInfoConfig} />}
+      {authorInfoConfig && <AuthorInfoCardCur config={authorInfoConfig} />}
       {wechatConfig && <CardWechat config={wechatConfig} />}
       <CustomSidebarBlocks />
       {clockConfig && <CardClock config={clockConfig} />}

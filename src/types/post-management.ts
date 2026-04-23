@@ -131,12 +131,20 @@ export interface ExportArticlesRequest {
   article_ids: string[];
 }
 
+export interface ExportArticlesMarkdownRequest {
+  article_ids: string[];
+  template_key?: string;
+  base_path?: string;
+}
+
 // ===================================
 //        导入相关类型
 // ===================================
 
 export interface ImportArticlesParams {
   file: File;
+  template_key?: string;
+  doc_series_id?: string;
   create_categories?: boolean;
   create_tags?: boolean;
   skip_existing?: boolean;

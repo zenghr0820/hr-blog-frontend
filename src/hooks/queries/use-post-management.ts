@@ -9,6 +9,7 @@ import type {
   AdminArticleListParams,
   CreateArticleRequest,
   UpdateArticleRequest,
+  ExportArticlesMarkdownRequest,
   ImportArticlesParams,
 } from "@/types/post-management";
 
@@ -108,6 +109,22 @@ export function useImportArticles() {
     mutationFn: (params: ImportArticlesParams) => postManagementApi.importArticles(params),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: postManagementKeys.lists(), refetchType: "all" });
+    },
+  });
+}
+
+export function useExportArticlesMarkdown() {
+  return useMutation({
+    mutationFn: (data: ExportArticlesMarkdownRequest) => postManagementApi.exportArticlesMarkdown(data),
+    onSuccess: (blob) => {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `articles_md_export_${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     },
   });
 }

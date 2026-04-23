@@ -28,6 +28,7 @@ import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { useUiStore } from "@/store/ui-store";
 import { usePageStore } from "@/store/page-store";
+import { scrollTo } from "@/store/scroll-store";
 import { setArticleMetaThemeColor, restoreMetaThemeColor } from "@/utils/theme-manager";
 import { resolvePostDefaultCoverUrl } from "@/utils/same-origin-media-url";
 import type { Article, RecentArticle } from "@/types/article";
@@ -66,7 +67,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
 
   // 进入文章页面时立即跳到顶部（不带缓动）
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    scrollTo(0, { immediate: true });
   }, [article.id]);
 
   // 设置文章标题到 Header

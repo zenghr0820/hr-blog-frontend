@@ -14,7 +14,7 @@
   padding: 0.5rem 10px;
   overflow: hidden;
   white-space: nowrap;
-  background: var(--anzhiyu-card-bg);
+  /* background: var(--anzhiyu-card-bg); */
   border: var(--style-border);
   border-radius: 12px;
   transition: all 0.3s ease 0s;
@@ -31,6 +31,14 @@
   transform: translateX(-1px);
 }
 
+.catalogBar a {
+  color: #99a9bf;
+}
+
+.catalogBar a:hover {
+  color: var(--anzhiyu-main)
+}
+
 .catalogBar::-webkit-scrollbar {
   display: none;
 }
@@ -44,7 +52,7 @@
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  color: var(--anzhiyu-fontcolor);
+  /* color: var(--anzhiyu-fontcolor); */
 }
 
 .catalogListItem span {
@@ -54,9 +62,9 @@
   transition: all 0.3s;
 }
 
-.catalogListItem:hover span {
+/* .catalogListItem:hover span {
   background: var(--anzhiyu-secondbg);
-}
+} */
 
 .catalogListItem.select span {
   color: var(--anzhiyu-white);
@@ -77,7 +85,7 @@
   border: none;
   border-radius: 8px;
   transition: all 0.3s ease-in-out;
-  color: var(--anzhiyu-fontcolor);
+  /* color: var(--anzhiyu-fontcolor); */
 }
 
 .scrollIcon {
@@ -92,14 +100,14 @@
 
 .categoryBarNext:hover {
   color: var(--anzhiyu-white);
-  background: var(--anzhiyu-main);
+  /* background: var(--anzhiyu-main); */
 }
 
 .catalogMore {
   padding: 2px 12px;
   margin-left: 1rem;
   font-weight: bold;
-  color: var(--anzhiyu-fontcolor);
+  color: #99a9bf;
   text-decoration: none;
   white-space: nowrap;
   border-radius: 8px;
@@ -108,7 +116,7 @@
 
 .catalogMore:hover {
   color: var(--anzhiyu-main);
-  background: var(--anzhiyu-secondbg);
+  /* background: var(--anzhiyu-secondbg); */
 }
 
 /* 移动端样式 */

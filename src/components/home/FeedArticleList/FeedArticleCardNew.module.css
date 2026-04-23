@@ -1,0 +1,377 @@
+/* FeedArticleCardNew - 文章卡片组件 */
+
+/* ============================================
+   公用徽章样式
+   ============================================ */
+.badgeTop,
+.badgeEssence,
+.badgeNewest,
+.badgeUnread {
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  color: #fff;
+  border-radius: 3px;
+}
+
+.badgeTop {
+  background: #e64980;
+}
+
+.badgeEssence {
+  background: #fab005;
+}
+
+.badgeNewest {
+  background: #10ac84;
+}
+
+.badgeUnread {
+  background: var(--anzhiyu-secondbg);
+  color: var(--anzhiyu-secondtext);
+}
+
+/* ============================================
+   文章元信息通用样式
+   ============================================ */
+.articleDate,
+.articleMeta {
+  color: #858585;
+  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.metaIcon {
+  display: inline-block;
+  margin-right: 4px;
+  font-size: 0.9em;
+}
+
+.articleMetaLabel {
+  display: inline;
+  margin-right: 4px;
+}
+
+.articleMeta::before {
+  content: "|";
+  margin: 0 6px;
+  color: var(--anzhiyu-secondtext);
+}
+
+.articleMetaLink {
+  display: inline;
+  margin: 0 4px;
+}
+
+.articleMetaCategories,
+.articleMetaTags {
+  color: var(--anzhiyu-secondtext);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.articleMetaCategories:hover,
+.articleMetaTags:hover {
+  color: var(--anzhiyu-main);
+}
+
+/* ============================================
+   标题通用样式
+   ============================================ */
+.articleTitle,
+.singleColumnTitle {
+  display: block;
+  margin: 6px 0;
+  font-size: 1.55rem;
+  line-height: 1.4;
+  color: var(--anzhiyu-fontcolor);
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.articleTitle:hover,
+.singleColumnTitle:hover {
+  color: var(--anzhiyu-main);
+}
+
+/* ============================================
+   瀑布流布局（双栏）
+   ============================================ */
+.postItems {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-bottom: 0.625rem;
+  break-inside: avoid;
+  background: var(--anzhiyu-card-bg);
+  box-shadow: var(--anzhiyu-shadow-card);
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+
+  opacity: 0;
+  animation: fadeInCard 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: calc(var(--animation-order, 0) * 0.1s);
+
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.postItems:active {
+  transform: scale(0.97);
+}
+
+.postItems:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
+}
+
+.postItems:hover .postBg {
+  filter: brightness(0.82);
+  transform: scale(1.03);
+}
+
+.postItems:hover .articleTitle {
+  color: var(--anzhiyu-main);
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.postBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+}
+
+.postCover {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+}
+
+.postCover a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.postBg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease,
+    filter 0.6s ease;
+  opacity: 0;
+}
+
+.postBg.lazyLoading {
+  background: var(--anzhiyu-secondbg);
+  opacity: 0;
+}
+
+.postBg.lazyLoaded {
+  opacity: 1;
+}
+
+.postInfo {
+  padding: 30px 30px 25px;
+}
+
+.articleMetaWrap {
+  margin: 6px 0;
+}
+
+.articleMetaWrap a:hover {
+  color: #2679cc;
+  text-decoration: underline
+}
+
+.postDesc {
+  margin-top: 10px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--anzhiyu-secondtext);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+
+/* ============================================
+   单列布局
+   ============================================ */
+.singleColumnItem {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  width: 100%;
+  margin-bottom: 16px;
+  background: var(--anzhiyu-card-bg);
+  box-shadow: var(--anzhiyu-shadow-card);
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+
+  opacity: 0;
+  animation: fadeInCard 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: calc(var(--animation-order, 0) * 0.1s);
+
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.singleColumnItem:active {
+  transform: scale(0.97);
+}
+
+.singleColumnItem:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
+}
+
+.singleColumnItem:hover .postBg {
+  filter: brightness(0.82);
+  transform: scale(1.03);
+}
+
+.singleColumnItem:hover .singleColumnTitle {
+  color: var(--anzhiyu-main);
+}
+
+.singleColumnInfo {
+  position: relative;
+  flex: 1;
+  padding: 24px 24px 20px;
+  min-width: 0;
+}
+
+.singleColumnMeta {
+  margin: 6px 0;
+}
+
+.singleColumnDesc {
+  margin-top: 15px;
+  height: 3.2em;
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow: hidden;
+  color: var(--anzhiyu-secondtext);
+}
+
+.singleColumnCover {
+  position: relative;
+  flex-shrink: 0;
+  width: 40%;
+  max-width: 400px;
+  overflow: hidden;
+}
+
+.singleColumnCover a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.singleColumnCover .postBg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.singleColumnBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+}
+
+/* ============================================
+   响应式 - 平板
+   ============================================ */
+@media screen and (max-width: 1024px) {
+  .postItems .postInfo {
+    padding: 20px 20px 18px;
+  }
+
+  .postItems .articleTitle {
+    font-size: 1.35rem;
+  }
+
+  .postItems .articleMetaWrap,
+  .postItems .singleColumnMeta {
+    font-size: 0.85rem;
+  }
+
+  .postItems .postDesc,
+  .singleColumnItem .singleColumnDesc {
+    font-size: 0.95rem;
+  }
+
+  .singleColumnItem .singleColumnCover {
+    width: 35%;
+  }
+
+  .singleColumnItem .singleColumnInfo {
+    padding: 18px 18px 16px;
+  }
+}
+
+/* ============================================
+   响应式 - 移动端
+   ============================================ */
+@media screen and (max-width: 768px) {
+  .postItems .postInfo {
+    padding: 16px 16px 14px;
+  }
+
+  .postItems .articleTitle {
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+
+  .postItems .articleMetaWrap {
+    font-size: 0.78rem;
+    flex-wrap: wrap;
+  }
+
+  .postItems .postDesc {
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .singleColumnItem {
+    flex-direction: column;
+  }
+
+  .singleColumnItem .singleColumnCover {
+    width: 100%;
+    max-width: none;
+    aspect-ratio: 16 / 9;
+  }
+
+  .singleColumnItem .singleColumnInfo {
+    padding: 16px 16px 14px;
+  }
+
+  .singleColumnItem .singleColumnTitle {
+    font-size: 1.2rem;
+  }
+
+  .singleColumnItem .singleColumnMeta {
+    font-size: 0.78rem;
+  }
+
+  .singleColumnItem .singleColumnDesc {
+    font-size: 0.88rem;
+  }
+}

@@ -1,8 +1,8 @@
 /* 文章内容样式 */
 
 .postContent {
-  font-size: 1rem;
-  line-height: 1.8;
+  /* font-size: 1rem;
+  line-height: 1.8; */
   color: var(--foreground);
   word-wrap: break-word;
 }
@@ -44,9 +44,7 @@
 /* 段落样式 - 与 anheyu-app 保持一致 */
 .postContent :global(p) {
   margin: 24px 0;
-  font-size: 17px;
   font-weight: 400;
-  line-height: 1.7;
   color: var(--anzhiyu-fontcolor, var(--foreground));
   text-align: left;
   letter-spacing: 0.6px;
@@ -412,7 +410,7 @@
   min-height: 24px;
   margin-bottom: 0;
   overflow: hidden;
-  font-size: 1rem;
+  font-size: .8rem;
   color: var(--hltools-color);
   padding: 0;
   margin: 0;

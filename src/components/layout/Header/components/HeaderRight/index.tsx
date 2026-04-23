@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { scrollTo } from "@/store/scroll-store";
 import { useRouter, usePathname } from "next/navigation";
 import { Tooltip, Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import { Icon } from "@iconify/react";
@@ -78,10 +79,7 @@ export function HeaderRight({
 
   // 滚动到顶部
   const scrollToTop = useCallback(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollTo(0);
   }, []);
 
   // 打开搜索

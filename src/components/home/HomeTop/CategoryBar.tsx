@@ -78,7 +78,7 @@ export function CategoryBar({ selectedCategory: controlledCategory, onCategoryCh
 
   return (
     <div className={styles.categoryBarContainer}>
-      <div className={styles.categoryBar}>
+      <div className={`cardWidget ${styles.categoryBar}`}>
         <div ref={catalogBarRef} className={styles.catalogBar} onScroll={checkScrollPosition}>
           <div className={styles.catalogList}>
             {/* 首页 */}
@@ -113,7 +113,7 @@ export function CategoryBar({ selectedCategory: controlledCategory, onCategoryCh
           </button>
         )}
         <Link href="/categories" prefetch={false} className={styles.catalogMore}>
-          更多
+          更多分类
         </Link>
       </div>
     </div>

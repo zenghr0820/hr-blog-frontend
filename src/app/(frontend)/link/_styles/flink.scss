@@ -339,6 +339,9 @@
   max-width: 1400px;
   padding: 0 1.5rem;
   margin: 0 auto;
+  padding: 50px 40px;
+  border-radius: 12px;
+  background-color: var(--anzhiyu-card-bg);
 }
 
 @media (width <= 768px) {

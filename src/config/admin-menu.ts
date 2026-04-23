@@ -143,6 +143,13 @@ export const adminMenuConfig: AdminMenuGroup[] = [
         icon: "ri:plug-line",
         roles: ["admin"],
       },
+      {
+        id: "meta-mapping",
+        label: "映射管理",
+        href: "/admin/meta-mapping",
+        icon: "ri:swap-line",
+        roles: ["admin"],
+      },
     ],
   },
 ];

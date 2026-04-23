@@ -15,9 +15,9 @@
   transition: border-color 0.3s ease;
 }
 
-.cardWechat:hover {
+/* .cardWechat:hover {
   border: var(--style-border-hover);
-}
+} */
 
 .cardWechat:hover::before {
   top: 100%;

@@ -9,19 +9,24 @@ const RightMenu = dynamic(() => import("@/components/RightMenu").then(mod => mod
 
 export default function FrontendLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div id="frontend-layout" className="frontend-layout">
-      <ScrollInitializer />
-      <ConsolePrinter />
-      <ExternalLinkInterceptor />
-      <KeyboardShortcutsProvider />
-      <Header />
-      <OneImageBanner />
-      <main id="frontend-main" className="flex-1">
-        {children}
-      </main>
-      <Footer />
-      <MusicPlayer />
-      <RightMenu />
-    </div>
+    <>
+      <head>
+        <link rel="stylesheet" href="https://jsd.liiiu.cn/gh/willow-god/Sharding-fonts/Yozai-Medium/result.min.css" />
+      </head>
+      <div id="frontend-layout" className="frontend-layout">
+        <ScrollInitializer />
+        <ConsolePrinter />
+        <ExternalLinkInterceptor />
+        <KeyboardShortcutsProvider />
+        <Header />
+        <OneImageBanner />
+        <main id="frontend-main" className="flex-1">
+          {children}
+        </main>
+        <Footer />
+        <MusicPlayer />
+        <RightMenu />
+      </div>
+    </>
   );
 }

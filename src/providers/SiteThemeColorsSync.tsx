@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useTheme } from "next-themes";
 import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -20,7 +20,7 @@ export function SiteThemeColorsSync() {
   );
   const { resolvedTheme } = useTheme();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window === "undefined" || !isLoaded) return;
     if (!resolvedTheme) return;
     const partial: Pick<SiteConfigData, "APPEARANCE_SKIN" | "APPEARANCE_TOKENS"> = {

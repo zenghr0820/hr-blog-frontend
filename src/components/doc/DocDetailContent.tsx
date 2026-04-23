@@ -6,6 +6,7 @@ import { PanelLeftClose, Search, List, X } from "lucide-react";
 import { setArticleMetaThemeColor, restoreMetaThemeColor } from "@/utils/theme-manager";
 import { docSeriesApi } from "@/lib/api/doc-series";
 import { usePageStore } from "@/store/page-store";
+import { scrollTo } from "@/store/scroll-store";
 import { cn } from "@/lib/utils";
 import type { Article } from "@/types/article";
 import type { DocSeriesWithArticles, DocArticleItem } from "@/types/doc-series";
@@ -103,7 +104,7 @@ export function DocDetailContent({ article }: DocDetailContentProps) {
     (docId: string) => {
       setIsSidebarOpen(false);
       router.push(`/doc/${docId}`);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollTo(0);
     },
     [router]
   );

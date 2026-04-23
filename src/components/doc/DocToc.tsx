@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { scrollTo } from "@/store/scroll-store";
 import styles from "./doc.module.css";
 
 interface TocItem {
@@ -183,7 +184,7 @@ export function DocToc({ contentHtml }: DocTocProps) {
     const el = headingElementsRef.current[item.index];
     if (el) {
       const top = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top, behavior: "smooth" });
+      scrollTo(top);
     }
   }, []);
 

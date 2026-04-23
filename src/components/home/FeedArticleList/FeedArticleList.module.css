@@ -13,20 +13,18 @@
   gap: 0.75rem;
 }
 
-/* 双栏模式 - 使用 flexbox 实现 */
+/* 双栏模式 - 瀑布流布局 */
 .doubleColumnContainer {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0.625rem;
-  justify-content: space-between;
+  display: block;
+  column-count: 2;
+  column-gap: 0.625rem;
 }
 
 /* 平板范围 - 恢复单栏行布局 */
 @media screen and (min-width: 769px) and (max-width: 992px) {
   .doubleColumnContainer {
-    flex-direction: column;
-    gap: 0.75rem;
+    column-count: 1;
+    column-gap: 0;
   }
 
   .skeletonCardDouble {
@@ -49,8 +47,8 @@
 /* 移动端 - 单栏 */
 @media (max-width: 768px) {
   .doubleColumnContainer {
-    flex-direction: column;
-    gap: 0.75rem;
+    column-count: 1;
+    column-gap: 0;
   }
 }
 
@@ -70,8 +68,9 @@
 /* 双栏骨架屏 */
 .skeletonCardDouble {
   flex-direction: column;
-  width: calc(50% - 0.3125rem);
-  margin: 0;
+  width: 100%;
+  margin: 0 0 0.625rem 0;
+  break-inside: avoid;
 }
 
 .skeletonCardDouble .skeletonCover {

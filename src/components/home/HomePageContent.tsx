@@ -8,7 +8,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { HomeTop, CategoryBar, FeedArticleList, Sidebar } from "@/components/home";
+import { HomeTop, CategoryBar, FeedArticleList, Sidebar, MomentWidget } from "@/components/home";
 
 // 动画变体
 const containerVariants: Variants = {
@@ -39,8 +39,13 @@ export function HomePageContent() {
     <motion.div className="home-page-content" initial="hidden" animate="visible" variants={containerVariants}>
       {/* 首页顶部区域 */}
       <motion.div className="post-home-top-container" variants={itemVariants}>
-        <HomeTop />
+        {/* <HomeTop /> */}
       </motion.div>
+
+      {/* 即刻条 */}
+      {/* <motion.div className="essay-bar-wrapper" variants={itemVariants}>
+        <MomentWidget />
+      </motion.div> */}
 
       {/* 主内容区域 */}
       <motion.div className="content-inner" variants={itemVariants}>

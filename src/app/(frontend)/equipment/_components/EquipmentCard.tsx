@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { RiChat1Fill } from "react-icons/ri";
+import { scrollTo } from "@/store/scroll-store";
 import type { EquipmentItem } from "./types";
 
 interface EquipmentCardProps {
@@ -26,7 +27,7 @@ export function EquipmentCard({ item }: EquipmentCardProps) {
     const el = document.getElementById("post-comment");
     if (el) {
       const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
-      window.scrollTo({ top, behavior: "smooth" });
+      scrollTo(top);
     }
   };
 

@@ -53,7 +53,7 @@ export function EquipmentPageContent() {
   }
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
+    <div className="cardWidget mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
       <BannerCard
         tips={bannerConfig?.title || "我的装备"}
         title={bannerConfig?.description || "Equipment"}

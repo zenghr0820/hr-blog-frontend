@@ -3,8 +3,9 @@
 import { FormInput } from "@/components/ui/form-input";
 import { FormSwitch } from "@/components/ui/form-switch";
 import { FormCodeEditor } from "@/components/ui/form-code-editor";
+import { FormImageUpload } from "@/components/ui/form-image-upload";
 import { OneImageConfigEditor } from "./editors/OneImageConfigEditor";
-import { SettingsSection } from "./SettingsSection";
+import { SettingsSection, SettingsFieldGroup } from "./SettingsSection";
 import { Spinner } from "@/components/ui/spinner";
 import {
   KEY_ENABLE_EXTERNAL_LINK_WARNING,
@@ -17,6 +18,9 @@ import {
   KEY_PAGE_ONE_IMAGE_CONFIG,
   KEY_HITOKOTO_API,
   KEY_TYPING_SPEED,
+  KEY_BACKGROUND_IMAGE,
+  KEY_BACKGROUND_IMAGE_DARK,
+  KEY_AUTHOR_CARD_BG,
 } from "@/lib/settings/setting-keys";
 
 interface PageStyleFormProps {
@@ -69,6 +73,31 @@ export function PageStyleForm({ values, onChange, loading }: PageStyleFormProps)
           value={values[KEY_TYPING_SPEED]}
           onValueChange={v => onChange(KEY_TYPING_SPEED, v)}
           description="一言打字机效果的速度（毫秒）"
+        />
+      </SettingsSection>
+
+      {/* 背景图片 */}
+      <SettingsSection title="背景图片">
+        <SettingsFieldGroup cols={2}>
+          <FormImageUpload
+            label="浅色模式背景"
+            value={values[KEY_BACKGROUND_IMAGE]}
+            onValueChange={v => onChange(KEY_BACKGROUND_IMAGE, v)}
+            description="浅色模式下显示的页面背景图片"
+          />
+          <FormImageUpload
+            label="暗色模式背景"
+            value={values[KEY_BACKGROUND_IMAGE_DARK]}
+            onValueChange={v => onChange(KEY_BACKGROUND_IMAGE_DARK, v)}
+            description="暗色模式下显示的页面背景图片"
+          />
+        </SettingsFieldGroup>
+
+        <FormImageUpload
+          label="作者卡片背景"
+          value={values[KEY_AUTHOR_CARD_BG]}
+          onValueChange={v => onChange(KEY_AUTHOR_CARD_BG, v)}
+          description="侧边栏作者卡片的背景图片"
         />
       </SettingsSection>
 

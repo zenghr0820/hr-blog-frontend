@@ -20,7 +20,10 @@ import { CustomCodeInjector } from "./custom-code-injector";
 import { DefaultThemeSync } from "./DefaultThemeSync";
 import { SiteThemeColorsSync } from "./SiteThemeColorsSync";
 import { ReducedMotionSync } from "./ReducedMotionSync";
+import { BackgroundImageSync } from "./BackgroundImageSync";
 import { VisitStatisticsTracker } from "./visit-statistics-tracker";
+import { LenisScroll } from "./LenisScroll";
+import { ContainerAliasLoader } from "./container-alias-loader";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -89,13 +92,17 @@ export function Providers({ children }: ProvidersProps) {
         <HeroUIProviderWrapper>
           <AuthTokenInitializer>
             <SiteConfigLoader>
+              <ContainerAliasLoader>
               <DefaultThemeSync />
               <SiteThemeColorsSync />
               <ReducedMotionSync />
+              <BackgroundImageSync />
+              <LenisScroll />
               <GlobalLoading />
               <CustomCodeInjector />
               <VisitStatisticsTracker />
               {children}
+              </ContainerAliasLoader>
             </SiteConfigLoader>
           </AuthTokenInitializer>
         </HeroUIProviderWrapper>

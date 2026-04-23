@@ -46,6 +46,7 @@
   box-shadow: var(--anzhiyu-shadow-border);
   transition: 0.3s;
   transform: translateZ(0);
+  cursor: pointer;
 }
 
 .barrageClose {
@@ -101,7 +102,6 @@
 }
 
 .commentBarrageItem:hover {
-  border: var(--style-border-hover);
   box-shadow: var(--anzhiyu-shadow-main);
 }
 

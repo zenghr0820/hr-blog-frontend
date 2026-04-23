@@ -4,12 +4,14 @@
  */
 
 import { apiClient } from "./client";
+import { axiosInstance } from "./client";
 import type {
   AdminArticle,
   AdminArticleListParams,
   AdminArticleListResponse,
   CreateArticleRequest,
   UpdateArticleRequest,
+  ExportArticlesMarkdownRequest,
   ImportArticlesParams,
   ImportArticlesResult,
   ArticleDetailForEdit,
@@ -134,12 +136,29 @@ export const postManagementApi = {
   },
 
   /**
+   * 导出文章为 Markdown ZIP
+   * POST /api/articles/export/md
+   */
+  async exportArticlesMarkdown(data: ExportArticlesMarkdownRequest): Promise<Blob> {
+    const response = await axiosInstance.post("/api/articles/export/md", data, {
+      responseType: "blob",
+    });
+    return response.data;
+  },
+
+  /**
    * 导入文章
    * POST /api/articles/import
    */
   async importArticles(params: ImportArticlesParams): Promise<ImportArticlesResult> {
     const formData = new FormData();
     formData.append("file", params.file);
+    if (params.template_key) {
+      formData.append("template_key", params.template_key);
+    }
+    if (params.doc_series_id) {
+      formData.append("doc_series_id", params.doc_series_id);
+    }
     if (params.create_categories !== undefined) {
       formData.append("create_categories", String(params.create_categories));
     }

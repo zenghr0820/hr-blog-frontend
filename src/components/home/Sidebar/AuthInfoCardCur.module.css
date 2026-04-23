@@ -1,0 +1,272 @@
+/* AuthorInfoCardCur - 作者信息卡片样式 */
+@keyframes megaphone {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+:global(:root) {
+    --author-card-bg: linear-gradient(-45deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.7));
+
+    --author-card-bg-before: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.7));
+}
+
+:global(.dark) {
+    --author-card-bg: linear-gradient(-45deg, rgba(24, 40, 72, 0.6), rgba(35, 37, 58, 0.5), rgba(35, 37, 58, 0.5), rgba(24, 40, 72, 0.6));
+    --author-card-bg-before: linear-gradient(to bottom, rgba(24, 40, 72, 0.1), rgba(35, 37, 58, 0.3), rgba(35, 37, 58, 0.6), rgba(24, 40, 72, 0.7));
+
+    img {
+        filter: blur(0) brightness(.8);
+    }
+}
+
+.isCenter {
+    text-align: center;
+}
+
+.cardWidget {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 15px;
+    padding: 20px 24px;
+    border-radius: 8px;
+}
+
+.cardInfo {
+    z-index: 1;
+    position: relative;
+    background: var(--anzhiyu-card-bg);
+}
+
+/* 背景伪元素 */
+.cardInfo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--author-card-bg-before);
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+    z-index: -1;
+    transition: opacity 0.8s;
+}
+
+/* 支持动态配置的作者卡片背景图片 */
+.cardInfo::before {
+    background-image: var(--author-card-bg-before), url(https://blog.zenghr.cn/author_bg.webp);
+}
+
+.cardInfo:hover::before {
+    opacity: 1;
+    filter: none;
+}
+
+/* 卡片内容容器 */
+
+
+/* 问候语/描述区域 */
+.authorInfoDetail {
+    user-select: none;
+    width: calc(100% - 40px);
+    height: 34px;
+    position: absolute;
+    overflow: hidden;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 14px;
+    padding: 2px 15px;
+    border-radius: 20px;
+    transition: width 0.5s ease-in-out, height 0.5s ease-in-out,
+        border-radius 0.5s ease-in-out, padding 0.5s ease-in-out,
+        background 0.5s ease-in-out;
+}
+
+.authorInfoHello {
+    border-radius: 20px;
+    width: 135px;
+    background: var(--anzhiyu-card-bg);
+    margin: 0 auto;
+    cursor: pointer;
+    transition: background 0.5s ease-in-out, border 0.5s ease-in-out;
+    text-align: center;
+    line-height: 30px;
+    padding: 0;
+}
+
+.authorInfoHello:hover {
+    color: var(--anzhiyu-fontcolor);
+    background: var(--anzhiyu-card-bg);
+}
+
+/* 悬停时展开描述区域 */
+.cardInfo:hover .authorInfoDetail {
+    background: var(--anzhiyu-card-bg);
+    height: 165px;
+    border-radius: 10px;
+    padding: 10px 15px;
+}
+
+.cardInfo:hover .authorInfoHello {
+    background: transparent;
+    border: none;
+}
+
+/* 头像区域 */
+.avatarImg {
+    position: relative;
+    margin: 50px auto 0;
+    width: 110px;
+    height: 110px;
+    transition: transform 0.5s, opacity 0.5s ease, filter 0.5s ease;
+    z-index: 5;
+}
+
+.avatarImg img {
+    border: 6px solid var(--anzhiyu-white);
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    transition: filter 375ms ease-in 0.2s;
+    object-fit: cover;
+}
+
+.authorStatus {
+    width: 38px;
+    height: 38px;
+    border: 6px solid var(--anzhiyu-white);
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    background: var(--anzhiyu-white);
+    overflow: hidden;
+}
+
+.gStatus {
+    width: 26px;
+    height: 26px;
+    object-fit: cover;
+}
+
+/* 悬停时头像变换 */
+.cardInfo:hover .avatarImg {
+    transform: translate(-90%, -85%) scale(0.4) rotate(-20deg);
+}
+
+/* 作者名称 */
+.authorInfoName {
+    font-weight: 500;
+    font-size: 1.57em;
+    margin-top: 10px;
+    color: var(--font-color);
+}
+
+
+/* 统计数据区域 */
+.siteData {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    margin: 14px 0 4px;
+}
+
+.siteData a {
+    border-radius: 10px;
+}
+
+.siteData a:hover {
+    background: var(--anzhiyu-secondbg);
+}
+
+.siteData>a {
+    display: table-cell;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.siteData>a div {
+    transition: all 0.3s;
+}
+
+/* .siteData>a:hover div {
+    color: var(--anzhiyu-theme) !important;
+} */
+
+.headline {
+    color: var(--font-color);
+    font-size: 0.9em;
+}
+
+.lengthNum {
+    margin-top: -0.32em;
+    color: var(--text-highlight-color);
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+/* Follow Me 按钮 */
+.cardInfoBtn {
+    display: block;
+    margin-top: 14px;
+    background-color: var(--anzhiyu-btn-bg);
+    color: var( --anzhiyu-btn-fontcolor);
+    text-align: center;
+    line-height: 2.4;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.cardInfoBtn:hover {
+    background-color: var(--anzhiyu-theme);
+}
+
+.cardInfoBtn span {
+    padding-left: 10px;
+}
+
+/* 底部信息组 */
+
+/* 社交图标 */
+.cardInfoSocialIcons {
+    margin: 14px 0 -14px;
+}
+
+.socialIcon {
+    margin: 0 10px;
+    color: var(--font-color);
+    font-size: 1.4em;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.socialIcon .socialIconify {
+    width: 24px;
+    height: 24px;
+    transition: all 0.3s;
+}
+
+.socialIcon:hover .socialIconify {
+    transform: rotate(360deg);
+    filter: brightness(1.15); 
+}
+
+.socialIconImg {
+    object-fit: contain;
+    border-radius: 50%;
+}

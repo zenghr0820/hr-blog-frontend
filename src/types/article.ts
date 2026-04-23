@@ -44,6 +44,7 @@ export interface FeedItem {
   title: string;
   cover_url: string;
   created_at: string;
+  updated_at: string;
   // 文章特有字段
   pin_sort?: number;
   comment_count?: number;
@@ -52,6 +53,7 @@ export interface FeedItem {
   is_doc?: boolean;
   doc_series_id?: string;
   primary_color?: string; // 文章主色调，用于分类标签背景色
+  summaries?: string;
   // 商品特有字段
   min_price?: number;
   max_price?: number;

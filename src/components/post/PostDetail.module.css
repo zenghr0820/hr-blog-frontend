@@ -37,22 +37,25 @@
   align-self: flex-start;
   width: 100%;
   padding: 1.25rem 2.5rem;
-  background: var(--card);
+  background: var(--anzhiyu-card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--anzhiyu-shadow-card);
   transition: all 0.3s ease 0s;
   animation: slideIn 0.6s 0.1s backwards;
 
   /* 文章详情页：评论表单灰色背景 + 评论列表内嵌模式（无独立卡片） */
-  --comment-form-bg: var(--anzhiyu-secondbg);
   --comment-form-quote-bg: var(--muted);
-  --comment-item-bg: transparent;
+  --comment-item-bg: var(--card-bg);
   --comment-item-border: none;
   --comment-item-radius: 0;
   --comment-item-padding: 0;
-  --comment-item-gap: 1.5rem;
-  --comment-divider-display: block;
+  --comment-item-gap: 0;
+  --comment-divider-display: none;
+}
+
+.postDetailContent:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 @keyframes slideIn {

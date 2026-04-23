@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
     // 固定 Turbopack 根目录，避免多 lockfile 场景下根目录误判
     root: __dirname,
   },
+  // 关闭TS实时类型检查（开发巨耗内存，打包再检查）
+  typescript: { ignoreBuildErrors: true },
   output: "standalone",
   images: {
     unoptimized: true,

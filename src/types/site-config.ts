@@ -92,6 +92,9 @@ export interface SiteConfigData {
 
   // 页面配置
   page?: {
+    background_image?: string;
+    background_image_dark?: string;
+    author_card_bg?: string;
     one_image?: {
       config?: {
         home?: PageOneImageItem;

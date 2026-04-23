@@ -1,0 +1,220 @@
+@keyframes megaphone {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.cardWidget {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 15px;
+  padding: 20px 24px;
+  background: var(--anzhiyu-card-bg);
+  box-shadow: var(--anzhiyu-shadow-blackdeep);
+  transition: all 0.3s;
+  border-radius: 8px;
+}
+
+.cardWidget:hover {
+  box-shadow: var(--anzhiyu-shadow-border);
+}
+
+.cardWidget:last-child {
+  margin-bottom: 0;
+}
+
+.isCenter {
+  text-align: center;
+}
+
+.cardInfo {
+  z-index: 1;
+  position: relative;
+  background: linear-gradient(
+    -45deg,
+    var(--anzhiyu-main-op),
+    var(--anzhiyu-main-op-deep),
+    var(--anzhiyu-main-op),
+    var(--anzhiyu-main-op-deep)
+  );
+}
+
+.cardInfo::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    var(--author-card-bg-before, linear-gradient(to bottom, var(--anzhiyu-none), var(--anzhiyu-main-op), var(--anzhiyu-main-op-deep))),
+    var(--author-card-bg-url, none);
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  z-index: -1;
+  transition: opacity 0.8s;
+}
+
+.cardInfo:hover::before {
+  opacity: 1;
+  filter: none;
+}
+
+.authorInfoDetail {
+  user-select: none;
+  width: calc(100% - 40px);
+  height: 34px;
+  position: absolute;
+  overflow: hidden;
+  left: 50%;
+  transform: translate(-50%, 0);
+  font-size: 14px;
+  padding: 2px 15px;
+  border-radius: 20px;
+  transition:
+    width 0.5s ease-in-out,
+    height 0.5s ease-in-out,
+    border-radius 0.5s ease-in-out,
+    padding 0.5s ease-in-out,
+    background 0.5s ease-in-out;
+}
+
+.authorInfoHello {
+  border-radius: 20px;
+  width: 135px;
+  background: var(--anzhiyu-card-bg);
+  margin: 0 auto;
+  transition:
+    background 0.5s ease-in-out,
+    border 0.5s ease-in-out;
+}
+
+.authorInfoDesc {
+  margin: 0 12px;
+  font-weight: 600;
+}
+
+.cardInfo:hover .authorInfoDetail {
+  background: var(--anzhiyu-card-bg);
+  height: 165px;
+  border-radius: 10px;
+  padding: 10px 15px;
+}
+
+.cardInfo:hover .authorInfoHello {
+  background: transparent;
+  border: none;
+}
+
+.authorInfoName {
+  margin-top: 10px;
+  font-weight: 500;
+  font-size: 1.57em;
+}
+
+.avatarImg {
+  position: relative;
+  margin: 50px auto 0;
+  width: 110px;
+  height: 110px;
+  transition:
+    transform 0.5s,
+    opacity 0.5s ease,
+    filter 0.5s ease;
+}
+
+.avatarImg img {
+  border: 6px solid var(--anzhiyu-white);
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  transition: filter 375ms ease-in 0.2s;
+  object-fit: cover;
+}
+
+.cardInfo:hover .avatarImg {
+  transform: translate(-90%, -85%) scale(0.4) rotate(-20deg);
+}
+
+.siteData {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin: 14px 0 4px;
+}
+
+.siteData a {
+  display: table-cell;
+  text-decoration: none;
+  color: inherit;
+}
+
+.siteData a div {
+  transition: all 0.3s;
+}
+
+.siteData a:hover div {
+  color: #2679cc !important;
+}
+
+.headline {
+  color: var(--anzhiyu-fontcolor);
+}
+
+.lengthNum {
+  margin-top: -0.32em;
+  color: var(--text-highlight-color);
+  font-size: 1.4em;
+}
+
+.cardInfoBtn {
+  display: block;
+  margin-top: 14px;
+  background-color: var(--anzhiyu-main-op-deep);
+  color: var(--anzhiyu-white);
+  text-align: center;
+  line-height: 2.4;
+  border-radius: 20px;
+  text-decoration: none;
+}
+
+.cardInfoBtn:hover {
+  background-color: var(--anzhiyu-main);
+}
+
+.cardInfoBtn span {
+  padding-left: 10px;
+}
+
+.cardInfoIcons {
+  margin: 6px 0 -6px;
+}
+
+.cardInfoIcons .icon {
+  display: inline-block;
+  margin: 0 10px;
+  color: var(--anzhiyu-fontcolor);
+  font-size: 1.4em;
+  text-decoration: none;
+}
+
+.cardInfoIcons .icon i {
+  transition: all 0.3s;
+}
+
+.cardInfoIcons .icon i:hover {
+  transform: rotate(360deg);
+}
+
+@media screen and (max-width: 900px) {
+  .cardWidget {
+    display: none;
+  }
+}

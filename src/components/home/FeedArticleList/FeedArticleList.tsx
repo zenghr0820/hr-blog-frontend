@@ -5,7 +5,7 @@ import { FaFileLines, FaTriangleExclamation } from "react-icons/fa6";
 import { useFeedList } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { cn } from "@/lib/utils";
-import { FeedArticleCard } from "./FeedArticleCard";
+import { FeedArticleCardNew } from "./FeedArticleCardNew";
 import { Pagination } from "../Pagination";
 import styles from "./FeedArticleList.module.css";
 
@@ -104,7 +104,7 @@ export function FeedArticleList({ category, tag, pageSize: propPageSize }: FeedA
       {/* 文章列表 */}
       <div className={cn(styles.articleList, isDoubleColumn && styles.doubleColumnContainer)}>
         {articles.map((article, index) => (
-          <FeedArticleCard
+          <FeedArticleCardNew
             key={article.id}
             article={article}
             isDoubleColumn={isDoubleColumn}

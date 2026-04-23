@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CategoryBar, Sidebar } from "@/components/home";
 import { FilteredArticleList } from "@/components/articles";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { scrollTo } from "@/store/scroll-store";
 
 interface CategoryDetailPageContentProps {
   categoryName: string;
@@ -39,8 +40,7 @@ export function CategoryDetailPageContent({
       setCurrentPage(1);
       // 直接更新浏览器 URL，不触发 Next.js 路由系统（避免组件重新挂载和动画重播）
       window.history.replaceState(null, "", buildCategoryPath(categoryName, 1));
-      // 滚动到顶部
-      window.scrollTo({ top: 0 });
+      scrollTo(0, { immediate: true });
     },
     [buildCategoryPath, router]
   );

@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { addToast, useDisclosure } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { useAdminArticles, useDeleteArticle, useImportArticles } from "@/hooks/queries/use-post-management";
+import { useAdminArticles, useDeleteArticle, useImportArticles, useExportArticlesMarkdown } from "@/hooks/queries/use-post-management";
 import { articleApi } from "@/lib/api/article";
 import type { AdminArticle, AdminArticleListParams, ArticleStatus, ReviewStatus } from "@/types/post-management";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -51,6 +51,7 @@ export function usePostManagementPage() {
   const deleteModal = useDisclosure();
   const batchDeleteModal = useDisclosure();
   const importModal = useDisclosure();
+  const exportModal = useDisclosure();
 
   // ---- 查询 ----
   const queryParams: AdminArticleListParams = useMemo(
@@ -74,6 +75,7 @@ export function usePostManagementPage() {
   // ---- Mutations ----
   const deleteArticle = useDeleteArticle();
   const importArticlesHook = useImportArticles();
+  const exportArticlesHook = useExportArticlesMarkdown();
 
   // ---- 选择逻辑 ----
   const isSomeSelected = selectedIds.size > 0;
@@ -216,6 +218,10 @@ export function usePostManagementPage() {
     // 导入
     importModal,
     importArticlesHook,
+
+    // 导出
+    exportModal,
+    exportArticlesHook,
 
     // 行操作
     handleAction,

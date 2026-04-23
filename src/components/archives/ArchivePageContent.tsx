@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar } from "@/components/home";
-import { ArchiveList } from "./ArchiveList";
+import { ArchiveListNew } from "./ArchiveListNew";
 
 interface ArchivePageContentProps {
   year?: number;
@@ -14,7 +14,7 @@ export function ArchivePageContent({ year, month, page }: ArchivePageContentProp
     <div className="archive-page-content">
       <div className="content-inner">
         <div className="main-content">
-          <ArchiveList year={year} month={month} page={page} />
+          <ArchiveListNew year={year} month={month} page={page} />
         </div>
         <Sidebar />
       </div>

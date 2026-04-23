@@ -11,6 +11,7 @@ import { Icon } from "@iconify/react";
 import { addToast } from "@heroui/react";
 import { useUiStore } from "@/store/ui-store";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { scrollTo } from "@/store/scroll-store";
 import { useTheme } from "@/hooks/use-theme";
 import styles from "./styles.module.css";
 
@@ -248,7 +249,7 @@ export function RightMenu() {
   };
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollTo(0);
     hideMenu();
   };
 

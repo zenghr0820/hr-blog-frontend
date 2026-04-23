@@ -9,7 +9,8 @@
   overflow: hidden;
   cursor: pointer;
   background: var(--anzhiyu-card-bg);
-  border: var(--style-border);
+  /* border: var(--style-border); */
+  box-shadow: var(--anzhiyu-shadow-card);
   border-radius: 12px;
   transition: all 0.3s ease-in-out;
 
@@ -40,8 +41,8 @@
 }
 
 .recentPostItem:hover {
-  border: var(--style-border-hover);
-  box-shadow: var(--anzhiyu-shadow-main);
+  /* border: var(--style-border-hover); */
+  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .recentPostItem:hover .postBg {
@@ -327,24 +328,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.articleMetaTags {
-  display: inline-flex;
-  margin: 0 2px;
-  align-items: center;
-  gap: 2px;
-  padding: 3px 6px;
-  overflow: hidden;
-  color: var(--anzhiyu-secondtext);
-  border-radius: 4px;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-
-.articleMetaTags:hover {
-  color: var(--anzhiyu-white);
-  background-color: var(--anzhiyu-main);
 }
 
 .tagIcon {

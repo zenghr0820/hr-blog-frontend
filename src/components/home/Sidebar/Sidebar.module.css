@@ -15,13 +15,14 @@
   position: relative;
   overflow: hidden;
   background: var(--anzhiyu-card-bg);
-  border: var(--style-border);
   border-radius: 12px;
-  transition: border-color 0.3s ease;
+  box-shadow: var(--anzhiyu-shadow-card);
+  transition: box-shadow 0.3s ease;
 }
 
 .cardWidget:hover {
-  border: var(--style-border-hover);
+  /* border: var(--style-border-hover); */
+  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 /* 响应式 - 992px 以下隐藏侧边栏 */

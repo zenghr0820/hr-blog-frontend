@@ -22,7 +22,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { processHtmlForSave } from "@/lib/content-processor";
 import { turndownArticleMarkdown } from "@/lib/editor-tabs-export";
 import { registerCustomRules } from "@/lib/turndown-rules";
-import { registerMarkedExtensions, fixTaskListHtml } from "@/lib/marked-extensions";
+import { registerMarkedExtensions, fixTaskListHtml, setContainerAliases } from "@/lib/marked-extensions";
+import { metaMappingApi } from "@/lib/api/meta-mapping";
 
 import type { Editor } from "@tiptap/react";
 
@@ -64,6 +65,10 @@ const turndownService = new TurndownService({
 });
 registerCustomRules(turndownService);
 registerMarkedExtensions(marked);
+
+metaMappingApi.getActiveContainerMappings().then(mappings => {
+  setContainerAliases(mappings.map(m => ({ name: m.name, target: m.target, params: m.params })));
+}).catch(() => {});
 
 function normalizePagePath(value: string): string {
   const trimmed = value.trim();

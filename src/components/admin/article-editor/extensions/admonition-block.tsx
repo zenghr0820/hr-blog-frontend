@@ -139,7 +139,7 @@ function TypeSelector({
 function AdmonitionBlockView({ node, updateAttributes }: NodeViewProps) {
   const [titleEditing, setTitleEditing] = useState(false);
   const adType = (node.attrs.admonitionType as AdmonitionType) || "note";
-  const title = (node.attrs.title as string) || DEFAULT_TITLES[adType];
+  const title = (node.attrs.title as string) || "";
   const opt = getTypeOption(adType);
 
   return (
@@ -158,7 +158,7 @@ function AdmonitionBlockView({ node, updateAttributes }: NodeViewProps) {
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            marginBottom: "0.5rem",
+            marginBottom: title ? "0.5rem" : 0,
           }}
           contentEditable={false}
         >
@@ -166,15 +166,13 @@ function AdmonitionBlockView({ node, updateAttributes }: NodeViewProps) {
             current={adType}
             onChange={t => {
               updateAttributes({ admonitionType: t });
-              if (title === DEFAULT_TITLES[adType]) {
-                updateAttributes({ title: DEFAULT_TITLES[t] });
-              }
             }}
           />
           {titleEditing ? (
             <input
               type="text"
               value={title}
+              placeholder="输入标题（留空则不显示）"
               onChange={e => updateAttributes({ title: e.target.value })}
               onBlur={() => setTitleEditing(false)}
               onKeyDown={e => {
@@ -194,7 +192,7 @@ function AdmonitionBlockView({ node, updateAttributes }: NodeViewProps) {
               }}
               autoFocus
             />
-          ) : (
+          ) : title ? (
             <span
               style={{
                 fontWeight: 600,
@@ -206,6 +204,18 @@ function AdmonitionBlockView({ node, updateAttributes }: NodeViewProps) {
               title="点击编辑标题"
             >
               {title}
+            </span>
+          ) : (
+            <span
+              style={{
+                color: "var(--muted-foreground, #999)",
+                cursor: "pointer",
+                fontSize: "12px",
+              }}
+              onClick={() => setTitleEditing(true)}
+              title="点击添加标题"
+            >
+              + 添加标题
             </span>
           )}
         </div>
@@ -270,12 +280,20 @@ export const AdmonitionBlock = Node.create({
 
   renderHTML({ node, HTMLAttributes }) {
     const adType = (node.attrs.admonitionType as string) || "note";
-    const title = (node.attrs.title as string) || DEFAULT_TITLES[adType as AdmonitionType] || "";
+    const title = (node.attrs.title as string) || "";
+
+    if (title) {
+      return [
+        "div",
+        mergeAttributes(HTMLAttributes, { class: `admonition ${adType}` }),
+        ["div", { class: "admonition-title" }, title],
+        ["div", { class: "admonition-body" }, 0],
+      ];
+    }
 
     return [
       "div",
       mergeAttributes(HTMLAttributes, { class: `admonition ${adType}` }),
-      ["div", { class: "admonition-title" }, title],
       ["div", { class: "admonition-body" }, 0],
     ];
   },
@@ -293,7 +311,7 @@ export const AdmonitionBlock = Node.create({
             type: this.name,
             attrs: {
               admonitionType: type,
-              title: title || DEFAULT_TITLES[type],
+              title: title || "",
             },
             content: [{ type: "paragraph" }],
           });

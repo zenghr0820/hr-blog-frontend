@@ -17,7 +17,7 @@ import {
 } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, lazy, Suspense } from "react";
-import { Plus, Upload, Trash2, ShieldAlert, ChevronDown, FileText, Tags } from "lucide-react";
+import { Plus, Upload, Download, Trash2, ShieldAlert, ChevronDown, FileText, Tags } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const PostCategoryTagManager = lazy(() => import("@/components/admin/post-management/PostCategoryTagManager"));
@@ -28,6 +28,7 @@ import { TABLE_COLUMNS, usePostRenderCell } from "@/components/admin/post-manage
 import { PostManagementSkeleton } from "@/components/admin/post-management/PostManagementSkeleton";
 import { PostFilterBar } from "@/components/admin/post-management/PostFilterBar";
 import { ImportModal } from "@/components/admin/post-management/ImportModal";
+import { ExportModal } from "@/components/admin/post-management/ExportModal";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { FloatingSelectionBar } from "@/components/admin/FloatingSelectionBar";
 import { TableEmptyState } from "@/components/admin/TableEmptyState";
@@ -166,6 +167,16 @@ export default function PostManagementPage() {
               >
                 导入
               </Button>
+              <Button
+                size="sm"
+                variant="flat"
+                onPress={pm.exportModal.onOpen}
+                isDisabled={!pm.isSomeSelected}
+                startContent={<Download className="w-3.5 h-3.5" />}
+                className="text-foreground/70"
+              >
+                导出
+              </Button>
             </div>
           </div>
         </div>
@@ -260,6 +271,12 @@ export default function PostManagementPage() {
             count={pm.selectedIds.size}
             actions={[
               {
+                key: "export",
+                label: "导出",
+                icon: <Download className="w-3.5 h-3.5" />,
+                onClick: pm.exportModal.onOpen,
+              },
+              {
                 key: "delete",
                 label: "删除",
                 icon: <Trash2 className="w-3.5 h-3.5" />,
@@ -303,6 +320,13 @@ export default function PostManagementPage() {
         isOpen={pm.importModal.isOpen}
         onOpenChange={pm.importModal.onOpenChange}
         onImport={pm.importArticlesHook}
+      />
+
+      <ExportModal
+        isOpen={pm.exportModal.isOpen}
+        onOpenChange={pm.exportModal.onOpenChange}
+        selectedIds={pm.selectedIds}
+        onExport={pm.exportArticlesHook}
       />
 
       <Suspense fallback={null}>

@@ -90,6 +90,7 @@ export const HiddenBlock = Node.create({
     return [
       {
         tag: "div.hide-block",
+        contentElement: ".hide-content",
         getAttrs: (element: HTMLElement) => {
           const button = element.querySelector(".hide-button");
           const display = button?.textContent || "查看隐藏内容";

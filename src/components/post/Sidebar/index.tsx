@@ -5,7 +5,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { AuthorInfoCard } from "@/components/home/Sidebar/AuthorInfoCard";
+import { AuthorInfoCardCur } from "@/components/home/Sidebar/AuthorInfoCardCur";
 import { CardWechat } from "@/components/home/Sidebar/CardWechat";
 import { CardClock } from "@/components/home/Sidebar/CardClock";
 import { CustomSidebarBlocks } from "@/components/home/Sidebar/CustomSidebarBlocks";
@@ -62,6 +62,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
       statusImg: author.statusImg || "",
       skills: author.skills || [],
       social: author.social || {},
+      totalPostCount: siteConfig?.sidebar?.siteinfo?.totalPostCount || 0,
     };
   }, [siteConfig]);
 
@@ -111,7 +112,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
   return (
     <aside className={styles.postSidebar}>
       {/* 作者信息卡片 */}
-      {authorInfoConfig && <AuthorInfoCard config={authorInfoConfig} />}
+      {authorInfoConfig && <AuthorInfoCardCur config={authorInfoConfig} />}
 
       {/* 微信卡片 */}
       {wechatConfig && <CardWechat config={wechatConfig} />}

@@ -2,9 +2,15 @@
 
 .cardToc {
   padding: 1rem;
-  background: var(--card);
+  background: var(--anzhiyu-card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
+  box-shadow: var(--anzhiyu-shadow-card);
+  transition: box-shadow 0.3s ease;
+}
+
+.cardToc:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .cardTitle {
@@ -60,7 +66,6 @@
 
 /* 鼠标悬停时取消模糊 */
 .tocContainer:hover .tocItem {
-  filter: blur(0);
   opacity: 1;
 }
 
@@ -89,16 +94,13 @@
     color 0.2s ease-out,
     background-color 0.2s ease-out,
     font-size 0.2s ease-out,
-    filter 0.2s ease-out,
     opacity 0.2s ease-out;
 }
 
-/* 非激活项的模糊效果 */
+/* 非激活项 */
 .tocItem:not(.active) {
   width: 100%;
   cursor: pointer;
-  filter: blur(1px);
-  opacity: 0.6;
 }
 
 .tocItem:hover {
@@ -109,7 +111,8 @@
 .tocItem.active {
   font-weight: 600;
   color: var(--primary);
-  background-color: var(--primary-op-light);
+  background-color: var(--anzhiyu-theme);
+  color: #fff;
 }
 
 .tocText {

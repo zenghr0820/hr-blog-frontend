@@ -13,3 +13,4 @@ export * from "./use-articles";
 export * from "./use-comments";
 export * from "./use-dashboard";
 export * from "./use-post-management";
+export * from "./use-essays";

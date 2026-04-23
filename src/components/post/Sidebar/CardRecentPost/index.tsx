@@ -83,7 +83,7 @@ export function CardRecentPost({
   }
 
   return (
-    <div className={styles.cardRecentPost}>
+    <div className={`cardWidget ${styles.cardRecentPost}`}>
       <div className={styles.cardTitle}>最近发布</div>
 
       <div className={styles.articleList}>

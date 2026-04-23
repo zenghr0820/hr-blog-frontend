@@ -6,6 +6,37 @@
  */
 import type { marked as Marked, Tokens } from "marked";
 
+// ---------- 容器别名映射缓存 ----------
+
+interface ContainerAliasEntry {
+  target: string;
+  params: string;
+}
+
+const containerAliasMap = new Map<string, ContainerAliasEntry>();
+
+export function setContainerAliases(aliases: Array<{ name: string; target: string; params: string }>) {
+  containerAliasMap.clear();
+  for (const a of aliases) {
+    containerAliasMap.set(a.name.toLowerCase(), { target: a.target.toLowerCase(), params: a.params || "" });
+  }
+}
+
+export function getContainerAliases(): Map<string, ContainerAliasEntry> {
+  return containerAliasMap;
+}
+
+  /**
+   * 容器映射别名解析
+   */
+function resolveContainerAlias(tagName: string): { resolvedName: string; extraParams: string } {
+  const entry = containerAliasMap.get(tagName.toLowerCase());
+  if (entry) {
+    return { resolvedName: entry.target, extraParams: entry.params };
+  }
+  return { resolvedName: tagName, extraParams: "" };
+}
+
 // ---------- 工具函数 ----------
 
 function escapeHtml(text: string): string {
@@ -24,7 +55,9 @@ function extractAttr(str: string, name: string): string {
  * 返回 { raw, tagName, params, body } 或 null
  */
 function matchContainerBlock(src: string): { raw: string; tagName: string; params: string; body: string } | null {
-  const openMatch = src.match(/^:::(\w[\w-]*)\s*(.*)\n/);
+  // 规范化换行符
+  const normalized = src.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const openMatch = normalized.match(/^[ \t]*:::[ \t]*(\w[\w-]*)[ \t]*(.*?)[ \t]*\n/);
   if (!openMatch) return null;
 
   const tagName = openMatch[1];
@@ -51,7 +84,7 @@ function matchContainerBlock(src: string): { raw: string; tagName: string; param
     }
 
     if (!inCode) {
-      if (/^:::\w/.test(line)) depth++;
+      if (/^:::\s*\w/.test(line)) depth++;
       else if (line === ":::") depth--;
     }
 
@@ -66,15 +99,21 @@ function matchContainerBlock(src: string): { raw: string; tagName: string; param
 }
 
 /** Admonition 块支持的标签（与 turndown、编辑器一致；!!! 与类型之间可有空格） */
-const ADMONITION_OPEN_RE = /^!!!\s*(note|tip|warning|danger)\s*(.*)\n/;
-const ADMONITION_NESTED_OPEN_RE = /^!!!\s*(?:note|tip|warning|danger)\b/;
+const ADMONITION_TYPES = new Set(["note", "tip", "warning", "danger"]);
+
+const ADMONITION_OPEN_RE = /^!!!\s*(\w[\w-]*)\s*(.*)\n/;
+const ADMONITION_NESTED_OPEN_RE = /^!!!\s*\w[\w-]*\b/;
 
 /**
  * 从 src 开头匹配 !!!note|tip|warning|danger ... !!! 块（闭合为单独一行的 !!!，支持嵌套与代码块跳过）
  * 旧版 :::type ... ::: 仍由 matchContainerBlock 解析。
  */
 function matchAdmonitionBlock(src: string): { raw: string; tagName: string; params: string; body: string } | null {
-  const openMatch = src.match(ADMONITION_OPEN_RE);
+  // 规范化换行符
+  const normalized = src.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const openMatch = normalized.match(/^[ \t]*!!![ \t]*(\w[\w-]*)[ \t]*(.*?)[ \t]*\n/);
+
+  // const openMatch = src.match(ADMONITION_OPEN_RE);
   if (!openMatch) return null;
 
   const tagName = openMatch[1];
@@ -310,8 +349,9 @@ function renderVideoGallery(body: string, params: string): string {
 /** 渲染 Admonition 警告框（!!!note / :::note 等均解析为此 HTML） */
 function renderAdmonition(type: string): BlockRenderer {
   return (body: string, params: string, parse: (md: string) => string) => {
-    const title = params.trim() || ({ note: "注意", tip: "提示", warning: "警告", danger: "危险" }[type] ?? type);
-    return `<div class="admonition ${type}"><div class="admonition-title">${escapeHtml(title)}</div><div class="admonition-body">${parse(body)}</div></div>`;
+    const title = params.trim();
+    const titleHtml = title ? `<div class="admonition-title">${escapeHtml(title)}</div>` : "";
+    return `<div class="admonition ${type}">${titleHtml}<div class="admonition-body">${parse(body)}</div></div>`;
   };
 }
 
@@ -434,7 +474,13 @@ export function registerMarkedExtensions(marked: typeof Marked) {
       params: string;
       body: string;
     };
-    const renderer = blockRenderers[tagName];
+    const { resolvedName, extraParams } = resolveContainerAlias(tagName);
+    const mergedParams = extraParams ? (params ? `${extraParams} ${params}` : extraParams) : params;
+    if (resolvedName.toLowerCase() !== tagName.toLowerCase()) {
+      const renderer = blockRenderers[resolvedName.toLowerCase()];
+      if (renderer) return renderer(body, mergedParams, parseInline);
+    }
+    const renderer = blockRenderers[tagName.toLowerCase()];
     if (renderer) return renderer(body, params, parseInline);
     return `<div class="custom-block custom-block-${tagName}">${parseInline(body)}</div>`;
   }
@@ -446,11 +492,18 @@ export function registerMarkedExtensions(marked: typeof Marked) {
         name: "admonitionBangBlock",
         level: "block" as const,
         start(src: string) {
-          return src.match(/^!!!\s*(?:note|tip|warning|danger)\b/m)?.index;
+          const m = src.match(/^!!!\s*\w[\w-]*\b/m);
+          if (!m) return undefined;
+          const tagName = m[0].replace(/^!!!\s*/, "").trimStart().split(/\s/)[0];
+          const { resolvedName } = resolveContainerAlias(tagName);
+          if (ADMONITION_TYPES.has(resolvedName.toLowerCase())) return m.index;
+          return undefined;
         },
         tokenizer(src: string) {
           const block = matchAdmonitionBlock(src);
           if (!block) return undefined;
+          const { resolvedName } = resolveContainerAlias(block.tagName);
+          if (!ADMONITION_TYPES.has(resolvedName.toLowerCase())) return undefined;
           return {
             type: "admonitionBangBlock",
             raw: block.raw,
@@ -473,7 +526,7 @@ export function registerMarkedExtensions(marked: typeof Marked) {
         name: "containerBlock",
         level: "block" as const,
         start(src: string) {
-          return src.match(/^:::\w/m)?.index;
+          return src.match(/^:::\s*\w/m)?.index;
         },
         tokenizer(src: string) {
           const block = matchContainerBlock(src);

@@ -126,3 +126,6 @@ export * from "./order";
 export * from "./product";
 export * from "./membership";
 export * from "./support";
+
+// 导出即刻相关类型
+export * from "./essay";

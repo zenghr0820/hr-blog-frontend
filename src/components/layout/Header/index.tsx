@@ -11,6 +11,7 @@ import { usePageStore } from "@/store/page-store";
 import { useHeader } from "@/hooks/use-header";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { updateMetaThemeColorDynamic } from "@/utils/theme-manager";
+import { scrollTo } from "@/store/scroll-store";
 
 // hooks
 import { friendsApi } from "@/lib/api/friends";
@@ -209,10 +210,7 @@ export function Header() {
 
   // 滚动到顶部
   const scrollToTop = useCallback(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollTo(0);
   }, []);
 
   // 切换控制台

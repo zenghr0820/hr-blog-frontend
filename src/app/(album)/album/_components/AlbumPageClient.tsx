@@ -239,8 +239,8 @@ export function AlbumPageClient() {
       <div className="album-waterfall-layout">
         <Header />
 
-        <main className="album-main">
-          <div className="album-content">
+        <main className="album-main" style={{ paddingTop: "100px" }}>
+          <div className="album-content cardWidget">
             {albumConfig.banner.title || albumConfig.banner.background ? (
               <div className="album-banner">
                 <BannerCard

@@ -12,6 +12,7 @@ import { FaHashtag, FaFileLines, FaClock, FaCalendarDays, FaFire, FaLocationDot 
 import { RiChat1Fill } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/utils/date";
+import { scrollTo } from "@/store/scroll-store";
 import type { Article } from "@/types/article";
 import styles from "./PostHeader.module.css";
 
@@ -156,7 +157,7 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
     if (commentSection) {
       const headerHeight = 80;
       const top = commentSection.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-      window.scrollTo({ top, behavior: "smooth" });
+      scrollTo(top, { offset: -headerHeight });
     }
   };
 

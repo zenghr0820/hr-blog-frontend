@@ -541,6 +541,9 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_PAGE_ONE_IMAGE_CONFIG, type: "json" },
     { backendKey: K.KEY_HITOKOTO_API, type: "string" },
     { backendKey: K.KEY_TYPING_SPEED, type: "number", defaultValue: "100" },
+    { backendKey: K.KEY_BACKGROUND_IMAGE, type: "string" },
+    { backendKey: K.KEY_BACKGROUND_IMAGE_DARK, type: "string" },
+    { backendKey: K.KEY_AUTHOR_CARD_BG, type: "string" },
   ],
   "content-post": [
     { backendKey: K.KEY_IP_API, type: "string" },

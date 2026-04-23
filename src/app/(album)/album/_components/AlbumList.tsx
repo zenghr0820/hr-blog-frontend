@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pagination } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import type { AlbumLayoutMode, AlbumStatType, PublicAlbumItem } from "@/types/album";
+import { scrollTo } from "@/store/scroll-store";
 import { AlbumGridItem } from "./AlbumGridItem";
 import { AlbumWaterfallItem } from "./AlbumWaterfallItem";
 import { AlbumImagePreview, type AlbumImagePreviewHandle } from "./AlbumImagePreview";
@@ -119,7 +120,7 @@ export function AlbumList({
   const handlePageChange = useCallback(
     (page: number) => {
       onPageChange(page);
-      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      scrollTo(0);
     },
     [onPageChange]
   );

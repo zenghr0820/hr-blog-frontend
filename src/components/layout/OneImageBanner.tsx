@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Volume2, VolumeX, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { scrollTo } from "@/store/scroll-store";
 import type { PageOneImageItem } from "@/types/site-config";
 import styles from "./OneImageBanner.module.css";
 
@@ -38,6 +39,10 @@ export function OneImageBanner() {
 
   const pageConfig = useMemo(() => {
     return siteConfig?.page?.one_image?.config || siteConfig?.page?.oneImageConfig;
+  }, [siteConfig]);
+  
+  const userAvatar = useMemo(() => {
+    return siteConfig.USER_AVATAR || "";
   }, [siteConfig]);
 
   const currentConfig = useMemo<PageOneImageItem | undefined>(() => {
@@ -257,7 +262,7 @@ export function OneImageBanner() {
     if (!mainEl) return;
     const mainTop = mainEl.getBoundingClientRect().top + window.pageYOffset;
     const offsetPosition = mainTop - 70;
-    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    scrollTo(offsetPosition);
   }, []);
 
   const isWechatBrowser = useCallback(() => {
@@ -318,23 +323,6 @@ export function OneImageBanner() {
   }, [isWechatBrowser, effectiveMediaType, effectiveBackground, handleWechatVideoPlay, handleUserInteraction]);
 
   useEffect(() => {
-    const layout = document.getElementById("frontend-layout");
-    if (!layout) return;
-
-    if (isEnabled && effectiveMediaType === "image" && effectiveBackground) {
-      document.documentElement.style.setProperty("--one-image-background", `url(${effectiveBackground})`);
-      layout.classList.add("one-image-active");
-    } else {
-      layout.classList.remove("one-image-active");
-      document.documentElement.style.removeProperty("--one-image-background");
-    }
-
-    return () => {
-      layout.classList.remove("one-image-active");
-    };
-  }, [isEnabled, effectiveBackground, effectiveMediaType]);
-
-  useEffect(() => {
     if (!currentConfig?.enable) {
       setDisplaySubtitle("");
       return;
@@ -354,10 +342,15 @@ export function OneImageBanner() {
     }
   }, [isVideoMuted]);
 
+  const imageBackgroundStyle =
+    effectiveMediaType === "image" && effectiveBackground
+      ? { backgroundImage: `url(${effectiveBackground})` }
+      : undefined;
+
   if (!isEnabled) return null;
 
   return (
-    <section className={styles.oneImageBanner}>
+    <section className={styles.oneImageBanner} style={imageBackgroundStyle}>
       {effectiveMediaType === "video" && effectiveBackground && (
         <video
           ref={videoRef}
@@ -390,6 +383,15 @@ export function OneImageBanner() {
       )}
 
       <div className={styles.siteInfo}>
+        <div className={styles.siteInfoAvatar}>
+          <img
+            src={userAvatar}
+            alt="avatar"
+            width={118}
+            height={118}
+            loading="lazy"
+          />
+        </div>
         <h1 className={styles.siteTitle}>{currentConfig?.mainTitle || siteConfig?.APP_NAME}</h1>
         <div className={styles.siteSubtitle}>
           <span>{displaySubtitle}</span>

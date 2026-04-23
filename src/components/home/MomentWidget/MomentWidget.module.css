@@ -1,0 +1,141 @@
+.momentWidget {
+  margin: 0 auto 20px;
+  padding: 0 1.5rem;
+  max-width: 1200px;
+}
+
+.momentContainer {
+  width: 100%;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  background: var(--anzhiyu-card-bg);
+  box-shadow: var(--anzhiyu-shadow-blackdeep);
+  transition: all 0.3s;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.momentContainer:hover {
+  box-shadow: var(--anzhiyu-shadow-border);
+}
+
+.widgetCenter {
+  flex: 1;
+  padding: 0 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.momentContentWrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  max-width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.momentContentWrapper.slideEnter {
+  animation: slideIn 0.3s ease forwards;
+}
+
+.momentContentWrapper.slideLeave {
+  animation: slideOut 0.3s ease forwards;
+}
+
+.momentContent {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-size: 0.95rem;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.contentIcons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.widgetIcon {
+  flex-shrink: 0;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.widgetIcon i {
+  font-size: 1.3rem;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .momentWidget {
+    padding: 0 12px;
+  }
+
+  .momentContainer {
+    height: 40px;
+  }
+
+  .widgetIcon {
+    width: 36px;
+  }
+
+  .widgetIcon i {
+    font-size: 1.2rem;
+  }
+
+  .widgetCenter {
+    padding: 0 8px;
+  }
+
+  .momentContent {
+    font-size: 0.85rem;
+  }
+
+  .contentIcons {
+    gap: 3px;
+  }
+
+  .contentIcons i {
+    font-size: 0.8rem;
+  }
+}
