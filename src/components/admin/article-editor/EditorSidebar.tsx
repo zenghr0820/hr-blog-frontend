@@ -24,6 +24,7 @@ import {
   Loader2,
   Upload,
   TextQuote,
+  Sparkles
 } from "lucide-react";
 import {
   addToast,
@@ -47,6 +48,7 @@ import type { ArticleStatus } from "@/types/post-management";
 import type { PostCategory, PostTag } from "@/types/article";
 import type { ArticleMeta } from "./use-article-meta";
 import { clipSummaryPlainText, SUMMARY_AUTO_MAX_CHARS } from "@/lib/article-summary";
+import { aiApi } from "@/lib/api/ai";
 import { SeoScorePanel } from "./SeoScorePanel";
 
 // ═══════════════════════════════════════════
@@ -230,6 +232,7 @@ function SbTextarea({
   placeholder,
   className = "",
   maxHeightPx,
+  minHeightPx,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -237,6 +240,8 @@ function SbTextarea({
   className?: string;
   /** 设置后高度随内容增长，但不超过该值，超出部分在框内滚动 */
   maxHeightPx?: number;
+  /** 设置后文本框最小高度 */
+  minHeightPx?: number;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -245,7 +250,8 @@ function SbTextarea({
     const el = ref.current;
     if (!el) return;
     el.style.height = "auto";
-    const minH = 32;
+    const baseMin = minHeightPx ?? 32;
+    const minH = Math.max(baseMin, 32);
     const natural = Math.max(el.scrollHeight, minH);
     if (maxHeightPx != null && maxHeightPx > 0) {
       const h = Math.min(natural, maxHeightPx);
@@ -255,7 +261,7 @@ function SbTextarea({
       el.style.height = `${natural}px`;
       el.style.overflowY = "hidden";
     }
-  }, [value, maxHeightPx]);
+  }, [value, maxHeightPx, minHeightPx]);
 
   return (
     <textarea
@@ -845,6 +851,63 @@ function SettingsContent({
     setFillSummaryDialogOpen(true);
   }, [editorVariant, getBodyPlainTextForSummary, maxSummarySlots, meta.summaries, onUpdateField]);
 
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [isGeneratingAISummary, setIsGeneratingAISummary] = useState(false);
+
+  const handleAIGenerateSummary = useCallback(async () => {
+    const content = getBodyPlainTextForSummary?.() ?? "";
+    if (!content.trim()) {
+      addToast({ title: "正文中没有可用文字", color: "warning" });
+      return;
+    }
+    setIsGeneratingSummary(true);
+    try {
+      const summary = await aiApi.generateSummary(content);
+      console.log("[AI] 摘要接口返回:", summary);
+      if (!summary) {
+        addToast({ title: "AI 摘要生成结果为空", color: "warning" });
+        return;
+      }
+      if (editorVariant === "app") {
+        onUpdateField("summaries", [summary]);
+      } else {
+        const arr = [...meta.summaries];
+        arr[0] = summary;
+        onUpdateField("summaries", arr.slice(0, maxSummarySlots));
+      }
+      addToast({ title: "AI 摘要生成成功", color: "success" });
+    } catch (e) {
+      console.error("[AI] 摘要生成失败:", e);
+      addToast({ title: "AI 摘要生成失败，请检查 AI 配置", color: "danger" });
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  }, [editorVariant, getBodyPlainTextForSummary, maxSummarySlots, meta.summaries, onUpdateField]);
+
+  const handleAIGenerateAISummary = useCallback(async () => {
+    const content = getBodyPlainTextForSummary?.() ?? "";
+    if (!content.trim()) {
+      addToast({ title: "正文中没有可用文字", color: "warning" });
+      return;
+    }
+    setIsGeneratingAISummary(true);
+    try {
+      const aiSummary = await aiApi.generateAISummary(content);
+      console.log("[AI] 总结接口返回:", aiSummary);
+      if (!aiSummary) {
+        addToast({ title: "AI 总结生成结果为空", color: "warning" });
+        return;
+      }
+      onUpdateField("ai_summary", aiSummary);
+      addToast({ title: "AI 总结生成成功", color: "success" });
+    } catch (e) {
+      console.error("[AI] 总结生成失败:", e);
+      addToast({ title: "AI 总结生成失败，请检查 AI 配置", color: "danger" });
+    } finally {
+      setIsGeneratingAISummary(false);
+    }
+  }, [getBodyPlainTextForSummary, onUpdateField]);
+
   // 创建分类
   const handleCreateCategory = useCallback(
     async (name: string) => {
@@ -1072,6 +1135,15 @@ function SettingsContent({
               <TextQuote className="w-3 h-3 shrink-0" />
               取自正文前{SUMMARY_AUTO_MAX_CHARS}字
             </button>
+            <a
+              role="button"
+              className={`sb-add-btn w-auto! py-1! px-2! text-[11px] ${isGeneratingSummary ? "opacity-50 pointer-events-none" : ""}`}
+              onClick={isGeneratingSummary ? undefined : handleAIGenerateSummary}
+              title="AI 生成摘要"
+            >
+              {isGeneratingSummary ? <Loader2 className="w-3 h-3 shrink-0 animate-spin" /> : <Sparkles className="w-3 h-3 shrink-0" />}
+              AI摘要
+            </a>
           </div>
           <div className="space-y-1.5">
             {editorVariant === "app" ? (
@@ -1119,6 +1191,29 @@ function SettingsContent({
               </>
             )}
           </div>
+        </div>
+
+        <div className="sb-field">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="sb-label">AI 总结</span>
+            <a
+              role="button"
+              className={`sb-add-btn w-auto! py-0.5! px-1.5! text-[11px] ${isGeneratingAISummary ? "opacity-50 pointer-events-none" : ""}`}
+              onClick={isGeneratingAISummary ? undefined : handleAIGenerateAISummary}
+              title="AI 生成总结"
+            >
+              {isGeneratingAISummary ? <Loader2 className="w-3 h-3 shrink-0 animate-spin" /> : <Sparkles className="w-3 h-3 shrink-0" />}
+              AI生成
+            </a>
+          </div>
+          <SbTextarea
+            value={meta.ai_summary}
+            onChange={v => onUpdateField("ai_summary", v)}
+            placeholder="AI 生成的文章总结（可选）"
+            className="flex-1"
+            minHeightPx={80}
+            maxHeightPx={SUMMARY_TEXTAREA_MAX_HEIGHT_PX}
+          />
         </div>
 
         <SbInput

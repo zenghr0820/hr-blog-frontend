@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Share2,
   DatabaseBackup,
+  Bot,
 } from "lucide-react";
 import type { SettingCategoryId } from "@/lib/settings/setting-descriptors";
 
@@ -121,6 +122,12 @@ export const settingsCategories: CategorySection[] = [
         label: "备份导入",
         icon: DatabaseBackup,
         keywords: ["备份", "导入", "导出", "恢复", "配置"],
+      },
+      {
+        id: "advanced-ai",
+        label: "AI 配置",
+        icon: Bot,
+        keywords: ["AI", "OpenAI", "DeepSeek", "摘要", "提示词", "MCP", "模型"],
       },
     ],
   },

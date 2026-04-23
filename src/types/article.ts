@@ -182,6 +182,8 @@ export interface Article {
   cover_url?: string;
   top_img_url?: string;
   summaries?: string[];
+  ai_summary?: string;
+  is_ai_summary_show?: boolean;
   word_count: number;
   reading_time: number;
   view_count: number;

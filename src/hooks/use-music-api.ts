@@ -384,7 +384,8 @@ export function useMusicAPI() {
       lyric: string;
       level: string;
       size: string;
-      error?: "server_error" | "not_found";
+      error?: "server_error" | "not_found" | "network_error" | "parse_error";
+      errorMessage?: string;
     } | null> => {
       try {
         const formData = new URLSearchParams();
@@ -403,15 +404,16 @@ export function useMusicAPI() {
 
         if (!response.ok) {
           if (response.status >= 500) {
-            return { url: "", lyric: "", level: "", size: "", error: "server_error" };
+            return { url: "", lyric: "", level: "", size: "", error: "server_error", errorMessage: `音乐服务暂时不可用 (HTTP ${response.status})` };
           }
-          return { url: "", lyric: "", level: "", size: "", error: "not_found" };
+          return { url: "", lyric: "", level: "", size: "", error: "not_found", errorMessage: `歌曲资源未找到 (HTTP ${response.status})` };
         }
 
         const data = await response.json();
 
         if (data.status !== 200 || !data.success) {
-          return { url: "", lyric: "", level: "", size: "", error: "not_found" };
+          const apiMsg = data.message || "";
+          return { url: "", lyric: "", level: "", size: "", error: "not_found", errorMessage: apiMsg || `API返回错误 (status: ${data.status})` };
         }
 
         return {
@@ -420,8 +422,15 @@ export function useMusicAPI() {
           level: data.data.level,
           size: data.data.size,
         };
-      } catch {
-        return { url: "", lyric: "", level: "", size: "", error: "server_error" };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes("Failed to fetch") || msg.includes("NetworkError") || msg.includes("net::")) {
+          return { url: "", lyric: "", level: "", size: "", error: "network_error", errorMessage: "网络连接失败，请检查网络后重试" };
+        }
+        if (msg.includes("timeout") || msg.includes("Timeout")) {
+          return { url: "", lyric: "", level: "", size: "", error: "network_error", errorMessage: "请求超时，请稍后重试" };
+        }
+        return { url: "", lyric: "", level: "", size: "", error: "server_error", errorMessage: `请求失败: ${msg}` };
       }
     },
     [getMusicAPIBaseURL]
@@ -459,35 +468,62 @@ export function useMusicAPI() {
         // 尝试 exhigh 音质
         let result = await fetchSongV1(song.neteaseId, "exhigh");
 
-        if (result?.error === "server_error") {
+        if (result?.error === "server_error" || result?.error === "network_error") {
+          const errMsg = result.errorMessage || "音乐服务暂时不可用";
+          console.error(`[音乐API] exhigh音质获取失败 (neteaseId: ${song.neteaseId}): ${errMsg}`);
+          // 网络错误直接返回，不尝试降级
+          if (result.error === "network_error") {
+            return {
+              audioUrl: song.url || "",
+              lyricsText,
+              errorType: "network",
+              errorMessage: errMsg,
+            };
+          }
           return {
             audioUrl: song.url || "",
             lyricsText,
             errorType: "server",
-            errorMessage: "音乐服务暂时不可用",
+            errorMessage: errMsg,
           };
         }
 
         // 如果资源不存在，降级到 standard
         if (!result || !result.url) {
+          const exhighErrMsg = result?.errorMessage || "";
+          if (exhighErrMsg) {
+            console.warn(`[音乐API] exhigh音质无资源 (neteaseId: ${song.neteaseId}): ${exhighErrMsg}`);
+          }
           result = await fetchSongV1(song.neteaseId, "standard");
 
-          if (result?.error === "server_error") {
+          if (result?.error === "server_error" || result?.error === "network_error") {
+            const errMsg = result.errorMessage || "音乐服务暂时不可用";
+            console.error(`[音乐API] standard音质获取失败 (neteaseId: ${song.neteaseId}): ${errMsg}`);
+            if (result.error === "network_error") {
+              return {
+                audioUrl: song.url || "",
+                lyricsText,
+                errorType: "network",
+                errorMessage: errMsg,
+              };
+            }
             return {
               audioUrl: song.url || "",
               lyricsText,
               errorType: "server",
-              errorMessage: "音乐服务暂时不可用",
+              errorMessage: errMsg,
             };
           }
         }
 
         if (!result || !result.url) {
+          const stdErrMsg = result?.errorMessage || "";
+          console.error(`[音乐API] 所有音质均无资源 (neteaseId: ${song.neteaseId}), exhigh/standard均失败${stdErrMsg ? `: ${stdErrMsg}` : ""}`);
           return {
             audioUrl: song.url || "",
             lyricsText,
             errorType: song.url ? undefined : "no_resources",
-            errorMessage: song.url ? undefined : "该歌曲暂无可用音源",
+            errorMessage: song.url ? undefined : (stdErrMsg || "该歌曲暂无可用音源，可能为付费歌曲或已下架"),
           };
         }
 

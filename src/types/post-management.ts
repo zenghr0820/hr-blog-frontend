@@ -29,10 +29,12 @@ export interface AdminArticle {
   ip_location?: string;
   primary_color?: string;
   is_primary_color_manual?: boolean;
+  is_ai_summary_show?: boolean;
   show_on_home?: boolean;
   home_sort?: number;
   pin_sort?: number;
   summaries?: string[];
+  ai_summary?: string;
   keywords?: string;
   // 版权字段
   copyright?: boolean;
@@ -181,6 +183,7 @@ export interface CreateArticleRequest {
   cover_url?: string;
   top_img_url?: string;
   summaries?: string[];
+  ai_summary?: string;
   abbrlink?: string;
   keywords?: string;
   // 显示与排序
@@ -189,6 +192,7 @@ export interface CreateArticleRequest {
   pin_sort?: number;
   primary_color?: string;
   is_primary_color_manual?: boolean;
+  is_ai_summary_show?: boolean;
   // 版权
   copyright?: boolean;
   is_reprint?: boolean;

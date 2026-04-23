@@ -18,6 +18,7 @@ import {
   KEY_POST_DOUBLE_COLUMN,
   KEY_POST_PAGE_SIZE,
   KEY_POST_ENABLE_PRIMARY_COLOR,
+  KEY_POST_ENABLE_AI_SUMMARY_SHOW,
   KEY_POST_404_IMAGE,
   KEY_POST_REWARD_ENABLE,
   KEY_POST_REWARD_WECHAT_QR,
@@ -157,6 +158,12 @@ export function PostSettingsForm({ values, onChange, loading }: PostSettingsForm
             description="文章列表封面启用主色调标签"
             checked={values[KEY_POST_ENABLE_PRIMARY_COLOR] === "true"}
             onCheckedChange={v => onChange(KEY_POST_ENABLE_PRIMARY_COLOR, String(v))}
+          />
+          <FormSwitch
+            label="启用AI总结展示"
+            description="文章默认展示AI生成的摘要"
+            checked={values[KEY_POST_ENABLE_AI_SUMMARY_SHOW] === "true"}
+            onCheckedChange={v => onChange(KEY_POST_ENABLE_AI_SUMMARY_SHOW, String(v))}
           />
         </SettingsFieldGroup>
 

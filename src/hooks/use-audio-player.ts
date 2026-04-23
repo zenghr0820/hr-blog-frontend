@@ -407,12 +407,15 @@ export function useAudioPlayer(
                 finalLyricsText = resources.lyricsText || "";
                 usingHighQuality = true;
               } else {
+                if (resources.errorMessage) {
+                  console.warn(`[音乐播放器] 资源获取返回错误 (neteaseId: ${song.neteaseId}): ${resources.errorMessage}`);
+                }
                 if (resources.lyricsText) {
                   finalLyricsText = resources.lyricsText;
                 }
               }
-            } catch {
-              // 降级到基础资源
+            } catch (err) {
+              console.error("[音乐播放器] 获取歌曲资源失败:", err instanceof Error ? err.message : err);
             }
           }
 

@@ -128,6 +128,7 @@ export const KEY_POST_EXPIRATION_TIME = "post.expiration_time";
 export const KEY_POST_DOUBLE_COLUMN = "post.default.double_column";
 export const KEY_POST_PAGE_SIZE = "post.default.page_size";
 export const KEY_POST_ENABLE_PRIMARY_COLOR = "post.default.enable_primary_color_tag";
+export const KEY_POST_ENABLE_AI_SUMMARY_SHOW = "post.default.enable_ai_summary_show";
 export const KEY_POST_404_IMAGE = "post.page404.default_image";
 export const KEY_POST_REWARD_ENABLE = "post.reward.enable";
 export const KEY_POST_REWARD_WECHAT_QR = "post.reward.wechat_qr";
@@ -522,3 +523,12 @@ export const KEY_AI_ASSISTANT_VECTOR_STORE = "ai_assistant.vector_store";
 export const KEY_AI_ASSISTANT_SYSTEM_PROMPT = "ai_assistant.system_prompt";
 export const KEY_AI_ASSISTANT_USER_PROMPT = "ai_assistant.user_prompt";
 export const KEY_AI_ASSISTANT_NO_CONTEXT_PROMPT = "ai_assistant.no_context_prompt";
+
+// ==================== AI 基础配置 ====================
+export const KEY_AI_BASE_URL = "ai.base_url";
+export const KEY_AI_API_KEY = "ai.api_key";
+export const KEY_AI_MODEL = "ai.model";
+export const KEY_AI_SUMMARY_PROMPT = "ai.summary_prompt";
+export const KEY_AI_AI_SUMMARY_PROMPT = "ai.ai_summary_prompt";
+export const KEY_AI_TITLE_PROMPT = "ai.title_prompt";
+export const KEY_AI_MCP_SECRET = "ai.mcp_secret";

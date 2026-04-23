@@ -65,4 +65,7 @@ export const settingsFormRegistry: Record<SettingCategoryId, LazyForm> = {
   "advanced-backup": lazy(() =>
     import("@/components/admin/settings/BackupImportForm").then(m => ({ default: m.BackupImportForm }))
   ) as LazyForm,
+  "advanced-ai": lazy(() =>
+    import("@/components/admin/settings/AIConfigForm").then(m => ({ default: m.AIConfigForm }))
+  ) as LazyForm,
 };

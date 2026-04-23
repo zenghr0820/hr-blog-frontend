@@ -1043,9 +1043,12 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
         if (result.code === 200 && result.data?.audioUrl) {
           return ensureHttps(result.data.audioUrl);
         }
+        const errMsg = result.message || "未知错误";
+        console.error(`[音乐播放器] 获取音频资源失败 (neteaseId: ${neteaseId}): ${errMsg} (code: ${result.code})`);
         return null;
       } catch (error) {
-        console.error("[音乐播放器] 获取音频资源失败:", error);
+        const msg = error instanceof Error ? error.message : String(error);
+        console.error(`[音乐播放器] 获取音频资源请求异常 (neteaseId: ${neteaseId}): ${msg}`);
         return null;
       }
     },

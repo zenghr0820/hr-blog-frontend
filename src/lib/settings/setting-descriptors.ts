@@ -40,7 +40,8 @@ export type SettingCategoryId =
   | "pages-music"
   | "advanced-captcha"
   | "advanced-wechat-share"
-  | "advanced-backup";
+  | "advanced-backup"
+  | "advanced-ai";
 
 /** 文章版权声明默认模板（与前台渲染兜底保持一致） */
 const DEFAULT_POST_COPYRIGHT_TEMPLATE_ORIGINAL =
@@ -553,6 +554,7 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_POST_DOUBLE_COLUMN, type: "boolean" },
     { backendKey: K.KEY_POST_PAGE_SIZE, type: "number", defaultValue: "12" },
     { backendKey: K.KEY_POST_ENABLE_PRIMARY_COLOR, type: "boolean", defaultValue: "false" },
+    { backendKey: K.KEY_POST_ENABLE_AI_SUMMARY_SHOW, type: "boolean", defaultValue: "false" },
     { backendKey: K.KEY_POST_404_IMAGE, type: "string" },
     { backendKey: K.KEY_POST_REWARD_ENABLE, type: "boolean" },
     { backendKey: K.KEY_POST_REWARD_WECHAT_QR, type: "string" },
@@ -833,4 +835,13 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_WECHAT_SHARE_APP_SECRET, type: "password" },
   ],
   "advanced-backup": [],
+  "advanced-ai": [
+    { backendKey: K.KEY_AI_BASE_URL, type: "string" },
+    { backendKey: K.KEY_AI_API_KEY, type: "password" },
+    { backendKey: K.KEY_AI_MODEL, type: "string" },
+    { backendKey: K.KEY_AI_SUMMARY_PROMPT, type: "code" },
+    { backendKey: K.KEY_AI_AI_SUMMARY_PROMPT, type: "code" },
+    { backendKey: K.KEY_AI_TITLE_PROMPT, type: "code" },
+    { backendKey: K.KEY_AI_MCP_SECRET, type: "password" },
+  ],
 };

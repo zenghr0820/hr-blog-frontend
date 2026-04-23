@@ -20,6 +20,7 @@ export interface ArticleMeta {
   copyright_author: string;
   // 摘要 & SEO
   summaries: string[];
+  ai_summary: string;
   keywords: string;
   abbrlink: string;
   // 显示控制
@@ -28,6 +29,7 @@ export interface ArticleMeta {
   pin_sort: number;
   primary_color: string;
   is_primary_color_manual: boolean;
+  is_ai_summary_show: boolean;
   // 版权
   copyright: boolean;
   copyright_author_href: string;
@@ -53,6 +55,7 @@ const DEFAULT_META: ArticleMeta = {
   is_reprint: false,
   copyright_author: "",
   summaries: [],
+  ai_summary: "",
   keywords: "",
   abbrlink: "",
   show_on_home: true,
@@ -60,6 +63,7 @@ const DEFAULT_META: ArticleMeta = {
   pin_sort: 0,
   primary_color: "",
   is_primary_color_manual: false,
+  is_ai_summary_show: false,
   copyright: true,
   copyright_author_href: "",
   copyright_url: "",
@@ -90,6 +94,7 @@ function initFromArticle(article: ArticleDetailForEdit, maxSummaries: number): A
     is_reprint: article.is_reprint || false,
     copyright_author: article.copyright_author || "",
     summaries: normalizeSummaries(article.summaries, maxSummaries),
+    ai_summary: article.ai_summary || "",
     keywords: article.keywords || "",
     abbrlink: article.abbrlink || "",
     show_on_home: article.show_on_home ?? true,
@@ -97,6 +102,7 @@ function initFromArticle(article: ArticleDetailForEdit, maxSummaries: number): A
     pin_sort: article.pin_sort || 0,
     primary_color: article.primary_color || "",
     is_primary_color_manual: article.is_primary_color_manual || false,
+    is_ai_summary_show: article.is_ai_summary_show || false,
     copyright: article.copyright ?? true,
     copyright_author_href: article.copyright_author_href || "",
     copyright_url: article.copyright_url || "",
@@ -155,6 +161,7 @@ export function useArticleMeta(
       cover_url: meta.cover_url || undefined,
       top_img_url: meta.top_img_url || undefined,
       summaries: summariesForSubmit.length > 0 ? summariesForSubmit : undefined,
+      ai_summary: meta.ai_summary || undefined,
       keywords: meta.keywords || undefined,
       abbrlink: meta.abbrlink || undefined,
       show_on_home: meta.show_on_home,
@@ -162,6 +169,7 @@ export function useArticleMeta(
       pin_sort: meta.pin_sort,
       primary_color: meta.primary_color || undefined,
       is_primary_color_manual: meta.is_primary_color_manual,
+      is_ai_summary_show: meta.is_ai_summary_show,
       copyright: meta.copyright,
       is_reprint: meta.is_reprint,
       copyright_author: meta.copyright_author || undefined,

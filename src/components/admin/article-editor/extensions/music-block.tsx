@@ -39,10 +39,18 @@ async function fetchMusicDetail(neteaseId: string): Promise<{ name: string; arti
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: formData,
     });
+
+    if (!response.ok) {
+      console.warn(`[音乐播放器] exhigh音质请求失败 (neteaseId: ${neteaseId}): HTTP ${response.status}`);
+    }
+
     let data = await response.json();
 
     // exhigh 失败则尝试 standard
     if (!response.ok || data.status !== 200 || !data.success) {
+      const exhighMsg = data.message || `status: ${data.status}`;
+      console.warn(`[音乐播放器] exhigh音质无资源 (neteaseId: ${neteaseId}): ${exhighMsg}，尝试standard`);
+
       const stdForm = new URLSearchParams();
       stdForm.append("url", neteaseId);
       stdForm.append("level", "standard");
@@ -53,6 +61,11 @@ async function fetchMusicDetail(neteaseId: string): Promise<{ name: string; arti
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: stdForm,
       });
+
+      if (!response.ok) {
+        console.warn(`[音乐播放器] standard音质请求失败 (neteaseId: ${neteaseId}): HTTP ${response.status}`);
+      }
+
       data = await response.json();
     }
 
@@ -63,9 +76,13 @@ async function fetchMusicDetail(neteaseId: string): Promise<{ name: string; arti
         pic: ensureHttps(data.data.pic || ""),
       };
     }
+
+    const failMsg = data.message || `API status: ${data.status}`;
+    console.error(`[音乐播放器] 获取歌曲详情失败 (neteaseId: ${neteaseId}): ${failMsg}`);
     return null;
   } catch (error) {
-    console.error("[音乐播放器] 获取歌曲详情失败:", error);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`[音乐播放器] 获取歌曲详情请求异常 (neteaseId: ${neteaseId}): ${msg}`);
     return null;
   }
 }
