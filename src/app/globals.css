@@ -594,9 +594,9 @@ body {
   padding: 0;
 }
 
-a:hover {
+/* a:hover {
   color: var(--primary);
-}
+} */
 
 code,
 kbd,
@@ -1000,8 +1000,7 @@ html.dark [data-slot="content"][role="tooltip"] {
 /* 即刻条容器 */
 .essay-bar-wrapper {
   width: 100%;
-  max-width: 1400px;
-  padding: 0.5rem 1.5rem 0;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -1147,6 +1146,8 @@ html.dark [data-slot="content"][role="tooltip"] {
   --comment-item-padding: 1.25rem;
   --comment-item-gap: 0.75rem;
   --comment-divider-display: none;
+  --comment-color-font: #2a2e2e;
+  --comment-color-grey: #f3f4f5;
 
   /* 代码块变量 */
   --hl-color: #90a4ae;
@@ -1241,6 +1242,10 @@ html.dark [data-slot="content"][role="tooltip"] {
   --hltools-bg: var(--anzhiyu-secondbg);
   --hltools-color: #90a4ae;
   --hlnumber-color: #636d83;
+
+
+  --comment-color-font: rgba(255, 255, 255, 0.7);
+  --comment-color-grey: #46494e;
 }
 
 /* ===================== Content Inner 主内容区布局 ===================== */

@@ -1,0 +1,82 @@
+.essayPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  padding-top: 20px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+}
+
+.emptyText {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+}
+
+.emptyIcon {
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.emptyState p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.momentList {
+  display: columns;
+  columns: 3;
+  column-gap: 16px;
+  margin-top: 24px;
+}
+
+.momentList > * {
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+
+.momentTip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+  padding: 15px 20px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.commentSection {
+  margin-top: 40px;
+  padding-top: 20px;
+}
+
+@media screen and (max-width: 1200px) {
+  .momentList {
+    columns: 2;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .essayPage {
+    padding: 0 12px;
+  }
+
+  .momentList {
+    columns: 1;
+    column-gap: 0;
+  }
+}

@@ -159,6 +159,16 @@
 .commentContentCanReply {
 }
 
+.commentContentCanReply blockquote {
+    position: static;
+    margin: 10px 0;
+    padding: 10px 20px;
+    background: var(--comment-color-grey);
+    color: var(--comment-color-font);
+    border-left: 4px solid #687a86;
+    border-radius: 12px;
+}
+
 .commentContent p {
   margin: 0.5rem 0;
 }

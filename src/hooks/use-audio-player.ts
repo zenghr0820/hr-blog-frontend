@@ -60,6 +60,8 @@ export function useAudioPlayer(
   );
   const shuffleHistoryRef = useRef<number[]>([]);
   const MAX_SHUFFLE_HISTORY = 10;
+  const consecutiveErrorCountRef = useRef(0);
+  const MAX_CONSECUTIVE_ERRORS = 5;
 
   // 判断异步加载结果是否仍对应当前歌曲，避免旧请求回写状态
   const isSongCurrent = useCallback(
@@ -484,6 +486,7 @@ export function useAudioPlayer(
             setCurrentLyricsText(finalLyricsText);
           }
           resourcesLoadedSongsRef.current.add(songKey);
+          consecutiveErrorCountRef.current = 0;
 
           return {
             success: true,
@@ -584,7 +587,10 @@ export function useAudioPlayer(
           isLoadingSongRef.current = false;
 
           if (!result.success) {
-            nextSong(true);
+            consecutiveErrorCountRef.current += 1;
+            if (consecutiveErrorCountRef.current < MAX_CONSECUTIVE_ERRORS) {
+              nextSong(true);
+            }
             return;
           }
         }
@@ -593,7 +599,10 @@ export function useAudioPlayer(
       } catch (error) {
         if (error instanceof DOMException) {
           if (error.name === "NotSupportedError" || error.name === "NotAllowedError" || error.name === "AbortError") {
-            nextSong(true);
+            consecutiveErrorCountRef.current += 1;
+            if (consecutiveErrorCountRef.current < MAX_CONSECUTIVE_ERRORS) {
+              nextSong(true);
+            }
           }
         }
       }
@@ -821,6 +830,12 @@ export function useAudioPlayer(
 
   const onError = useCallback(() => {
     setAudioState(prev => ({ ...prev, isPlaying: false }));
+
+    consecutiveErrorCountRef.current += 1;
+
+    if (consecutiveErrorCountRef.current >= MAX_CONSECUTIVE_ERRORS) {
+      return;
+    }
 
     setTimeout(() => {
       if (playlistRef.current.length > 1) {

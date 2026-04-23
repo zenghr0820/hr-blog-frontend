@@ -101,7 +101,7 @@ export function MomentWidget() {
     >
       <Link href="/essay" className={styles.momentContainer}>
         <div className={styles.widgetIcon}>
-          <Icon icon="ri:send-plane-line" />
+          <Icon icon="ri:quill-pen-ai-fill" />
         </div>
 
         <div className={styles.widgetCenter}>

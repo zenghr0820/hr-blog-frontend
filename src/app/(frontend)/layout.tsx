@@ -10,9 +10,7 @@ const RightMenu = dynamic(() => import("@/components/RightMenu").then(mod => mod
 export default function FrontendLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <head>
-        <link rel="stylesheet" href="https://jsd.liiiu.cn/gh/willow-god/Sharding-fonts/Yozai-Medium/result.min.css" />
-      </head>
+      <link rel="stylesheet" href="https://jsd.liiiu.cn/gh/willow-god/Sharding-fonts/Yozai-Medium/result.min.css" />
       <div id="frontend-layout" className="frontend-layout">
         <ScrollInitializer />
         <ConsolePrinter />

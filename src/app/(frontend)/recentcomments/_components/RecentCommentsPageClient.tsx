@@ -38,7 +38,7 @@ export function RecentCommentsPageClient() {
   );
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-6 py-8 space-y-6">
+    <div className="cardWidget w-full max-w-[1400px] mx-auto px-6 py-8 space-y-6">
       <BannerCard
         tips={bannerConfig?.title || "最近评论"}
         title={bannerConfig?.description || "Recent Comments"}

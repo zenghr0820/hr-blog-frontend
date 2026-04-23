@@ -43,9 +43,9 @@ export function HomePageContent() {
       </motion.div>
 
       {/* 即刻条 */}
-      {/* <motion.div className="essay-bar-wrapper" variants={itemVariants}>
+      <motion.div className="essay-bar-wrapper" variants={itemVariants}>
         <MomentWidget />
-      </motion.div> */}
+      </motion.div>
 
       {/* 主内容区域 */}
       <motion.div className="content-inner" variants={itemVariants}>

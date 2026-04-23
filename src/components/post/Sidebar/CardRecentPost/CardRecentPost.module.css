@@ -39,8 +39,8 @@
   transition: all 0.2s ease;
 }
 
-.articleItem:hover {
-  background: var(--muted);
+.articleItem:hover .title {
+  color: var(--primary);
 }
 
 .articleItem:hover .coverImage {
@@ -88,6 +88,7 @@
 .date {
   font-size: 0.75rem;
   color: var(--muted-foreground);
+  cursor: default;
 }
 
 /* 响应式 */

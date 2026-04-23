@@ -489,6 +489,7 @@
 }
 
 .markdownPreviewContainer {
+  background-color: var(--card-bg);
   margin-top: 12px;
   padding: 12px;
   border-radius: 8px;

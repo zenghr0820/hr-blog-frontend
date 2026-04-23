@@ -125,6 +125,7 @@ export function CommentSection({ targetTitle, targetPath, className }: CommentSe
   const [loadingChildrenIds, setLoadingChildrenIds] = useState<Set<string>>(new Set());
   const [isCommentListVisible, setIsCommentListVisible] = useState(false);
   const [isLoadingScroll, setIsLoadingScroll] = useState(false);
+  const isLoadingScrollRef = useRef(false);
   const [isAnonymousMode, setIsAnonymousMode] = useState(false);
 
   const likeMutation = useLikeComment(resolvedPath, pageSize);
@@ -252,15 +253,19 @@ export function CommentSection({ targetTitle, targetPath, className }: CommentSe
   }, [isCommentEnabled, scrollToComment, resolvedPath]);
 
   const handleScroll = useCallback(() => {
-    if (isLoadingScroll || !hasNextPage || isFetchingNextPage) return;
+    if (isLoadingScrollRef.current || !hasNextPage || isFetchingNextPage) return;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     if (scrollTop + windowHeight >= documentHeight - 100) {
+      isLoadingScrollRef.current = true;
       setIsLoadingScroll(true);
-      fetchNextPage().finally(() => setIsLoadingScroll(false));
+      fetchNextPage().finally(() => {
+        isLoadingScrollRef.current = false;
+        setIsLoadingScroll(false);
+      });
     }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isLoadingScroll]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
     if (!isCommentEnabled) return;
