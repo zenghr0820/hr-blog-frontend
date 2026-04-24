@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { addToast, Spinner } from "@heroui/react";
+import { addToast, Spinner, Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import TurndownService from "turndown";
 import { marked } from "marked";
+import { X } from "lucide-react";
 import { EditorHeader } from "./EditorHeader";
 import { EditorToolbar, type EditorMode } from "./EditorToolbar";
 import { TiptapEditor } from "./TiptapEditor";
@@ -86,8 +87,13 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
   const [title, setTitle] = useState("");
   const [prevArticleId, setPrevArticleId] = useState<string | null>(null);
 
-  // 右侧面板
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // 右侧面板 - 桌面端默认打开，移动端默认关闭
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768;
+    }
+    return true;
+  });
 
   // 专注模式
   const [focusMode, setFocusMode] = useState(false);
@@ -359,26 +365,28 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
       {/* 主体区域：编辑器 + 大纲（固定布局） */}
       <div className="flex flex-1 min-h-0 overflow-hidden relative">
         {/* 编辑器区域 - 始终占满剩余空间 */}
-        <div className="flex-1 min-h-0 relative flex flex-col">
+        <div className="flex-1 min-h-0 relative flex flex-col overflow-hidden">
           {/* TipTap 始终挂载，源码模式时隐藏（避免 flushSync 重挂载错误） */}
           <div className={editorMode === "visual" ? "flex-1 overflow-auto bg-card" : "hidden"}>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto px-3 sm:px-6 md:px-8 py-4 md:py-6">
               <TiptapEditor editor={editor} />
             </div>
           </div>
           {editorMode === "visual" && <WordCount editor={editor} />}
           {editorMode !== "visual" && (
-            <SourceCodeEditor
-              value={sourceContent}
-              onChange={handleSourceChange}
-              language={editorMode === "html" ? "html" : "markdown"}
-            />
+            <div className="p-2 sm:p-3 md:p-4">
+              <SourceCodeEditor
+                value={sourceContent}
+                onChange={handleSourceChange}
+                language={editorMode === "html" ? "html" : "markdown"}
+              />
+            </div>
           )}
         </div>
 
         {/* 大纲面板 - 仅可视化模式且非专注模式显示 */}
         {editorMode === "visual" && !focusMode && (
-          <div className="w-64 shrink-0 h-full overflow-auto py-4 px-5">
+          <div className="hidden md:block w-64 shrink-0 h-full overflow-auto py-4 px-5">
             <h3 className="text-base font-bold text-foreground mb-3 pl-1">大纲</h3>
             <div className="border-l-2 border-border/60 pl-2">
               <TOCContent editor={editor} />
@@ -386,23 +394,65 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
           </div>
         )}
 
-        {/* 文章设置面板 - 专注模式下隐藏 */}
+        {/* 文章设置面板 - 专注模式下隐藏，移动端改为底部抽屉 */}
         {sidebarOpen && !focusMode && (
-          <div className="absolute top-0 right-0 h-full w-64 z-20 bg-background border-l-[0.5px] border-border/60 shadow-md overflow-auto">
-            <EditorSidebar
-              meta={meta}
-              onUpdateField={updateField}
-              isAdmin={isAdmin}
-              categories={categories}
-              tags={tags}
-              isLoadingCategories={isLoadingCategories}
-              isLoadingTags={isLoadingTags}
-              editorVariant="app"
-              getBodyPlainTextForSummary={getBodyPlainTextForSummary}
-              editor={editor}
-              articleTitle={title}
-            />
-          </div>
+          <>
+            {/* 桌面端：右侧固定面板 */}
+            <div className="hidden md:block absolute top-0 right-0 h-full w-64 z-20 bg-background border-l-[0.5px] border-border/60 shadow-md overflow-auto">
+              <EditorSidebar
+                meta={meta}
+                onUpdateField={updateField}
+                isAdmin={isAdmin}
+                categories={categories}
+                tags={tags}
+                isLoadingCategories={isLoadingCategories}
+                isLoadingTags={isLoadingTags}
+                editorVariant="app"
+                getBodyPlainTextForSummary={getBodyPlainTextForSummary}
+                editor={editor}
+                articleTitle={title}
+              />
+            </div>
+
+            {/* 移动端：底部抽屉式面板 */}
+            <div className="md:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)}>
+              <div 
+                className="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-background rounded-t-2xl shadow-2xl overflow-hidden"
+                onClick={e => e.stopPropagation()}
+              >
+                {/* 抽屉头部 */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <h3 className="text-base font-semibold">文章设置</h3>
+                  <Button
+                    isIconOnly
+                    variant="light"
+                    size="sm"
+                    onPress={() => setSidebarOpen(false)}
+                    aria-label="关闭设置"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                {/* 抽屉内容 */}
+                <div className="overflow-auto" style={{ maxHeight: 'calc(85vh - 60px)' }}>
+                  <EditorSidebar
+                    meta={meta}
+                    onUpdateField={updateField}
+                    isAdmin={isAdmin}
+                    categories={categories}
+                    tags={tags}
+                    isLoadingCategories={isLoadingCategories}
+                    isLoadingTags={isLoadingTags}
+                    editorVariant="app"
+                    getBodyPlainTextForSummary={getBodyPlainTextForSummary}
+                    editor={editor}
+                    articleTitle={title}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </div>
 

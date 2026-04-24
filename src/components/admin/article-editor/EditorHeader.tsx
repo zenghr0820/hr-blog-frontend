@@ -346,232 +346,241 @@ export function EditorHeader({
   const [hoveredEmoji, setHoveredEmoji] = useState<EmojiItem | null>(null);
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border bg-background shrink-0">
-      {/* 返回按钮 */}
-      <Button
-        isIconOnly
-        variant="light"
-        size="sm"
-        onPress={() => router.push("/admin/post-management")}
-        aria-label="返回文章列表"
-      >
-        <ArrowLeft className="w-4 h-4" />
-      </Button>
+    <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 border-b border-border bg-background shrink-0">
+      {/* 第一行：返回按钮 + 标题（移动端） */}
+      <div className="flex items-center gap-2 w-full md:flex-1 md:min-w-0">
+        {/* 返回按钮 */}
+        <Button
+          isIconOnly
+          variant="light"
+          size="sm"
+          onPress={() => router.push("/admin/post-management")}
+          aria-label="返回文章列表"
+          className="shrink-0"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
 
-      {/* 标题区域 -- 统一容器高度，切换内容不跳动 */}
-      <div className="flex-1 relative" ref={emojiRef}>
-        {isEditing ? (
-          /* 激活态：输入框 + emoji 按钮 */
-          <div className="flex items-center gap-2 rounded-lg h-9 px-3 bg-card ring-2 ring-primary/40 focus-within:ring-primary transition-shadow">
+        {/* 标题区域 -- 统一容器高度，切换内容不跳动 */}
+        <div className="flex-1 min-w-0 relative" ref={emojiRef}>
+          {isEditing ? (
+            /* 激活态：输入框 + emoji 按钮 */
+            <div className="flex items-center gap-2 rounded-lg h-9 px-3 bg-card ring-2 ring-primary/40 focus-within:ring-primary transition-shadow">
+              <button
+                type="button"
+                onMouseDown={e => e.preventDefault()}
+                onClick={() => setShowEmoji(!showEmoji)}
+                className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
+                title="插入表情"
+              >
+                <SmilePlus className="w-4.5 h-4.5" />
+              </button>
+              <input
+                ref={inputRef}
+                type="text"
+                value={title}
+                onChange={e => onTitleChange(e.target.value)}
+                onBlur={handleFinishEdit}
+                onKeyDown={handleKeyDown}
+                placeholder="无标题文章"
+                className="flex-1 min-w-0 text-base font-semibold bg-transparent border-none outline-none placeholder:text-muted-foreground/40"
+              />
+            </div>
+          ) : (
+            /* 非激活态：纯文字 */
             <button
               type="button"
-              onMouseDown={e => e.preventDefault()}
-              onClick={() => setShowEmoji(!showEmoji)}
-              className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
-              title="插入表情"
+              onClick={() => setIsEditing(true)}
+              className="w-full text-left text-base font-semibold truncate h-9 flex items-center px-3 rounded-lg hover:bg-muted transition-colors"
+              title="点击编辑标题"
             >
-              <SmilePlus className="w-4.5 h-4.5" />
+              {title || <span className="text-muted-foreground/40">无标题文章</span>}
             </button>
-            <input
-              ref={inputRef}
-              type="text"
-              value={title}
-              onChange={e => onTitleChange(e.target.value)}
-              onBlur={handleFinishEdit}
-              onKeyDown={handleKeyDown}
-              placeholder="无标题文章"
-              className="flex-1 text-base font-semibold bg-transparent border-none outline-none placeholder:text-muted-foreground/40 min-w-0"
-            />
-          </div>
-        ) : (
-          /* 非激活态：纯文字 */
-          <button
-            type="button"
-            onClick={() => setIsEditing(true)}
-            className="w-full text-left text-base font-semibold truncate h-9 flex items-center px-3 rounded-lg hover:bg-muted transition-colors"
-            title="点击编辑标题"
-          >
-            {title || <span className="text-muted-foreground/40">无标题文章</span>}
-          </button>
-        )}
+          )}
 
-        {/* Emoji 选择器（带进出动画） */}
-        <div
-          className={`absolute top-full left-0 mt-2 w-[380px] bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden
+          {/* Emoji 选择器（带进出动画） */}
+          <div
+            className={`absolute top-full left-0 mt-2 w-[380px] max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden
  transition-all duration-200 origin-top-left
  ${
    isEditing && showEmoji
      ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
      : "opacity-0 scale-95 translate-y-1 pointer-events-none"
  }`}
-          onMouseDown={e => {
-            if ((e.target as HTMLElement).tagName !== "INPUT") {
-              e.preventDefault();
-            }
-          }}
-        >
-          {/* 搜索框 */}
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-border">
-            <input
-              type="text"
-              value={emojiSearch}
-              onChange={e => setEmojiSearch(e.target.value)}
-              placeholder="搜索表情..."
-              className="flex-1 text-sm bg-muted/30 border border-border rounded-lg px-3 py-1.5 outline-none focus:border-primary transition-colors"
-            />
-            <button
-              type="button"
-              onMouseDown={e => e.preventDefault()}
-              onClick={() => setShowEmoji(false)}
-              className="text-muted-foreground hover:text-foreground/70 text-sm shrink-0"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+            onMouseDown={e => {
+              if ((e.target as HTMLElement).tagName !== "INPUT") {
+                e.preventDefault();
+              }
+            }}
+          >
+            {/* 搜索框 */}
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-border">
+              <input
+                type="text"
+                value={emojiSearch}
+                onChange={e => setEmojiSearch(e.target.value)}
+                placeholder="搜索表情..."
+                className="flex-1 text-sm bg-muted/30 border border-border rounded-lg px-3 py-1.5 outline-none focus:border-primary transition-colors"
+              />
+              <button
+                type="button"
+                onMouseDown={e => e.preventDefault()}
+                onClick={() => setShowEmoji(false)}
+                className="text-muted-foreground hover:text-foreground/70 text-sm shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-          {/* Emoji 网格 */}
-          <div className="p-2 h-[260px] overflow-auto">
-            {!emojiSearch && (
-              <div className="text-xs text-muted-foreground mb-1.5 px-1">
-                {EMOJI_CATEGORIES.find(c => c.key === emojiCategory)?.label}
-              </div>
-            )}
-            <div key={emojiGridKey} className="grid grid-cols-10 gap-0.5 emoji-grid-animate">
-              {filteredEmojis.map((item, i) => (
-                <button
-                  key={`${item.e}-${i}`}
-                  type="button"
-                  className="w-8 h-8 flex items-center justify-center text-xl rounded
+            {/* Emoji 网格 */}
+            <div className="p-2 h-[260px] overflow-auto">
+              {!emojiSearch && (
+                <div className="text-xs text-muted-foreground mb-1.5 px-1">
+                  {EMOJI_CATEGORIES.find(c => c.key === emojiCategory)?.label}
+                </div>
+              )}
+              <div key={emojiGridKey} className="grid grid-cols-10 gap-0.5 emoji-grid-animate">
+                {filteredEmojis.map((item, i) => (
+                  <button
+                    key={`${item.e}-${i}`}
+                    type="button"
+                    className="w-8 h-8 flex items-center justify-center text-xl rounded
  hover:bg-muted hover:scale-125 active:scale-95
  transition-all duration-150 cursor-pointer
  opacity-0 animate-[emojiItemIn_0.25s_ease-out_forwards]"
-                  style={{ animationDelay: `${Math.min(i * 12, 300)}ms` }}
-                  onClick={() => insertEmoji(item.e)}
-                  onMouseDown={e => e.preventDefault()}
-                  onMouseEnter={() => setHoveredEmoji(item)}
-                  onMouseLeave={() => setHoveredEmoji(null)}
-                >
-                  {item.e}
-                </button>
-              ))}
+                    style={{ animationDelay: `${Math.min(i * 12, 300)}ms` }}
+                    onClick={() => insertEmoji(item.e)}
+                    onMouseDown={e => e.preventDefault()}
+                    onMouseEnter={() => setHoveredEmoji(item)}
+                    onMouseLeave={() => setHoveredEmoji(null)}
+                  >
+                    {item.e}
+                  </button>
+                ))}
+              </div>
+              {filteredEmojis.length === 0 && (
+                <div className="text-sm text-muted-foreground/40 text-center py-8">未找到匹配的表情</div>
+              )}
             </div>
-            {filteredEmojis.length === 0 && (
-              <div className="text-sm text-muted-foreground/40 text-center py-8">未找到匹配的表情</div>
+
+            {/* Hover 提示条 */}
+            <div className="flex items-center gap-2 px-3 py-1.5 border-t border-border min-h-[32px]">
+              {hoveredEmoji ? (
+                <>
+                  <span className="text-lg">{hoveredEmoji.e}</span>
+                  <span className="text-xs text-muted-foreground">{hoveredEmoji.n}</span>
+                </>
+              ) : (
+                <span className="text-xs text-muted-foreground/40">移到表情上查看名称</span>
+              )}
+            </div>
+
+            {/* 分类标签 */}
+            {!emojiSearch && (
+              <div className="flex border-t border-border overflow-x-auto">
+                {EMOJI_CATEGORIES.map(cat => (
+                  <button
+                    key={cat.key}
+                    type="button"
+                    className={`px-3 py-2 text-xs whitespace-nowrap transition-colors ${
+                      emojiCategory === cat.key
+                        ? "text-primary border-b-2 border-primary font-medium"
+                        : "text-muted-foreground hover:text-foreground/80"
+                    }`}
+                    onClick={() => setEmojiCategory(cat.key)}
+                    onMouseDown={e => e.preventDefault()}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
-
-          {/* Hover 提示条 */}
-          <div className="flex items-center gap-2 px-3 py-1.5 border-t border-border min-h-[32px]">
-            {hoveredEmoji ? (
-              <>
-                <span className="text-lg">{hoveredEmoji.e}</span>
-                <span className="text-xs text-muted-foreground">{hoveredEmoji.n}</span>
-              </>
-            ) : (
-              <span className="text-xs text-muted-foreground/40">移到表情上查看名称</span>
-            )}
-          </div>
-
-          {/* 分类标签 */}
-          {!emojiSearch && (
-            <div className="flex border-t border-border overflow-x-auto">
-              {EMOJI_CATEGORIES.map(cat => (
-                <button
-                  key={cat.key}
-                  type="button"
-                  className={`px-3 py-2 text-xs whitespace-nowrap transition-colors ${
-                    emojiCategory === cat.key
-                      ? "text-primary border-b-2 border-primary font-medium"
-                      : "text-muted-foreground hover:text-foreground/80"
-                  }`}
-                  onClick={() => setEmojiCategory(cat.key)}
-                  onMouseDown={e => e.preventDefault()}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
-      {/* 自动保存状态指示 */}
-      {isEditMode ? (
-        <Tooltip content="查看历史版本" placement="bottom">
-          <button
-            type="button"
-            onClick={() => articleId && router.push(`/admin/post-management/${articleId}/history`)}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground/70 transition-colors shrink-0 cursor-pointer px-2 py-1 rounded-md hover:bg-muted"
-          >
+      {/* 第二行：自动保存状态 + 操作按钮（移动端一行显示） */}
+      <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-between md:justify-end">
+        {/* 自动保存状态指示 - 左侧 */}
+        {isEditMode ? (
+          <Tooltip content="查看历史版本" placement="bottom">
+            <button
+              type="button"
+              onClick={() => articleId && router.push(`/admin/post-management/${articleId}/history`)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground/70 transition-colors shrink-0 cursor-pointer px-2 py-1 rounded-md hover:bg-muted"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              {autoSaveStatus === "saving" && (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>自动保存中...</span>
+                </>
+              )}
+              {autoSaveStatus === "saved" && lastSavedAt && <span>已保存 {formatTime(lastSavedAt)}</span>}
+              {autoSaveStatus === "error" && <span className="text-danger">保存失败</span>}
+              {autoSaveStatus === "idle" && !lastSavedAt && articleUpdatedAt && (
+                <span>已保存 {formatTime(new Date(articleUpdatedAt))}</span>
+              )}
+              {autoSaveStatus === "idle" && !lastSavedAt && !articleUpdatedAt && <span>未保存</span>}
+              {autoSaveStatus === "idle" && lastSavedAt && <span>已保存 {formatTime(lastSavedAt)}</span>}
+              <Cloud className="w-3.5 h-3.5" />
+            </button>
+          </Tooltip>
+        ) : (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground shrink-0 px-2 py-1">
             <Lock className="w-3.5 h-3.5" />
-            {autoSaveStatus === "saving" && (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>自动保存中...</span>
-              </>
-            )}
-            {autoSaveStatus === "saved" && lastSavedAt && <span>已保存 {formatTime(lastSavedAt)}</span>}
-            {autoSaveStatus === "error" && <span className="text-danger">保存失败</span>}
-            {autoSaveStatus === "idle" && !lastSavedAt && articleUpdatedAt && (
-              <span>已保存 {formatTime(new Date(articleUpdatedAt))}</span>
-            )}
-            {autoSaveStatus === "idle" && !lastSavedAt && !articleUpdatedAt && <span>未保存</span>}
-            {autoSaveStatus === "idle" && lastSavedAt && <span>已保存 {formatTime(lastSavedAt)}</span>}
+            <span>新建文章</span>
             <Cloud className="w-3.5 h-3.5" />
-          </button>
-        </Tooltip>
-      ) : (
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground shrink-0 px-2 py-1">
-          <Lock className="w-3.5 h-3.5" />
-          <span>新建文章</span>
-          <Cloud className="w-3.5 h-3.5" />
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* 右侧操作 */}
-      <div className="flex items-center gap-1.5 shrink-0">
-        <Button color="primary" size="sm" onPress={onSave} isLoading={isSaving}>
-          {isEditMode ? "更新" : "发布"}
-        </Button>
-        {isEditMode && articleId && (
-          <Tooltip content="查看文章" placement="bottom">
-            <Button
-              isIconOnly
-              variant="light"
-              size="sm"
-              as="a"
-              href={isDoc ? `/doc/${articleId}` : `/posts/${articleId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="查看文章"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </Button>
-          </Tooltip>
-        )}
-        {onToggleFocusMode && (
-          <Tooltip content={focusMode ? "退出专注模式 (Esc)" : "专注模式"} size="sm" delay={400} closeDelay={0}>
-            <Button
-              isIconOnly
-              variant={focusMode ? "flat" : "light"}
-              size="sm"
-              onPress={onToggleFocusMode}
-              aria-label={focusMode ? "退出专注模式" : "进入专注模式"}
-              className={focusMode ? "text-primary" : ""}
-            >
-              <Focus className="w-4 h-4" />
-            </Button>
-          </Tooltip>
-        )}
-        <Button
-          isIconOnly
-          variant={sidebarOpen ? "flat" : "light"}
-          size="sm"
-          onPress={onToggleSidebar}
-          aria-label="切换属性面板"
-        >
-          <PanelRight className="w-4 h-4" />
-        </Button>
+        {/* 右侧操作按钮 */}
+        <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
+          <Button color="primary" size="sm" onPress={onSave} isLoading={isSaving} className="shrink-0">
+            {isEditMode ? "更新" : "发布"}
+          </Button>
+          {isEditMode && articleId && (
+            <Tooltip content="查看文章" placement="bottom">
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                as="a"
+                href={isDoc ? `/doc/${articleId}` : `/posts/${articleId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="查看文章"
+                className="shrink-0"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            </Tooltip>
+          )}
+          {onToggleFocusMode && (
+            <Tooltip content={focusMode ? "退出专注模式 (Esc)" : "专注模式"} size="sm" delay={400} closeDelay={0}>
+              <Button
+                isIconOnly
+                variant={focusMode ? "flat" : "light"}
+                size="sm"
+                onPress={onToggleFocusMode}
+                aria-label={focusMode ? "退出专注模式" : "进入专注模式"}
+                className={`shrink-0 ${focusMode ? "text-primary" : ""}`}
+              >
+                <Focus className="w-4 h-4" />
+              </Button>
+            </Tooltip>
+          )}
+          <Button
+            isIconOnly
+            variant={sidebarOpen ? "flat" : "light"}
+            size="sm"
+            onPress={onToggleSidebar}
+            aria-label="切换属性面板"
+            className="shrink-0"
+          >
+            <PanelRight className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -877,7 +877,6 @@ function SettingsContent({
       }
       addToast({ title: "AI 摘要生成成功", color: "success" });
     } catch (e) {
-      console.error("[AI] 摘要生成失败:", e);
       addToast({ title: "AI 摘要生成失败，请检查 AI 配置", color: "danger" });
     } finally {
       setIsGeneratingSummary(false);
@@ -893,7 +892,6 @@ function SettingsContent({
     setIsGeneratingAISummary(true);
     try {
       const aiSummary = await aiApi.generateAISummary(content);
-      console.log("[AI] 总结接口返回:", aiSummary);
       if (!aiSummary) {
         addToast({ title: "AI 总结生成结果为空", color: "warning" });
         return;
@@ -901,7 +899,6 @@ function SettingsContent({
       onUpdateField("ai_summary", aiSummary);
       addToast({ title: "AI 总结生成成功", color: "success" });
     } catch (e) {
-      console.error("[AI] 总结生成失败:", e);
       addToast({ title: "AI 总结生成失败，请检查 AI 配置", color: "danger" });
     } finally {
       setIsGeneratingAISummary(false);
@@ -1137,7 +1134,7 @@ function SettingsContent({
             </button>
             <a
               role="button"
-              className={`sb-add-btn w-auto! py-1! px-2! text-[11px] ${isGeneratingSummary ? "opacity-50 pointer-events-none" : ""}`}
+              className={`sb-add-btn py-1! px-2! text-[11px] ${isGeneratingSummary ? "opacity-50 pointer-events-none" : ""}`}
               onClick={isGeneratingSummary ? undefined : handleAIGenerateSummary}
               title="AI 生成摘要"
             >
@@ -1193,7 +1190,7 @@ function SettingsContent({
           </div>
         </div>
 
-        <div className="sb-field">
+        <div className="space-y-1.5">
           <div className="flex items-center justify-between mb-1.5">
             <span className="sb-label">AI 总结</span>
             <a
@@ -1211,7 +1208,6 @@ function SettingsContent({
             onChange={v => onUpdateField("ai_summary", v)}
             placeholder="AI 生成的文章总结（可选）"
             className="flex-1"
-            minHeightPx={80}
             maxHeightPx={SUMMARY_TEXTAREA_MAX_HEIGHT_PX}
           />
         </div>

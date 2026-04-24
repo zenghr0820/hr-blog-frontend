@@ -5,6 +5,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { ArticleLink } from "@/types/article";
 import styles from "./PostRelatedPostsGrid.module.css";
@@ -50,9 +51,10 @@ function RelatedPostCoverImage({ coverUrl, defaultCover, alt }: RelatedPostCover
   const src = loadFailed || !coverUrl?.trim() ? defaultCover : coverUrl.trim();
 
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
+      fill
       className={styles.cover}
       loading="lazy"
       onError={() => setLoadFailed(true)}

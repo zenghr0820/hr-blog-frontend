@@ -5,6 +5,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { ArticleLink } from "@/types/article";
 import styles from "./PostPaginationNew.module.css";
@@ -36,10 +37,11 @@ function PaginationCoverImage({ coverUrl, defaultCover, alt }: PaginationCoverIm
   const src = loadFailed || !coverUrl?.trim() ? defaultCover : coverUrl.trim();
 
   return (
-    <img
+    <Image
       src={src}
       className={styles.cover}
       alt={alt}
+      fill
       loading="lazy"
       onError={() => setLoadFailed(true)}
     />
