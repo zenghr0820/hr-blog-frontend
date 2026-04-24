@@ -46,7 +46,6 @@ export function SeoSettingsForm({ values, onChange, loading }: SeoSettingsFormPr
           description="发布或更新文章时自动推送到搜索引擎"
           checked={values[KEY_SEO_AUTO_SUBMIT] === "true"}
           onCheckedChange={v => onChange(KEY_SEO_AUTO_SUBMIT, String(v))}
-          isPro
         />
         {values[KEY_SEO_AUTO_SUBMIT] === "true" && (
           <div className={cardClass}>
@@ -69,13 +68,12 @@ export function SeoSettingsForm({ values, onChange, loading }: SeoSettingsFormPr
       </SettingsSection>
 
       {/* 百度推送 */}
-      <SettingsSection title="百度推送 (PRO)">
+      <SettingsSection title="百度推送">
         <FormSwitch
           label="启用百度推送"
           description="自动将新文章推送到百度搜索"
           checked={values[KEY_SEO_BAIDU_ENABLE] === "true"}
           onCheckedChange={v => onChange(KEY_SEO_BAIDU_ENABLE, String(v))}
-          isPro
         />
         {values[KEY_SEO_BAIDU_ENABLE] === "true" && (
           <div className={cardClass}>
@@ -99,13 +97,12 @@ export function SeoSettingsForm({ values, onChange, loading }: SeoSettingsFormPr
       </SettingsSection>
 
       {/* Bing 推送 */}
-      <SettingsSection title="Bing 推送 (PRO)">
+      <SettingsSection title="Bing 推送">
         <FormSwitch
           label="启用 Bing 推送"
           description="自动将新文章推送到 Bing 搜索"
           checked={values[KEY_SEO_BING_ENABLE] === "true"}
           onCheckedChange={v => onChange(KEY_SEO_BING_ENABLE, String(v))}
-          isPro
         />
         {values[KEY_SEO_BING_ENABLE] === "true" && (
           <div className={cardClass}>
@@ -129,13 +126,12 @@ export function SeoSettingsForm({ values, onChange, loading }: SeoSettingsFormPr
       </SettingsSection>
 
       {/* Google 推送 */}
-      <SettingsSection title="Google 推送 (PRO)">
+      <SettingsSection title="Google 推送">
         <FormSwitch
           label="启用 Google 推送"
           description="自动将新文章推送到 Google 搜索"
           checked={values[KEY_SEO_GOOGLE_ENABLE] === "true"}
           onCheckedChange={v => onChange(KEY_SEO_GOOGLE_ENABLE, String(v))}
-          isPro
         />
         {values[KEY_SEO_GOOGLE_ENABLE] === "true" && (
           <div className={cardClass}>

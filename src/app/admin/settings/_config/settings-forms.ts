@@ -68,4 +68,7 @@ export const settingsFormRegistry: Record<SettingCategoryId, LazyForm> = {
   "advanced-ai": lazy(() =>
     import("@/components/admin/settings/AIConfigForm").then(m => ({ default: m.AIConfigForm }))
   ) as LazyForm,
+  "advanced-seo": lazy(() =>
+    import("@/components/admin/settings/SeoSettingsForm").then(m => ({ default: m.SeoSettingsForm }))
+  ) as LazyForm,
 };

@@ -1,10 +1,9 @@
 "use client";
 
-import { FormInput } from "@/components/ui/form-input";
-import { FormImageUpload } from "@/components/ui/form-image-upload";
-import { EquipmentListEditor } from "./editors/EquipmentListEditor";
-import { SettingsSection, SettingsFieldGroup } from "./SettingsSection";
+import { SettingsSection } from "./SettingsSection";
 import { Spinner } from "@/components/ui/spinner";
+import { BannerEditor } from "./editors/BannerEditor";
+import { EquipmentListEditor } from "./editors/EquipmentListEditor";
 import {
   KEY_EQUIPMENT_BANNER_BG,
   KEY_EQUIPMENT_BANNER_TITLE,
@@ -32,34 +31,24 @@ export function EquipmentPageForm({ values, onChange, loading }: EquipmentPageFo
     <div className="space-y-10">
       {/* 横幅配置 */}
       <SettingsSection title="横幅" description="页面顶部展示区域">
-        <div className="rounded-xl border border-border/60 bg-muted/20 p-5 shadow-[0_0_0_0.5px_rgba(0,0,0,0.04)] dark:shadow-none">
-          <SettingsFieldGroup cols={2}>
-            <FormImageUpload
-              label="背景图"
-              value={values[KEY_EQUIPMENT_BANNER_BG]}
-              onValueChange={v => onChange(KEY_EQUIPMENT_BANNER_BG, v)}
-              placeholder="图片 URL"
-            />
-            <FormInput
-              label="标题"
-              placeholder="页面标题"
-              value={values[KEY_EQUIPMENT_BANNER_TITLE]}
-              onValueChange={v => onChange(KEY_EQUIPMENT_BANNER_TITLE, v)}
-            />
-            <FormInput
-              label="描述"
-              placeholder="页面描述"
-              value={values[KEY_EQUIPMENT_BANNER_DESC]}
-              onValueChange={v => onChange(KEY_EQUIPMENT_BANNER_DESC, v)}
-            />
-            <FormInput
-              label="提示"
-              placeholder="提示文字"
-              value={values[KEY_EQUIPMENT_BANNER_TIP]}
-              onValueChange={v => onChange(KEY_EQUIPMENT_BANNER_TIP, v)}
-            />
-          </SettingsFieldGroup>
-        </div>
+        <BannerEditor
+          prefix="equipment.banner"
+          values={values}
+          onChange={onChange}
+          cols={2}
+          labels={{
+            background: "背景图",
+            title: "标题",
+            description: "描述",
+            tip: "提示",
+          }}
+          placeholders={{
+            background: "图片 URL",
+            title: "页面标题",
+            description: "页面描述",
+            tip: "提示文字",
+          }}
+        />
       </SettingsSection>
 
       {/* 装备列表 */}
