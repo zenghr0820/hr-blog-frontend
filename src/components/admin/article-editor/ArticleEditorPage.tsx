@@ -95,6 +95,12 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
     return true;
   });
 
+  // Ctrl+S 快捷键保存 - 先定义空函数引用
+  const handleSaveRef = useRef<() => void>(() => {});
+  // Ctrl+/ 切换视图 - 使用 ref 避免依赖顺序问题
+  const editorModeRef = useRef<EditorMode>("visual");
+  const handleModeChangeRef = useRef<(mode: EditorMode) => void>(() => {});
+
   // 专注模式
   const [focusMode, setFocusMode] = useState(false);
   const toggleFocusMode = useCallback(() => setFocusMode(prev => !prev), []);
@@ -107,6 +113,29 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [focusMode]);
+
+  // Ctrl+S 快捷键保存 和 Ctrl+/ 切换视图
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 检测 Ctrl+S (Windows/Linux) 或 Cmd+S (Mac)
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault(); // 阻止浏览器默认保存行为
+        handleSaveRef.current(); // 触发保存
+      }
+
+      // 检测 Ctrl+/ (Windows/Linux) 或 Cmd+/ (Mac) - 切换到 Markdown 视图
+      if ((e.ctrlKey || e.metaKey) && e.key === "/") {
+        e.preventDefault(); // 阻止浏览器默认行为
+        if (editorModeRef.current == "visual") {
+          handleModeChangeRef.current("markdown");
+        }
+      }
+    };
+
+    
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // 文章元数据
   const { meta, updateField, initFromData, getSubmitData } = useArticleMeta(undefined, {
@@ -177,6 +206,15 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
     },
     [editorMode, editor, sourceContent]
   );
+
+  // 更新 ref 引用，使快捷键始终调用最新的逻辑
+  useEffect(() => {
+    editorModeRef.current = editorMode;
+  }, [editorMode]);
+
+  useEffect(() => {
+    handleModeChangeRef.current = handleModeChange;
+  }, [handleModeChange]);
 
   // 分类和标签列表
   const { data: categories = [], isLoading: isLoadingCategories } = useQuery({
@@ -313,6 +351,11 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
     }
   };
 
+  // 更新 handleSave 引用，使快捷键始终调用最新的保存逻辑
+  useEffect(() => {
+    handleSaveRef.current = handleSave;
+  }, [handleSave]);
+
   const getBodyPlainTextForSummary = useCallback(() => {
     if (editorMode === "visual" && editor && !editor.isDestroyed) {
       return editor.getText();
@@ -374,13 +417,11 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
           </div>
           {editorMode === "visual" && <WordCount editor={editor} />}
           {editorMode !== "visual" && (
-            <div className="p-2 sm:p-3 md:p-4">
-              <SourceCodeEditor
-                value={sourceContent}
-                onChange={handleSourceChange}
-                language={editorMode === "html" ? "html" : "markdown"}
-              />
-            </div>
+            <SourceCodeEditor
+              value={sourceContent}
+              onChange={handleSourceChange}
+              language={editorMode === "html" ? "html" : "markdown"}
+            />
           )}
         </div>
 
