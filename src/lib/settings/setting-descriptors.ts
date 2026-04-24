@@ -41,7 +41,8 @@ export type SettingCategoryId =
   | "advanced-captcha"
   | "advanced-wechat-share"
   | "advanced-backup"
-  | "advanced-ai";
+  | "advanced-ai"
+  | "advanced-seo";
 
 /** 文章版权声明默认模板（与前台渲染兜底保持一致） */
 const DEFAULT_POST_COPYRIGHT_TEMPLATE_ORIGINAL =
