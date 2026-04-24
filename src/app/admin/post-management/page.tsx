@@ -312,7 +312,7 @@ export default function PostManagementPage() {
         confirmColor="danger"
         icon={<ShieldAlert className="w-5 h-5 text-danger" />}
         iconBg="bg-danger-50"
-        loading={pm.batchDeleting}
+        loading={pm.batchDeleteArticles.isPending}
         onConfirm={pm.handleBatchDeleteConfirm}
       />
 

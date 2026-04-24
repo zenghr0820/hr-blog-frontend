@@ -3,12 +3,12 @@
  * 对接 anheyu-app 后端 /api/articles 接口
  */
 
-import { apiClient } from "./client";
-import { axiosInstance } from "./client";
+import { apiClient, axiosInstance } from "./client";
 import type {
   AdminArticle,
   AdminArticleListParams,
   AdminArticleListResponse,
+  BatchDeleteRequest,
   CreateArticleRequest,
   UpdateArticleRequest,
   ExportArticlesMarkdownRequest,
@@ -81,6 +81,15 @@ export const postManagementApi = {
     const response = await apiClient.delete(`/api/articles/${id}`);
     if (response.code !== 200) {
       throw new Error(response.message || "删除文章失败");
+    }
+  },
+
+  async batchDeleteArticles(articleIds: string[]): Promise<void> {
+    const response = await apiClient.delete<unknown>("/api/articles/batch", {
+      data: { ids: articleIds } as BatchDeleteRequest,
+    });
+    if (response.code !== 200) {
+      throw new Error(response.message || "批量删除文章失败");
     }
   },
 

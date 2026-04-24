@@ -6,6 +6,8 @@ import katex from "katex";
 import { Sigma } from "lucide-react";
 import { AdminDialog } from "@/components/admin/AdminDialog";
 
+export type MathFormulaType = "inline" | "block";
+
 interface MathFormulaDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -13,6 +15,12 @@ interface MathFormulaDialogProps {
   onInsertBlock: (latex: string) => void;
   /** 插入行内公式 */
   onInsertInline: (latex: string) => void;
+  /** 编辑模式：传入时进入"更新公式"模式，不插入新节点 */
+  editingLatex?: string;
+  /** 编辑模式下当前公式类型（决定预览模式与按钮文案） */
+  editingType?: MathFormulaType;
+  /** 编辑模式下保存回调 */
+  onUpdate?: (latex: string) => void;
 }
 
 /** 常用公式模板 */
@@ -31,25 +39,38 @@ const FORMULA_TEMPLATES = [
   { label: "偏导数", latex: "\\frac{\\partial f}{\\partial x}" },
 ];
 
-export function MathFormulaDialog({ isOpen, onOpenChange, onInsertBlock, onInsertInline }: MathFormulaDialogProps) {
+export function MathFormulaDialog({
+  isOpen,
+  onOpenChange,
+  onInsertBlock,
+  onInsertInline,
+  editingLatex,
+  editingType,
+  onUpdate,
+}: MathFormulaDialogProps) {
+  // 编辑模式：需要同时提供 latex、type、更新回调才算完整
+  const isEditMode = editingLatex !== undefined && editingType !== undefined && !!onUpdate;
   const [latex, setLatex] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [prevIsOpen, setPrevIsOpen] = useState(false);
 
-  // 关闭时重置状态（渲染阶段调整状态）
+  // 打开/关闭时同步初始值（渲染阶段调整状态）
   if (!isOpen && prevIsOpen) {
     setLatex("");
     setPrevIsOpen(false);
   } else if (isOpen && !prevIsOpen) {
+    setLatex(editingLatex ?? "");
     setPrevIsOpen(true);
   }
 
-  // 实时预览（纯计算，用 useMemo 替代 effect + state）
+  // 预览模式：编辑模式下尊重当前公式类型；插入模式默认块级
+  const previewDisplayMode = isEditMode ? editingType !== "inline" : true;
+
   const { previewHtml, previewError } = useMemo(() => {
     if (!latex.trim()) return { previewHtml: "", previewError: "" };
     try {
       const html = katex.renderToString(latex, {
-        displayMode: true,
+        displayMode: previewDisplayMode,
         throwOnError: true,
         output: "html",
       });
@@ -57,9 +78,8 @@ export function MathFormulaDialog({ isOpen, onOpenChange, onInsertBlock, onInser
     } catch (err) {
       return { previewHtml: "", previewError: err instanceof Error ? err.message : "渲染错误" };
     }
-  }, [latex]);
+  }, [latex, previewDisplayMode]);
 
-  // 打开时聚焦
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => textareaRef.current?.focus(), 100);
@@ -79,6 +99,12 @@ export function MathFormulaDialog({ isOpen, onOpenChange, onInsertBlock, onInser
     onOpenChange(false);
   }, [latex, onInsertInline, onOpenChange]);
 
+  const handleUpdate = useCallback(() => {
+    if (!latex.trim() || !onUpdate) return;
+    onUpdate(latex.trim());
+    onOpenChange(false);
+  }, [latex, onUpdate, onOpenChange]);
+
   const handleTemplateClick = useCallback((templateLatex: string) => {
     setLatex(templateLatex);
     setTimeout(() => textareaRef.current?.focus(), 0);
@@ -86,14 +112,24 @@ export function MathFormulaDialog({ isOpen, onOpenChange, onInsertBlock, onInser
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Ctrl+Enter 插入块级公式
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        handleInsertBlock();
+        if (isEditMode) {
+          handleUpdate();
+        } else {
+          handleInsertBlock();
+        }
       }
     },
-    [handleInsertBlock]
+    [handleInsertBlock, handleUpdate, isEditMode]
   );
+
+  const dialogTitle = isEditMode
+    ? editingType === "inline"
+      ? "编辑行内公式"
+      : "编辑块级公式"
+    : "插入数学公式";
+  const dialogDescription = isEditMode ? "修改 LaTeX 内容后按 Ctrl+Enter 保存" : "支持 LaTeX 输入并实时预览";
 
   return (
     <AdminDialog
@@ -102,7 +138,7 @@ export function MathFormulaDialog({ isOpen, onOpenChange, onInsertBlock, onInser
       size="2xl"
       scrollBehavior="inside"
       classNames={{ wrapper: "z-[200]", backdrop: "z-[199]" }}
-      header={{ title: "插入数学公式", description: "支持 LaTeX 输入并实时预览", icon: Sigma }}
+      header={{ title: dialogTitle, description: dialogDescription, icon: Sigma }}
     >
       {onClose => (
         <>
@@ -111,7 +147,7 @@ export function MathFormulaDialog({ isOpen, onOpenChange, onInsertBlock, onInser
             <div>
               <label className="text-xs text-muted-foreground mb-1.5 block">
                 LaTeX 公式
-                <span className="text-muted-foreground/40 ml-2">Ctrl+Enter 快速插入</span>
+                <span className="text-muted-foreground/40 ml-2">Ctrl+Enter 快速{isEditMode ? "保存" : "插入"}</span>
               </label>
               <textarea
                 ref={textareaRef}
@@ -159,18 +195,31 @@ export function MathFormulaDialog({ isOpen, onOpenChange, onInsertBlock, onInser
             <Button variant="flat" onPress={onClose} size="sm">
               取消
             </Button>
-            <Button
-              variant="flat"
-              color="primary"
-              onPress={handleInsertInline}
-              isDisabled={!latex.trim() || !!previewError}
-              size="sm"
-            >
-              插入行内公式
-            </Button>
-            <Button color="primary" onPress={handleInsertBlock} isDisabled={!latex.trim() || !!previewError} size="sm">
-              插入块级公式
-            </Button>
+            {isEditMode ? (
+              <Button color="primary" onPress={handleUpdate} isDisabled={!latex.trim() || !!previewError} size="sm">
+                保存修改
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="flat"
+                  color="primary"
+                  onPress={handleInsertInline}
+                  isDisabled={!latex.trim() || !!previewError}
+                  size="sm"
+                >
+                  插入行内公式
+                </Button>
+                <Button
+                  color="primary"
+                  onPress={handleInsertBlock}
+                  isDisabled={!latex.trim() || !!previewError}
+                  size="sm"
+                >
+                  插入块级公式
+                </Button>
+              </>
+            )}
           </ModalFooter>
         </>
       )}

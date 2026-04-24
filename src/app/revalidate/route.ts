@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const REVALIDATE_TOKEN = process.env.REVALIDATE_TOKEN || "anheyu-revalidate-secret";
+// REVALIDATE_TOKEN 不再提供默认值。
+// 为避免生产环境误用弱口令，必须显式配置；未设置或空串时接口全部返回 503，
+// 迫使运维补齐配置而不是回退到可被猜中的硬编码默认值。
+const REVALIDATE_TOKEN = (process.env.REVALIDATE_TOKEN ?? "").trim();
 
 interface RevalidateBody {
   article?: string;
@@ -16,6 +19,11 @@ interface RevalidateBody {
 }
 
 export async function POST(request: NextRequest) {
+  if (!REVALIDATE_TOKEN) {
+    console.error("[revalidate] REVALIDATE_TOKEN 未配置，接口已禁用；请在环境变量中设置后重启服务");
+    return NextResponse.json({ error: "revalidate disabled: token not configured" }, { status: 503 });
+  }
+
   const token = request.headers.get("x-revalidate-token");
   if (token !== REVALIDATE_TOKEN) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -68,7 +76,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ revalidated, now: Date.now() });
-  } catch {
+  } catch (error) {
+    console.error("[revalidate] 处理请求失败:", error);
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 }

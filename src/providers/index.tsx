@@ -11,12 +11,12 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { subscribeSiteConfigUpdates } from "@/store/site-config-store";
 import { useAuthStore } from "@/store/auth-store";
 import { tokenManager } from "@/lib/api/client";
 import { HeroUIProviderWrapper } from "./heroui-provider";
 import { QueryProvider } from "./query-provider";
 import { GlobalLoading } from "@/components/common/GlobalLoading";
-import { CustomCodeInjector } from "./custom-code-injector";
 import { DefaultThemeSync } from "./DefaultThemeSync";
 import { SiteThemeColorsSync } from "./SiteThemeColorsSync";
 import { ReducedMotionSync } from "./ReducedMotionSync";
@@ -28,6 +28,22 @@ import { ContainerAliasLoader } from "./container-alias-loader";
 interface ProvidersProps {
   children: ReactNode;
 }
+
+const SSR_CRITICAL_SETTING_KEYS = new Set([
+  "APP_NAME",
+  "SUB_TITLE",
+  "SITE_URL",
+  "SITE_KEYWORDS",
+  "SITE_DESCRIPTION",
+  "FRONT_DESK_SITE_OWNER_NAME",
+  "ICON_URL",
+  "LOGO_URL",
+  "LOGO_URL_192x192",
+  "CUSTOM_HEADER_HTML",
+  "CUSTOM_FOOTER_HTML",
+  "CUSTOM_CSS",
+  "CUSTOM_JS",
+]);
 
 /**
  * Auth Token 初始化器
@@ -85,6 +101,24 @@ function SiteConfigLoader({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+function SiteConfigSyncListener() {
+  useEffect(() => {
+    return subscribeSiteConfigUpdates(async ({ updatedKeys }) => {
+      const shouldReload =
+        !updatedKeys?.length || updatedKeys.some(key => SSR_CRITICAL_SETTING_KEYS.has(key));
+
+      if (shouldReload) {
+        window.location.reload();
+        return;
+      }
+
+      await useSiteConfigStore.getState().forceRefreshFromServer();
+    });
+  }, []);
+
+  return null;
+}
+
 export function Providers({ children }: ProvidersProps) {
   return (
     <QueryProvider>
@@ -93,13 +127,13 @@ export function Providers({ children }: ProvidersProps) {
           <AuthTokenInitializer>
             <SiteConfigLoader>
               <ContainerAliasLoader>
+              <SiteConfigSyncListener />
               <DefaultThemeSync />
               <SiteThemeColorsSync />
               <ReducedMotionSync />
               <BackgroundImageSync />
               <LenisScroll />
               <GlobalLoading />
-              <CustomCodeInjector />
               <VisitStatisticsTracker />
               {children}
               </ContainerAliasLoader>

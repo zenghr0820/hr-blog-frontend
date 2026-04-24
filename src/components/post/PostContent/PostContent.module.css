@@ -1247,52 +1247,141 @@
   margin: 1rem 0;
   padding: 1rem;
   border-radius: 8px;
-  border-left: 4px solid;
+  border: 1px solid transparent;
 }
 
 .postContent :global(.admonition.note) {
   background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.postContent :global(.admonition.info) {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.25);
 }
 
 .postContent :global(.admonition.tip) {
   background: rgba(16, 185, 129, 0.1);
-  border-color: #10b981;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.postContent :global(.admonition.success) {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.25);
 }
 
 .postContent :global(.admonition.warning) {
   background: rgba(245, 158, 11, 0.1);
-  border-color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.25);
 }
 
 .postContent :global(.admonition.danger) {
   background: rgba(239, 68, 68, 0.1);
-  border-color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.25);
 }
 
 .postContent :global(.admonition-title) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
   font-weight: 600;
+  line-height: 1.5;
   margin-bottom: 0.5rem;
 }
+
+.postContent :global(.admonition-title)::before {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
 .postContent :global(.admonition.note) :global(.admonition-title) {
   color: #3b82f6;
 }
+
+.postContent :global(.admonition.note) :global(.admonition-title)::before {
+  content: "📝 注释";
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+.postContent :global(.admonition.info) :global(.admonition-title) {
+  color: #6366f1;
+}
+
+.postContent :global(.admonition.info) :global(.admonition-title)::before {
+  content: "ℹ️ 信息";
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.14);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
 .postContent :global(.admonition.tip) :global(.admonition-title) {
   color: #10b981;
 }
+
+.postContent :global(.admonition.tip) :global(.admonition-title)::before {
+  content: "💡 提示";
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.postContent :global(.admonition.success) :global(.admonition-title) {
+  color: #22c55e;
+}
+
+.postContent :global(.admonition.success) :global(.admonition-title)::before {
+  content: "✅ 成功";
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
 .postContent :global(.admonition.warning) :global(.admonition-title) {
   color: #f59e0b;
 }
+
+.postContent :global(.admonition.warning) :global(.admonition-title)::before {
+  content: "⚠️ 警告";
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
 .postContent :global(.admonition.danger) :global(.admonition-title) {
   color: #ef4444;
+}
+
+.postContent :global(.admonition.danger) :global(.admonition-title)::before {
+  content: "🚨 危险";
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 /* Admonition 暗色模式适配 */
 :global(html.dark) .postContent :global(.admonition.note) {
   background: rgba(59, 130, 246, 0.15);
 }
+:global(html.dark) .postContent :global(.admonition.info) {
+  background: rgba(99, 102, 241, 0.15);
+}
 :global(html.dark) .postContent :global(.admonition.tip) {
   background: rgba(16, 185, 129, 0.15);
+}
+:global(html.dark) .postContent :global(.admonition.success) {
+  background: rgba(34, 197, 94, 0.15);
 }
 :global(html.dark) .postContent :global(.admonition.warning) {
   background: rgba(245, 158, 11, 0.15);

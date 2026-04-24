@@ -461,6 +461,31 @@ export function Footer() {
           </div>
         )}
 
+      {/* 页脚运行时间 */}
+      {runtimeEnabled && runtimeConfig?.launch_time && (
+        <div className={styles.footerRuntimeBoard}>
+          {runtimeState.statusImg && (
+            <div className={styles.statusImgRow}>
+              <img
+                className={styles.statusBadge}
+                src={runtimeState.statusImg}
+                title={runtimeState.statusDesc}
+                alt="工作状态"
+                onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+            </div>
+          )}
+          <div className={styles.runtimeInfoRow}>
+            <span className={styles.runtimeText}>
+              本站居然运行了 {runtimeState.days} 天
+            </span>
+            <span className={styles.runtimeTimeText}>{runtimeState.time}</span>
+            <Icon icon="fa:heartbeat" className={styles.heartbeatIcon} style={{ color: "red" }} />
+          </div>
+        </div>
+      )}
+
+      <div className={styles.footerBottom}>
         {/* 底部徽章：自定义徽章（如框架、CDN、协议等） */}
         {badgeList.length > 0 && (
           <p className={styles.footerBadges}>
@@ -487,30 +512,6 @@ export function Footer() {
           </p>
         )}
       </div>
-
-      {/* 页脚运行时间 */}
-      {runtimeEnabled && runtimeConfig?.launch_time && (
-        <div className={styles.footerRuntimeBoard}>
-          {runtimeState.statusImg && (
-            <div className={styles.statusImgRow}>
-              <img
-                className={styles.statusBadge}
-                src={runtimeState.statusImg}
-                title={runtimeState.statusDesc}
-                alt="工作状态"
-                onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-              />
-            </div>
-          )}
-          <div className={styles.runtimeInfoRow}>
-            <span className={styles.runtimeText}>
-              本站居然运行了 {runtimeState.days} 天
-            </span>
-            <span className={styles.runtimeTimeText}>{runtimeState.time}</span>
-            <Icon icon="fa:heartbeat" className={styles.heartbeatIcon} style={{ color: "red" }} />
-          </div>
-        </div>
-      )}
 
       {/* Footer Bottom Bar */}
       {footerConfig.bar && (
@@ -631,6 +632,7 @@ export function Footer() {
           </div>
         </div>
       )}
+      </div>
     </footer>
   );
 }

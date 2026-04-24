@@ -75,10 +75,10 @@ export function getSeoBackendUrl(): string {
   return process.env.API_URL || process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8091";
 }
 
-export async function fetchSiteConfigForSeo(revalidateSeconds = 60): Promise<SiteConfigData | null> {
+export async function fetchSiteConfigForSeo(): Promise<SiteConfigData | null> {
   try {
     const response = await fetch(`${getSeoBackendUrl()}/api/public/site-config`, {
-      next: { revalidate: revalidateSeconds },
+      cache: "no-store",
     });
 
     if (!response.ok) {

@@ -1,7 +1,7 @@
 /**
  * marked 自定义扩展
  * 处理自定义 Markdown 语法 → HTML 转换
- * 块级：:::tagName params ... :::（通用容器）；!!!note|tip|warning|danger ... !!!（提示框，推荐）
+ * 块级：:::tagName params ... :::（通用容器）；!!!note|info|tip|success|warning|danger ... !!!（提示框，推荐）
  * 行内：{tagName params}content{/tagName}
  */
 import type { marked as Marked, Tokens } from "marked";
@@ -99,19 +99,20 @@ function matchContainerBlock(src: string): { raw: string; tagName: string; param
 }
 
 /** Admonition 块支持的标签（与 turndown、编辑器一致；!!! 与类型之间可有空格） */
-const ADMONITION_TYPES = new Set(["note", "tip", "warning", "danger"]);
+const ADMONITION_TYPES = new Set(["note", "tip", "warning", "danger", "success", "info"]);
 
-const ADMONITION_OPEN_RE = /^!!!\s*(\w[\w-]*)\s*(.*)\n/;
+const ADMONITION_OPEN_RE = /^[ \t]*!!![ \t]*(\w[\w-]*)[ \t]*(.*?)[ \t]*\n/;
 const ADMONITION_NESTED_OPEN_RE = /^!!!\s*\w[\w-]*\b/;
+const ADMONITION_CLOSE_RE = /(?:^|\s)!!!$/;
 
 /**
- * 从 src 开头匹配 !!!note|tip|warning|danger ... !!! 块（闭合为单独一行的 !!!，支持嵌套与代码块跳过）
+ * 从 src 开头匹配 !!!note|info|tip|success|warning|danger ... !!! 块（闭合为 !!!，支持嵌套与代码块跳过）
  * 旧版 :::type ... ::: 仍由 matchContainerBlock 解析。
  */
 function matchAdmonitionBlock(src: string): { raw: string; tagName: string; params: string; body: string } | null {
   // 规范化换行符
   const normalized = src.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  const openMatch = normalized.match(/^[ \t]*!!![ \t]*(\w[\w-]*)[ \t]*(.*?)[ \t]*\n/);
+  const openMatch = normalized.match(ADMONITION_OPEN_RE);
 
   // const openMatch = src.match(ADMONITION_OPEN_RE);
   if (!openMatch) return null;
@@ -141,7 +142,7 @@ function matchAdmonitionBlock(src: string): { raw: string; tagName: string; para
 
     if (!inCode) {
       if (ADMONITION_NESTED_OPEN_RE.test(line)) depth++;
-      else if (line === "!!!") depth--;
+      else if (ADMONITION_CLOSE_RE.test(line)) depth--;
     }
 
     pos = lineEnd + 1;
@@ -366,7 +367,9 @@ const blockRenderers: Record<string, BlockRenderer> = {
   gallery: renderGallery,
   "video-gallery": renderVideoGallery,
   note: renderAdmonition("note"),
+  info: renderAdmonition("info"),
   tip: renderAdmonition("tip"),
+  success: renderAdmonition("success"),
   warning: renderAdmonition("warning"),
   danger: renderAdmonition("danger"),
 };
@@ -485,7 +488,7 @@ export function registerMarkedExtensions(marked: typeof Marked) {
     return `<div class="custom-block custom-block-${tagName}">${parseInline(body)}</div>`;
   }
 
-  // 块级 !!!note|tip|warning|danger 容器（须在 ::: 之前注册）
+  // 块级 !!!note|info|tip|success|warning|danger 容器（须在 ::: 之前注册）
   marked.use({
     extensions: [
       {

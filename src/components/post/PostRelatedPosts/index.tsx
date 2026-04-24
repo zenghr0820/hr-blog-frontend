@@ -5,6 +5,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { FaStar } from "react-icons/fa6";
 import type { ArticleLink } from "@/types/article";
@@ -37,10 +38,12 @@ function RelatedPostCoverImage({ coverUrl, defaultCover, alt }: RelatedPostCover
   const src = loadFailed || !coverUrl?.trim() ? defaultCover : coverUrl.trim();
 
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
+      fill
       className={styles.cover}
+      sizes="(max-width: 768px) 100vw, 45vw"
       onError={() => setLoadFailed(true)}
     />
   );

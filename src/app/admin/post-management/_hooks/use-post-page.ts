@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { addToast, useDisclosure } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { useAdminArticles, useDeleteArticle, useImportArticles, useExportArticlesMarkdown } from "@/hooks/queries/use-post-management";
+import { useAdminArticles, useDeleteArticle, useImportArticles, useBatchDeleteArticles, useExportArticlesMarkdown } from "@/hooks/queries/use-post-management";
 import { articleApi } from "@/lib/api/article";
 import type { AdminArticle, AdminArticleListParams, ArticleStatus, ReviewStatus } from "@/types/post-management";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -47,7 +47,6 @@ export function usePostManagementPage() {
 
   // ---- 弹窗状态 ----
   const [deleteTarget, setDeleteTarget] = useState<AdminArticle | null>(null);
-  const [batchDeleting, setBatchDeleting] = useState(false);
   const deleteModal = useDisclosure();
   const batchDeleteModal = useDisclosure();
   const importModal = useDisclosure();
@@ -74,6 +73,7 @@ export function usePostManagementPage() {
 
   // ---- Mutations ----
   const deleteArticle = useDeleteArticle();
+  const batchDeleteArticles = useBatchDeleteArticles();
   const importArticlesHook = useImportArticles();
   const exportArticlesHook = useExportArticlesMarkdown();
 
@@ -120,24 +120,15 @@ export function usePostManagementPage() {
   const handleBatchDeleteConfirm = useCallback(async () => {
     const ids = Array.from(selectedIds);
     if (ids.length === 0) return;
-    setBatchDeleting(true);
     try {
-      const results = await Promise.allSettled(ids.map(id => deleteArticle.mutateAsync(id)));
-      const failed = results.filter(r => r.status === "rejected").length;
-      const succeeded = results.filter(r => r.status === "fulfilled").length;
-      if (failed === 0) {
-        addToast({ title: `已删除 ${succeeded} 篇文章`, color: "success", timeout: 3000 });
-      } else {
-        addToast({ title: `${succeeded} 篇删除成功，${failed} 篇删除失败`, color: "warning", timeout: 5000 });
-      }
+      await batchDeleteArticles.mutateAsync(ids);
+      addToast({ title: `已删除 ${ids.length} 篇文章`, color: "success", timeout: 3000 });
       setSelectedIds(new Set());
     } catch (error) {
       addToast({ title: error instanceof Error ? error.message : "批量删除失败", color: "danger", timeout: 3000 });
-    } finally {
-      setBatchDeleting(false);
-      batchDeleteModal.onClose();
     }
-  }, [selectedIds, deleteArticle, batchDeleteModal]);
+    batchDeleteModal.onClose();
+  }, [selectedIds, batchDeleteArticles, batchDeleteModal]);
 
   // ---- 行操作分发 ----
   const handleAction = useCallback(
@@ -209,13 +200,13 @@ export function usePostManagementPage() {
     deleteTarget,
     deleteModal,
     batchDeleteModal,
-    batchDeleting,
     deleteArticle,
+    batchDeleteArticles,
     handleDeleteClick,
     handleDeleteConfirm,
     handleBatchDeleteConfirm,
 
-    // 导入
+    // 导出 & 导入
     importModal,
     importArticlesHook,
 

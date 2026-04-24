@@ -102,6 +102,17 @@ export function useDeleteArticle() {
   });
 }
 
+export function useBatchDeleteArticles() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (articleIds: string[]) => postManagementApi.batchDeleteArticles(articleIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postManagementKeys.lists(), refetchType: "all" });
+    },
+  });
+}
+
 export function useImportArticles() {
   const queryClient = useQueryClient();
 
@@ -113,6 +124,9 @@ export function useImportArticles() {
   });
 }
 
+/**
+ * 导出文章（成功后触发浏览器下载 ZIP）
+ */
 export function useExportArticlesMarkdown() {
   return useMutation({
     mutationFn: (data: ExportArticlesMarkdownRequest) => postManagementApi.exportArticlesMarkdown(data),

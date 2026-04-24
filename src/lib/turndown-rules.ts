@@ -1,7 +1,7 @@
 /**
  * TurndownService 自定义规则
  * 将自定义 HTML 组件转换为对应的 Markdown 语法
- * 语法规范：块级 :::tagName params ... :::（通用）；!!!note|tip|warning|danger ... !!!（提示框），行内 {tagName params}content{/tagName}
+ * 语法规范：块级 :::tagName params ... :::（通用）；!!!note|info|tip|success|warning|danger ... !!!（提示框），行内 {tagName params}content{/tagName}
  */
 import type TurndownService from "turndown";
 
@@ -225,7 +225,8 @@ export function registerCustomRules(td: TurndownService) {
 
       buttons.forEach((btn, i) => {
         const caption = btn.textContent?.trim() || `Tab ${i + 1}`;
-        const content = items[i]?.innerHTML?.trim() || "";
+        const rawHtml = items[i]?.innerHTML?.trim() || "";
+        const content = rawHtml ? td.turndown(rawHtml).trim() : "";
         md += `== tab ${caption}\n${content}\n\n`;
       });
 
@@ -540,7 +541,7 @@ export function registerCustomRules(td: TurndownService) {
     replacement: (_content, node) => {
       const el = node as HTMLElement;
       let adType = "note";
-      for (const t of ["note", "tip", "warning", "danger"]) {
+      for (const t of ["note", "info", "tip", "success", "warning", "danger"]) {
         if (el.classList.contains(t)) {
           adType = t;
           break;
@@ -548,13 +549,10 @@ export function registerCustomRules(td: TurndownService) {
       }
       const titleEl = el.querySelector(".admonition-title");
       const title = titleEl?.textContent?.trim() || "";
-      const bodyEl = el.querySelector(".admonition-body") || el;
-      const bodyChildren = Array.from(bodyEl.children).filter(
-        c => !c.classList.contains("admonition-title")
-      );
-      const inner = bodyChildren.map(c => (c as HTMLElement).innerHTML?.trim() || c.textContent?.trim() || "").join("\n");
+      const bodyEl = el.querySelector(".admonition-body");
+      const inner = bodyEl ? td.turndown(bodyEl.innerHTML).trim() : _content.trim();
 
-      return `\n!!!${adType}${title ? ` ${title}` : ""}\n${inner || _content}\n!!!\n\n`;
+      return `\n!!!${adType}${title ? ` ${title}` : ""}\n${inner}\n!!!\n\n`;
     },
   });
 

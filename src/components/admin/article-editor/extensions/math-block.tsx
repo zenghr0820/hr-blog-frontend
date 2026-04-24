@@ -1,8 +1,13 @@
 /**
  * MathBlock 扩展
  * 块级 KaTeX 数学公式节点
+ *
+ * 功能点：
+ * - React NodeView 支持点击"编辑"按钮/公式区域进行原地编辑
+ * - 支持 `$$...$$` 输入规则自动转换为块级公式
+ * - 提供 `updateMathBlockAt` 命令用于更新指定位置的公式
  */
-import { Node, mergeAttributes } from "@tiptap/core";
+import { Node, mergeAttributes, InputRule } from "@tiptap/core";
 import { ReactNodeViewRenderer, NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import katex from "katex";
 import { useState, useCallback, useRef, useEffect } from "react";
@@ -103,6 +108,8 @@ declare module "@tiptap/core" {
     mathBlock: {
       /** 插入块级公式 */
       insertMathBlock: (latex?: string) => ReturnType;
+      /** 更新指定位置的块级公式 */
+      updateMathBlockAt: (pos: number, latex: string) => ReturnType;
     };
   }
 }
@@ -177,6 +184,39 @@ export const MathBlock = Node.create({
     return ReactNodeViewRenderer(MathBlockView);
   },
 
+  addInputRules() {
+    return [
+      // 匹配 `$$...$$`：内容非空、不含 `$` 与换行
+      // 仅当当前段落恰好是 `$$...$$`（match 从段落开头开始、光标位于段落末尾）时才触发，
+      // 避免在段落中间插入块级节点导致结构被切分
+      //
+      // 注意：InputRule handler 调用时，`text`（即最后输入的字符）尚未应用到 doc，
+      // 所以不能直接用 parent.textContent === match[0] 来判断，必须依赖 parentOffset。
+      new InputRule({
+        find: /\$\$([^$\n]+?)\$\$$/,
+        handler: ({ state, range, match }) => {
+          const latex = match[1]?.trim();
+          if (!latex) return null;
+
+          const $from = state.doc.resolve(range.from);
+          const $to = state.doc.resolve(range.to);
+          const parent = $from.parent;
+          // 仅在普通 textBlock（段落、标题等）中触发
+          if (!parent.isTextblock) return null;
+          // 不在同一段落则跳过
+          if (!$from.sameParent($to)) return null;
+          // match 必须从段落开头开始
+          if ($from.parentOffset !== 0) return null;
+          // 光标（range.to）必须位于段落末尾 —— 即当前段落只包含 `$$...$`
+          if ($to.parentOffset !== parent.content.size) return null;
+
+          // 替换整个段落节点为 mathBlock
+          state.tr.replaceRangeWith($from.before(), $from.after(), this.type.create({ latex }));
+        },
+      }),
+    ];
+  },
+
   addCommands() {
     return {
       insertMathBlock:
@@ -186,6 +226,17 @@ export const MathBlock = Node.create({
             type: this.name,
             attrs: { latex },
           });
+        },
+      updateMathBlockAt:
+        (pos, latex) =>
+        ({ tr, dispatch, state }) => {
+          if (pos < 0 || pos >= state.doc.content.size) return false;
+          const node = state.doc.nodeAt(pos);
+          if (!node || node.type.name !== "mathBlock") return false;
+          if (dispatch) {
+            tr.setNodeMarkup(pos, undefined, { ...node.attrs, latex });
+          }
+          return true;
         },
     };
   },

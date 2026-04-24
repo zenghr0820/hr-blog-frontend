@@ -13,12 +13,19 @@ export type { SiteConfigData } from "@/types/site-config";
 // 缓存相关常量
 const CACHE_KEY = "site_config_cache";
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 小时
+const SITE_CONFIG_SYNC_KEY = "anheyu_site_config_sync";
+const SITE_CONFIG_SYNC_CHANNEL = "anheyu-site-config";
 
 // 缓存数据结构
 interface CachedData {
   config: SiteConfigData;
   timestamp: number;
   configVersion?: number;
+}
+
+export interface SiteConfigSyncPayload {
+  version: number;
+  updatedKeys?: string[];
 }
 
 interface UserPanelPublicConfig {
@@ -54,6 +61,99 @@ interface SiteConfigState {
   fetchSiteConfig: () => Promise<void>;
   clearCache: () => void;
   forceRefreshFromServer: () => Promise<void>;
+}
+
+function readCachedSiteConfig(): CachedData | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if (!cachedData) {
+      return null;
+    }
+
+    const parsed: CachedData = JSON.parse(cachedData);
+    if (Date.now() - parsed.timestamp >= CACHE_TTL) {
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+
+    return parsed;
+  } catch (error) {
+    console.error("[SiteConfig] 解析缓存数据失败:", error);
+    localStorage.removeItem(CACHE_KEY);
+    return null;
+  }
+}
+
+function writeCachedSiteConfig(config: SiteConfigData, configVersion?: number) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const dataToCache: CachedData = {
+    config,
+    timestamp: Date.now(),
+    configVersion,
+  };
+  localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
+}
+
+function createSyncChannel(): BroadcastChannel | null {
+  if (typeof window === "undefined" || typeof BroadcastChannel === "undefined") {
+    return null;
+  }
+  return new BroadcastChannel(SITE_CONFIG_SYNC_CHANNEL);
+}
+
+export function broadcastSiteConfigUpdate(updatedKeys: string[] = []) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const payload: SiteConfigSyncPayload = {
+    version: Date.now(),
+    updatedKeys,
+  };
+  const serialized = JSON.stringify(payload);
+  localStorage.setItem(SITE_CONFIG_SYNC_KEY, serialized);
+  createSyncChannel()?.postMessage(payload);
+}
+
+export function subscribeSiteConfigUpdates(callback: (payload: SiteConfigSyncPayload) => void): () => void {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== SITE_CONFIG_SYNC_KEY || !event.newValue) {
+      return;
+    }
+
+    try {
+      callback(JSON.parse(event.newValue) as SiteConfigSyncPayload);
+    } catch {
+      // ignore malformed payload
+    }
+  };
+
+  const channel = createSyncChannel();
+  const onMessage = (event: MessageEvent<SiteConfigSyncPayload>) => {
+    if (event.data) {
+      callback(event.data);
+    }
+  };
+
+  window.addEventListener("storage", onStorage);
+  channel?.addEventListener("message", onMessage);
+
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    channel?.removeEventListener("message", onMessage);
+    channel?.close();
+  };
 }
 
 function isSettingEnabled(value: unknown, defaultValue = true): boolean {
@@ -132,53 +232,6 @@ export const useSiteConfigStore = create<SiteConfigState>((set, get) => ({
       return;
     }
 
-    // 尝试从缓存读取
-    if (typeof window !== "undefined") {
-      try {
-        const cachedData = localStorage.getItem(CACHE_KEY);
-        if (cachedData) {
-          const parsed: CachedData = JSON.parse(cachedData);
-          if (Date.now() - parsed.timestamp < CACHE_TTL) {
-            set({
-              siteConfig: parsed.config,
-              isLoaded: true,
-              loading: false,
-            });
-
-            console.log("%c[SiteConfig] 从缓存加载站点配置", "color: #10b981; font-weight: bold;");
-
-            // 后台校验配置版本号，若服务端版本更新则自动刷新
-            siteConfigService
-              .getConfigVersion()
-              .then((res) => {
-                if (
-                  res.code === 200 &&
-                  res.data?.version &&
-                  res.data.version !== parsed.configVersion
-                ) {
-                  console.log(
-                    "%c[SiteConfig] 检测到配置版本变更，后台刷新中...",
-                    "color: #f59e0b; font-weight: bold;",
-                  );
-                  return get().forceRefreshFromServer();
-                }
-              })
-              .catch(() => {
-                // 版本校验或刷新失败不影响正常使用
-              });
-
-            return;
-          } else {
-            localStorage.removeItem(CACHE_KEY);
-          }
-        }
-      } catch (error) {
-        console.error("[SiteConfig] 解析缓存数据失败:", error);
-        localStorage.removeItem(CACHE_KEY);
-      }
-    }
-
-    // 从服务器获取配置
     set({ loading: true, error: null });
 
     try {
@@ -203,14 +256,7 @@ export const useSiteConfigStore = create<SiteConfigState>((set, get) => ({
         });
 
         // 缓存到 localStorage（含版本号）
-        if (typeof window !== "undefined") {
-          const dataToCache: CachedData = {
-            config: configData,
-            timestamp: Date.now(),
-            configVersion,
-          };
-          localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
-        }
+        writeCachedSiteConfig(configData, configVersion);
 
         console.log("%c[SiteConfig] 从服务器加载站点配置", "color: #3b82f6; font-weight: bold;", configData);
       } else {
@@ -219,6 +265,18 @@ export const useSiteConfigStore = create<SiteConfigState>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "未知错误";
       console.error("[SiteConfig] 请求站点配置出错:", error);
+
+      const cachedData = readCachedSiteConfig();
+      if (cachedData) {
+        set({
+          siteConfig: cachedData.config,
+          isLoaded: true,
+          loading: false,
+          error: null,
+        });
+        return;
+      }
+
       set({
         loading: false,
         error: errorMessage,

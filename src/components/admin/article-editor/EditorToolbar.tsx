@@ -38,10 +38,12 @@ import {
   Eye,
   FileCode2,
   CodeXml,
+  SquareCode,
 } from "lucide-react";
 import { useCallback, useState, useEffect } from "react";
-import { MathFormulaDialog } from "./MathFormulaDialog";
+import { MathFormulaDialog, type MathFormulaType } from "./MathFormulaDialog";
 import { LinkDialog, ImageDialog } from "./EditorDialogs";
+import { MATH_INLINE_EDIT_EVENT, type MathInlineEditDetail } from "./extensions/math-inline";
 
 export type EditorMode = "visual" | "html" | "markdown";
 
@@ -360,6 +362,11 @@ export function EditorToolbar({ editor, onAIWriting, editorMode = "visual", onMo
 
   // 数学公式对话框
   const [mathDialogOpen, setMathDialogOpen] = useState(false);
+  const [mathEditingState, setMathEditingState] = useState<{
+    latex: string;
+    type: MathFormulaType;
+    pos: number;
+  } | null>(null);
 
   const handleInsertMathBlock = useCallback(
     (latex: string) => {
@@ -376,6 +383,41 @@ export function EditorToolbar({ editor, onAIWriting, editorMode = "visual", onMo
     },
     [editor]
   );
+
+  const handleUpdateMath = useCallback(
+    (latex: string) => {
+      if (!editor || !mathEditingState) return;
+      // 通过分支调用保留类型安全（依赖 math-inline/math-block 扩展的命令声明）
+      if (mathEditingState.type === "inline") {
+        editor.commands.updateMathInlineAt(mathEditingState.pos, latex);
+      } else {
+        editor.commands.updateMathBlockAt(mathEditingState.pos, latex);
+      }
+    },
+    [editor, mathEditingState]
+  );
+
+  // 监听行内公式点击编辑事件
+  useEffect(() => {
+    if (!editor) return;
+    const handleEdit = (event: Event) => {
+      const customEvent = event as CustomEvent<MathInlineEditDetail>;
+      const { latex, pos } = customEvent.detail || { latex: "", pos: -1 };
+      if (pos < 0) return;
+      setMathEditingState({ latex, type: "inline", pos });
+      setMathDialogOpen(true);
+    };
+    const dom = editor.view.dom;
+    dom.addEventListener(MATH_INLINE_EDIT_EVENT, handleEdit as EventListener);
+    return () => {
+      dom.removeEventListener(MATH_INLINE_EDIT_EVENT, handleEdit as EventListener);
+    };
+  }, [editor]);
+
+  const handleMathDialogOpenChange = useCallback((open: boolean) => {
+    setMathDialogOpen(open);
+    if (!open) setMathEditingState(null);
+  }, []);
 
   if (!editor) return null;
 
@@ -605,11 +647,18 @@ export function EditorToolbar({ editor, onAIWriting, editorMode = "visual", onMo
         <Quote className="w-4 h-4" />
       </ToolbarButton>
       <ToolbarButton
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        isActive={editor.isActive("code")}
+        title="行内代码"
+      >
+        <Code className="w-4 h-4" />
+      </ToolbarButton>
+      <ToolbarButton
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         isActive={editor.isActive("codeBlock")}
         title="代码块"
       >
-        <Code className="w-4 h-4" />
+        <SquareCode className="w-4 h-4" />
       </ToolbarButton>
 
       <Divider />
@@ -682,9 +731,12 @@ export function EditorToolbar({ editor, onAIWriting, editorMode = "visual", onMo
       {/* 对话框 */}
       <MathFormulaDialog
         isOpen={mathDialogOpen}
-        onOpenChange={setMathDialogOpen}
+        onOpenChange={handleMathDialogOpenChange}
         onInsertBlock={handleInsertMathBlock}
         onInsertInline={handleInsertMathInline}
+        editingLatex={mathEditingState?.latex}
+        editingType={mathEditingState?.type}
+        onUpdate={handleUpdateMath}
       />
       <LinkDialog
         isOpen={linkDialogOpen}
@@ -750,7 +802,7 @@ function InsertBlockMenu({ editor }: { editor: Editor }) {
                 setOpen(false);
               }}
             >
-              {item.icon && <span className="flex-shrink-0 text-muted-foreground">{item.icon}</span>}
+              {item.icon && <span className="shrink-0 text-muted-foreground">{item.icon}</span>}
               {item.label}
             </button>
           )

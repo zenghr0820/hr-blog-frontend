@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "@/providers";
+import { renderCustomBodyHtml, renderCustomHeadHtml } from "@/lib/custom-html";
 import {
   buildWebSiteJsonLd,
   createRobotsMetadata,
@@ -8,6 +9,12 @@ import {
   resolveMetadataBase,
   resolveSeoSiteInfo,
 } from "@/lib/seo";
+
+// Next.js 16 默认会尝试将 root layout 静态化（即使 fetch 带 cache:"no-store"，
+// 也只是跳过 Data Cache，不会让整个路由 shell 转为 dynamic）。
+// 自定义 HTML/CSS/JS、站点名、logo 等必须在 admin 保存后立即生效，
+// 所以显式把根布局声明为 dynamic，使每次请求都重新读取最新站点配置。
+export const dynamic = "force-dynamic";
 
 /**
  * 动态生成 Metadata
@@ -83,6 +90,10 @@ function createMetadata(config: {
   };
 }
 
+function getTrimmedString(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -99,6 +110,10 @@ export default async function RootLayout({
 }>) {
   const siteConfig = await fetchSiteConfigForSeo();
   const site = resolveSeoSiteInfo(siteConfig);
+  const customHeaderHtml = getTrimmedString(siteConfig?.CUSTOM_HEADER_HTML);
+  const customFooterHtml = getTrimmedString(siteConfig?.CUSTOM_FOOTER_HTML);
+  const customCss = getTrimmedString(siteConfig?.CUSTOM_CSS);
+  const customJs = getTrimmedString(siteConfig?.CUSTOM_JS);
   const webSiteJsonLd =
     site.siteUrl && site.siteName
       ? buildWebSiteJsonLd(site.siteName, site.siteUrl, site.description)
@@ -113,6 +128,9 @@ export default async function RootLayout({
             dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
           />
         )}
+        {customCss && <style id="anheyu-custom-css" dangerouslySetInnerHTML={{ __html: customCss }} />}
+        {customJs && <script id="anheyu-custom-js" dangerouslySetInnerHTML={{ __html: customJs }} />}
+        {renderCustomHeadHtml(customHeaderHtml)}
       </head>
       <body className="antialiased min-h-screen flex flex-col">
         {/* 初始加载动画 - 纯 CSS + SVG，JS 加载前就显示，样式在 globals.css */}
@@ -124,6 +142,7 @@ export default async function RootLayout({
           <span className="sr-only">页面加载中</span>
         </div>
         <Providers>{children}</Providers>
+        {renderCustomBodyHtml(customFooterHtml)}
       </body>
     </html>
   );

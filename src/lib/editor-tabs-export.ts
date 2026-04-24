@@ -65,6 +65,9 @@ export function prepareHtmlForTabsTurndown(html: string, tabMarkdownPieces: stri
 
 /**
  * 可视化模式下将处理后的 HTML 转为 Markdown：优先用文档树导出标签页，再对其余内容走 Turndown。
+ *
+ * 使用唯一文本标记代替直接嵌入 Markdown 文本，避免 Turndown 对 <div> 内文本节点
+ * 进行 HTML 空白折叠（将换行符替换为空格）而破坏 Markdown 格式。
  */
 export function turndownArticleMarkdown(
   editor: Editor | null | undefined,
@@ -83,6 +86,14 @@ export function turndownArticleMarkdown(
     return turndown.turndown(processedHtml);
   }
 
-  const prepared = prepareHtmlForTabsTurndown(processedHtml, pieces);
-  return turndown.turndown(prepared);
+  const ts = Date.now();
+  const markers = pieces.map((_, i) => `ANHEYU_TABS_MARKER_${i}_${ts}`);
+  const prepared = prepareHtmlForTabsTurndown(processedHtml, markers);
+  let md = turndown.turndown(prepared);
+
+  for (let i = 0; i < markers.length; i++) {
+    md = md.replace(markers[i], pieces[i].trim());
+  }
+
+  return md;
 }

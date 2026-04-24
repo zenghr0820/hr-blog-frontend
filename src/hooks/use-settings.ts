@@ -14,7 +14,7 @@ import {
 } from "@/lib/settings/setting-descriptors";
 import { addToast } from "@heroui/react";
 import { useAuthStore } from "@/store/auth-store";
-import { useSiteConfigStore } from "@/store/site-config-store";
+import { broadcastSiteConfigUpdate, useSiteConfigStore } from "@/store/site-config-store";
 
 interface UseSettingsReturn {
   /** 当前表单值 */
@@ -125,6 +125,7 @@ export function useSettings(categoryId: SettingCategoryId): UseSettingsReturn {
       setOriginalValues({ ...values });
       // 强制刷新前台站点配置，确保注入的自定义代码等立即生效
       await useSiteConfigStore.getState().forceRefreshFromServer();
+      broadcastSiteConfigUpdate(Object.keys(changed));
       addToast({ title: "保存成功", color: "success" });
       return true;
     } catch (err) {
@@ -245,6 +246,7 @@ export function useMultiSettings(categoryIds: SettingCategoryId[]) {
       setAllOriginal({ ...allValues });
       // 强制刷新前台站点配置，确保注入的自定义代码等立即生效
       await useSiteConfigStore.getState().forceRefreshFromServer();
+      broadcastSiteConfigUpdate(Object.keys(changed));
       addToast({ title: "保存成功", color: "success" });
       return true;
     } catch (err) {

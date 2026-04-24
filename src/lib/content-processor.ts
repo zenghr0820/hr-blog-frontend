@@ -144,7 +144,24 @@ export function processHtmlForSave(html: string): string {
     pre.replaceWith(details);
   });
 
-  // 6. KaTeX 公式：清理编辑器专用属性
+  // 6. Tabs：确保 active 按钮对应的 tab-item-content 也有 active 类
+  doc.querySelectorAll(".tabs").forEach(tabsEl => {
+    const buttons = tabsEl.querySelectorAll(".nav-tabs .tab");
+    const items = tabsEl.querySelectorAll(".tab-contents .tab-item-content");
+    if (buttons.length === 0 || items.length === 0) return;
+
+    let activeIdx = Array.from(buttons).findIndex(b => b.classList.contains("active"));
+    if (activeIdx < 0) activeIdx = 0;
+
+    buttons.forEach((btn, i) => {
+      btn.classList.toggle("active", i === activeIdx);
+    });
+    items.forEach((item, i) => {
+      item.classList.toggle("active", i === activeIdx);
+    });
+  });
+
+  // 7. KaTeX 公式：清理编辑器专用属性
   doc.querySelectorAll("[data-type='math-inline']").forEach(el => {
     el.removeAttribute("contenteditable");
   });
