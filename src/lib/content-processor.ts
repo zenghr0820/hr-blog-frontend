@@ -5,6 +5,76 @@
  */
 
 /**
+ * 生成 slug（用于锚点链接）
+ */
+function slugify(text: string): string {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\u4e00-\u9fff\-]/g, "");
+}
+
+/**
+ * 为 heading 元素添加锚点链接
+ * @param heading heading 元素 (h1-h6)
+ * @param usedIds 已使用的 ID 集合（用于处理重复 ID）
+ */
+function addAnchorToHeading(heading: HTMLElement, usedIds: Set<string>): void {
+  // 如果已经有 headerlink，跳过（避免重复处理）
+  if (heading.querySelector("a.headerlink")) return;
+
+  const text = heading.textContent?.trim() || "";
+  if (!text) return;
+
+  // 生成唯一的 ID
+  let baseId = heading.getAttribute("id") || slugify(text);
+  let id = baseId;
+  let counter = 1;
+  
+  // 处理 ID 重复
+  while (usedIds.has(id)) {
+    id = `${baseId}-${counter}`;
+    counter++;
+  }
+  usedIds.add(id);
+
+  // 设置 id 属性
+  heading.setAttribute("id", id);
+
+  // 创建锚点链接
+  const anchor = document.createElement("a");
+  anchor.href = `#${id}`;
+  anchor.className = "headerlink";
+  anchor.title = text;
+  anchor.innerHTML = ""; // 空链接，通过 CSS 显示图标
+
+  // 在 heading 开头插入锚点链接
+  heading.insertBefore(anchor, heading.firstChild);
+}
+
+/**
+ * 清理加载的 HTML，移除 heading 中的锚点链接，恢复为纯文本
+ * @param html 从后端获取的 HTML（可能包含带 a 标签的 heading）
+ * @returns 清理后的 HTML（heading 只包含纯文本）
+ */
+export function cleanHtmlForEditor(html: string): string {
+  if (!html || typeof window === "undefined") return html;
+
+  const doc = new DOMParser().parseFromString(html, "text/html");
+
+  // 移除 heading 中的 a.headerlink，恢复为纯文本
+  doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(heading => {
+    const anchor = heading.querySelector("a.headerlink");
+    if (anchor) {
+      anchor.remove();
+    }
+  });
+
+  return doc.body.innerHTML;
+}
+
+/**
  * 处理保存时的 HTML
  * @param html 编辑器输出的原始 HTML
  * @returns 处理后的 HTML
@@ -13,6 +83,12 @@ export function processHtmlForSave(html: string): string {
   if (!html || typeof window === "undefined") return html;
 
   const doc = new DOMParser().parseFromString(html, "text/html");
+  const usedIds = new Set<string>();
+
+  // 0. Heading 处理：为 h1-h6 添加锚点链接
+  doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(heading => {
+    addAnchorToHeading(heading as HTMLElement, usedIds);
+  });
 
   // 1. 表格包裹 div.table-container
   doc.querySelectorAll("table").forEach(table => {

@@ -6,6 +6,25 @@
 import type TurndownService from "turndown";
 
 export function registerCustomRules(td: TurndownService) {
+  // --- Heading 特殊处理：防止 h 标签内的 a 被转换为链接格式 ---
+  // 必须在其他规则之前注册，确保优先级最高
+  td.addRule("headingAnchor", {
+    filter: (node, options) => {
+      // 只匹配 heading 标签内的直接子元素 a 标签
+      const parent = node.parentElement;
+      return (
+        parent &&
+        /^(H[1-6])$/i.test(parent.nodeName) &&
+        node.nodeName === "A" &&
+        node.classList.contains("headerlink")
+      );
+    },
+    replacement: (content) => {
+      // 直接返回纯文本，不转换为 [text](url) 格式
+      return content;
+    },
+  });
+
   // --- GFM 表格 ---
   // 跳过 table 内部元素的默认处理，让 table 规则统一处理
   td.addRule("tableCell", {

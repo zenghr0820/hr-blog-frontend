@@ -43,7 +43,7 @@
 
 /* 段落样式 - 与 anheyu-app 保持一致 */
 .postContent :global(p) {
-  margin: 24px 0;
+  margin: 0 0 16px;
   font-weight: 400;
   color: var(--anzhiyu-fontcolor, var(--foreground));
   text-align: left;
@@ -52,23 +52,12 @@
 
 /* 链接样式 - 与 anheyu-app 保持一致 */
 .postContent :global(a) {
-  padding: 0 0.2rem !important;
-  font-family: inherit;
-  font-weight: 500;
-  line-height: 1.25rem;
-  color: var(--anzhiyu-fontcolor, var(--foreground)) !important;
-  text-decoration: none !important;
-  border-bottom: dotted 2px var(--primary);
-  transition: all 0.2s ease 0s !important;
+  color: #2679cc;
+  font-size: 1rem;
 }
 
 .postContent :global(a:hover:not(.btn-anzhiyu):not(.btn-item):not(.anzhiyu-tag-link)) {
-  color: var(--anzhiyu-white, #fff) !important;
-  text-decoration: none !important;
-  background: var(--primary);
-  border-radius: 0.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  border-bottom-color: transparent;
+  text-decoration: underline;
 }
 
 /* 图片样式 */
@@ -348,7 +337,7 @@
   border-radius: 0;
 }
 
-/* 代码内容区域 */
+/* 代码块内容区域 */
 .postContent :global(.md-editor-code .md-editor-code-block) {
   flex: 1;
   min-width: 0;
@@ -360,7 +349,7 @@
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
   font-size: 16px !important;
   line-height: 1.6;
-  color: #a9b7c6;
+  /* ✅ 移除固定颜色，让 highlight.js 的样式生效 */
   vertical-align: bottom;
 }
 
@@ -563,16 +552,20 @@
 
 /* 引用样式 */
 .postContent :global(blockquote) {
-  padding: 0.5rem 0.8rem;
-  margin: 1rem 0;
-  color: var(--muted-foreground);
-  background-color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  background: var(--style-quote-border-bg);
+  border-radius: 12px;
+  border-left: 4px solid var(--style-quote-border);
+  color: var(--style-quote-border-txt);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  position: relative;
+  margin: 1.5rem 0;
+  padding: .75rem 1.25rem;
 }
 
 .postContent :global(blockquote p) {
   margin: 0.5rem;
+  color: var(--style-quote-border-txt);
 }
 
 /* 复选框样式 */

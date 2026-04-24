@@ -1127,6 +1127,9 @@ html.dark [data-slot="content"][role="tooltip"] {
   --style-border-style: solid;
   --style-border-color: #e2e8f0;
   --style-border-none: 1px solid transparent;
+  --style-quote-border: #49b1f5;
+  --style-quote-border-bg: linear-gradient(90deg, rgba(73, 177, 245, .05), transparent);
+  --style-quote-border-txt: var(--anzhiyu-fontcolor);
 
   /* 其他 */
   --anzhiyu-logo-color: linear-gradient(215deg, #4584ff 0%, #cf0db9 100%);
@@ -1163,6 +1166,10 @@ html.dark [data-slot="content"][role="tooltip"] {
 
   /* AI摘要 */
   --post-ai-bg: conic-gradient(from 1.5708rad at 50% 50%, #d6b300 0%, #42a2ff 54%, #d6b300 100%);
+
+  /* footer 样式 */
+  --footer-bottom-bg: #fff;
+  --footer-wrap-bg:   linear-gradient(0deg, #fff, rgba(255, 255, 255, 0));
 }
 
 .dark {
@@ -1241,6 +1248,9 @@ html.dark [data-slot="content"][role="tooltip"] {
   --style-border-hover-always: 1px solid var(--anzhiyu-lighttext);
   --style-border-dashed: 1px dashed var(--anzhiyu-theme-op);
   --style-border-forever: 2px solid var(--anzhiyu-lighttext);
+  --style-quote-border: #1b4c6d;
+  --style-quote-border-bg: rgb(18 19 19 / 60%);
+  --style-quote-border-txt: var(--anzhiyu-fontcolor);
 
   /* 暗色代码块变量 */
   --hltools-bg: var(--anzhiyu-secondbg);
@@ -1255,6 +1265,10 @@ html.dark [data-slot="content"][role="tooltip"] {
 
   /* AI摘要 */
   --post-ai-bg: conic-gradient(from 1.5708rad at 50% 50%, rgba(214, 178, 0, 0.46) 0%, rgba(66, 161, 255, 0.53) 54%, rgba(214, 178, 0, 0.49) 100%);
+
+  /* footer 样式 */
+  --footer-bottom-bg: #202020;
+  --footer-wrap-bg:  linear-gradient(0deg, #202020, rgba(24, 40, 72, 0));
 }
 
 /* ===================== Content Inner 主内容区布局 ===================== */
@@ -1819,3 +1833,112 @@ html.with-fancybox body.hide-scrollbar {
       }
     }
   }
+
+/* ========== Markdown 内容排版样式 ========== */
+.postContentInner h1,.postContentInner h2,.postContentInner h3,.postContentInner h4,.postContentInner h5,.postContentInner h6 {
+    position: relative;  /* ✅ 为 ::before 伪元素提供定位上下文 */
+    transition: all .2s ease-out
+}
+
+.postContentInner h1:before,.postContentInner h2:before,.postContentInner h3:before,.postContentInner h4:before,.postContentInner h5:before,.postContentInner h6::before {
+    position: absolute;
+    top: calc(50% - 7px);
+    color: #f47466;
+    content: '📝';
+    left: 0;
+    line-height: 1;
+    transition: all .2s ease-out;
+}
+
+.postContentInner h1:hover:before,.postContentInner h2:hover:before,.postContentInner h3:hover:before,.postContentInner h4:hover:before,.postContentInner h5:hover:before,.postContentInner h6:hover:before {
+    color: #2679cc
+}
+
+.postContentInner h1:before,.postContentInner h2:before,.postContentInner h3:before,.postContentInner h4:before,.postContentInner h5:before,.postContentInner h6:before,.postContentInner hr:before {
+    display: inline-block;
+    font-weight: 600;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased
+}
+
+.postContentInner h1 a.headerlink,.postContentInner h2 a.headerlink,.postContentInner h3 a.headerlink,.postContentInner h4 a.headerlink,.postContentInner h5 a.headerlink,.postContentInner h6 a.headerlink {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%
+}
+
+.postContentInner h1 {
+    padding-left: 28px
+}
+
+.postContentInner h1:before {
+    font-size: 18px
+}
+
+.postContentInner h1:hover {
+    padding-left: 32px
+}
+
+.postContentInner h2 {
+    padding-left: 26px
+}
+
+.postContentInner h2:before {
+    font-size: 16px
+}
+
+.postContentInner h2:hover {
+    padding-left: 30px
+}
+
+.postContentInner h3 {
+    padding-left: 24px;
+}
+
+.postContentInner h3:before {
+    font-size: 14px
+}
+
+.postContentInner h3:hover {
+    padding-left: 28px
+}
+
+.postContentInner h4 {
+    padding-left: 22px
+}
+
+.postContentInner h4:before {
+    font-size: 12px
+}
+
+.postContentInner h4:hover {
+    padding-left: 26px
+}
+
+.postContentInner h5 {
+    padding-left: 20px
+}
+
+.postContentInner h5:before {
+    font-size: 10px
+}
+
+.postContentInner h5:hover {
+    padding-left: 24px
+}
+
+.postContentInner h6 {
+    padding-left: 20px
+}
+
+.postContentInner h6:before {
+    font-size: 10px
+}
+
+.postContentInner h6:hover {
+    padding-left: 24px
+}

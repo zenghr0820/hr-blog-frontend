@@ -30,6 +30,7 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
   const toggleShortcuts = useUiStore(state => state.toggleShortcuts);
   const isCommentBarrageVisible = useUiStore(state => state.isCommentBarrageVisible);
   const toggleCommentBarrage = useUiStore(state => state.toggleCommentBarrage);
+  const isMusicPlayerVisible = useUiStore(state => state.isMusicPlayerVisible);
 
   const isDarkMode = mounted && isDark;
 
@@ -323,7 +324,7 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
             closeDelay={0}
             classNames={{ content: "custom-tooltip-content" }}
           >
-            <div className={styles.consoleBtnItem}>
+            <div className={cn(styles.consoleBtnItem, !isMusicPlayerVisible && styles.on)}>
               <button
                 className={styles.musicSwitch}
                 aria-label="音乐胶囊开关"

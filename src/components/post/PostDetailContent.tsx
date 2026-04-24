@@ -33,6 +33,7 @@ import { setArticleMetaThemeColor, restoreMetaThemeColor } from "@/utils/theme-m
 import { resolvePostDefaultCoverUrl } from "@/utils/same-origin-media-url";
 import type { Article, RecentArticle } from "@/types/article";
 import styles from "./PostDetail.module.css";
+import { cn } from "@/lib/utils";
 
 interface PostDetailContentProps {
   article: Article;
@@ -139,7 +140,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
 
       {/* 主内容区域 */}
       <div className={styles.layout}>
-        <main className={styles.postContentInner}>
+        <main className={`postContentInner ${styles.postContentInner}`}>
           <div className={styles.postDetailContent}>
             {/* AI 文章摘要 - 带打字效果 */}
 
@@ -219,13 +220,13 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
       </div>
 
       {/* 右下角：上一篇/下一篇浮动卡片 + 热评弹幕（受系统设置与用户开关双重控制） */}
-      <PostPaginationFloat
+      {/* <PostPaginationFloat
         prevArticle={article.prev_article}
         nextArticle={article.next_article}
         commentBarrageEnabled={
           isCommentEnabled && isCommentBarrageEnabledBySite && isCommentBarrageVisible
         }
-      />
+      /> */}
       {isCommentEnabled && isCommentBarrageEnabledBySite && isCommentBarrageVisible && (
         <CommentBarrage
           gravatarUrl={gravatarUrl || "https://cravatar.cn/"}

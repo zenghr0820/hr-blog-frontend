@@ -322,7 +322,7 @@ function MusicPlayerInner() {
 
   const containerClasses = [
     styles.navMusic,
-    !isMusicPlayerVisible ? styles.musicHidden : "",
+    isMusicPlayerVisible ? styles.musicHidden : "",
     isInFooterArea ? styles.inFooterArea : "",
   ]
     .filter(Boolean)

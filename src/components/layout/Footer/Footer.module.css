@@ -1,17 +1,20 @@
 /* Footer - 页脚组件 */
 
 .footerContainer {
-  position: relative;
+  /* position: relative;
   margin-top: 1rem;
   color: var(--anzhiyu-fontcolor);
-  background: linear-gradient(180deg, transparent 0, var(--anzhiyu-card-bg) 25%);
+  background: linear-gradient(180deg, transparent 0, var(--anzhiyu-card-bg) 25%); */
+
+  animation: bottom-top 1s;
 }
 
 .footerWrap {
-  position: relative;
+  /* position: relative;
   max-width: 1200px;
   min-height: 17.875rem;
-  margin: 0 auto;
+  margin: 0 auto; */
+  background:var(--footer-wrap-bg);
 }
 
 /* 社交图标栏 */
@@ -246,7 +249,7 @@
   margin-top: 1rem;
   overflow: hidden;
   color: var(--anzhiyu-fontcolor);
-  background: var(--anzhiyu-secondbg);
+  background: var(--footer-bottom-bg);
   transition: 0.3s;
 }
 
@@ -465,6 +468,13 @@
 }
 
 /* 响应式 - 大屏幕不换行 */
+@media screen and (min-width: 1280px) {
+  .footerLinkGrid {
+    padding-left: calc((100% - 1200px) / 2) !important;
+    padding-right: calc((100% - 1200px) / 2) !important;
+  }
+}
+
 @media (min-width: 992px) {
   .footerLinkGrid {
     flex-wrap: nowrap;

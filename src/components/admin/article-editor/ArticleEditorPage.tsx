@@ -16,7 +16,7 @@ import { useArticleEditor } from "./use-article-editor";
 import { useArticleMeta } from "./use-article-meta";
 import { useAutoSave } from "./use-auto-save";
 import { useArticleForEdit, useCreateArticle, useUpdateArticle } from "@/hooks/queries/use-post-management";
-import { processHtmlForSave } from "@/lib/content-processor";
+import { processHtmlForSave, cleanHtmlForEditor } from "@/lib/content-processor";
 import { turndownArticleMarkdown } from "@/lib/editor-tabs-export";
 import { registerCustomRules } from "@/lib/turndown-rules";
 import { registerMarkedExtensions, fixTaskListHtml, setContainerAliases } from "@/lib/marked-extensions";
@@ -269,7 +269,9 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
     queueMicrotask(() => {
       if (editor.isDestroyed) return;
       if (contentHtml) {
-        editor.commands.setContent(contentHtml);
+        // 清理 HTML，移除 heading 中的锚点链接，恢复为纯文本
+        const cleanedHtml = cleanHtmlForEditor(contentHtml);
+        editor.commands.setContent(cleanedHtml);
         return;
       }
       // 兼容仅返回 Markdown、或历史数据中 content_html 为空的场景：用 MD 转 HTML 初始化可视化编辑器
