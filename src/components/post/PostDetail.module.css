@@ -9,7 +9,7 @@
 .layout {
   display: flex;
   gap: 0.625rem;
-  max-width: 1400px;
+  max-width: 1200px;
   padding: 1rem 1.5rem;
   margin: 0 auto;
 }

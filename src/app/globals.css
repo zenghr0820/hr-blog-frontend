@@ -1007,7 +1007,7 @@ html.dark [data-slot="content"][role="tooltip"] {
 /* 首页顶部区域容器 */
 .post-home-top-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   padding: 0 1.5rem;
   margin: 0 auto;
   overflow: hidden;
@@ -1159,6 +1159,7 @@ html.dark [data-slot="content"][role="tooltip"] {
   --hlscrollbar-bg: #dce4eb;
   --hlexpand-bg: linear-gradient(180deg, rgb(246 248 250 / 60%), rgb(246 248 250 / 90%));
   --md-theme-code-block-color: #a9b7c6;
+  --prose-custom-note-bg: #fff;
 
   /* AI摘要 */
   --post-ai-bg: conic-gradient(from 1.5708rad at 50% 50%, #d6b300 0%, #42a2ff 54%, #d6b300 100%);
@@ -1245,6 +1246,8 @@ html.dark [data-slot="content"][role="tooltip"] {
   --hltools-bg: var(--anzhiyu-secondbg);
   --hltools-color: #90a4ae;
   --hlnumber-color: #636d83;
+
+  --prose-custom-note-bg: #2d2d2d;
 
 
   --comment-color-font: rgba(255, 255, 255, 0.7);
@@ -1734,3 +1737,85 @@ html.with-fancybox body.hide-scrollbar {
 .cardWidget:hover {
   box-shadow: var(--anzhiyu-shadow-card-hover);
 }
+
+/* ===================== 自定义块设计系统 ===================== */
+.admonition {
+    border-radius: 12px;
+    position: relative;
+    margin: 0 0 20px;
+    padding: 15px;
+    background-color: var(--prose-custom-note-bg);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+    }
+
+    .admonition-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .admonition-body p {
+      margin: 0.5rem 0;
+      line-height: 1.7;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    &.tip {
+      background-image: radial-gradient(circle at 4em -25em, #3b82f6, transparent 30em), linear-gradient(#3b82f6 -2000%, transparent);
+
+      .admonition-title {
+        color: #3b82f6;
+      }
+    }
+    
+    
+    &.note {
+      background-image: radial-gradient(circle at 4em -25em, #3b82f6, transparent 30em), linear-gradient(#3b82f6 -2000%, transparent);
+
+      .admonition-title {
+        color: #3b82f6;
+      }
+    }
+
+    &.warning {
+      background-image: radial-gradient(circle at 4em -25em, #f0ad4e, transparent 30em), linear-gradient(#f0ad4e -2000%, transparent);
+
+      .admonition-title {
+        color: #f0ad4e;
+      }
+    }
+
+    &.success {
+      background-image: radial-gradient(circle at 4em -25em, #5cb85c, transparent 30em), linear-gradient(#5cb85c -2000%, transparent);
+
+      .admonition-title {
+        color: #5cb85c;
+      }
+    }
+
+    &.danger {
+      background-image: radial-gradient(circle at 4em -25em, #d9534f, transparent 30em), linear-gradient(#d9534f -2000%, transparent);
+
+      .admonition-title {
+        color: #d9534f;
+      }
+    }
+
+    &.info {
+      background-image: radial-gradient(circle at 4em -25em, #5cb85c, transparent 30em), linear-gradient(#5cb85c -2000%, transparent);
+
+      .admonition-title {
+        color: #5cb85c;
+      }
+    }
+  }

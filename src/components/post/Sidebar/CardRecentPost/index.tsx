@@ -11,6 +11,7 @@ import { formatDate } from "@/utils/date";
 import { toSameOriginMediaUrl } from "@/utils/same-origin-media-url";
 import type { RecentArticle } from "@/types/article";
 import styles from "./CardRecentPost.module.css";
+import { Icon } from "@iconify/react";
 
 interface CardRecentPostProps {
   articles: RecentArticle[];
@@ -84,10 +85,13 @@ export function CardRecentPost({
 
   return (
     <div className={`cardWidget ${styles.cardRecentPost}`}>
-      <div className={styles.cardTitle}>最近发布</div>
+      <div className={styles.cardTitle}>
+        <Icon icon="ri:history-line" />
+        <span>最近文章</span>
+      </div>
 
       <div className={styles.articleList}>
-        {filteredArticles.map(article => (
+        {filteredArticles?.map(article => (
           <Link key={article.id} href={getArticleLink(article)} className={styles.articleItem}>
             <div className={styles.cover}>
               <RecentPostCoverImage coverUrl={article.cover_url} defaultCover={defaultCover} alt={article.title} />
