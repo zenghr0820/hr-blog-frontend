@@ -1159,6 +1159,9 @@ html.dark [data-slot="content"][role="tooltip"] {
   --hlscrollbar-bg: #dce4eb;
   --hlexpand-bg: linear-gradient(180deg, rgb(246 248 250 / 60%), rgb(246 248 250 / 90%));
   --md-theme-code-block-color: #a9b7c6;
+
+  /* AI摘要 */
+  --post-ai-bg: conic-gradient(from 1.5708rad at 50% 50%, #d6b300 0%, #42a2ff 54%, #d6b300 100%);
 }
 
 .dark {
@@ -1246,6 +1249,9 @@ html.dark [data-slot="content"][role="tooltip"] {
 
   --comment-color-font: rgba(255, 255, 255, 0.7);
   --comment-color-grey: #46494e;
+
+  /* AI摘要 */
+  --post-ai-bg: conic-gradient(from 1.5708rad at 50% 50%, rgba(214, 178, 0, 0.46) 0%, rgba(66, 161, 255, 0.53) 54%, rgba(214, 178, 0, 0.49) 100%);
 }
 
 /* ===================== Content Inner 主内容区布局 ===================== */

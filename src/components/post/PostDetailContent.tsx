@@ -15,7 +15,7 @@ import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { FaHashtag } from "react-icons/fa6";
 import { PostHeader } from "./PostHeader";
-import { ArticleLeadSummary } from "./ArticleLeadSummary";
+import { ArticleAiSummary } from "./ArticleAiSummary";
 import { PostContent } from "./PostContent";
 import { PostCopyright } from "./PostCopyright";
 import { PostRelatedPosts } from "./PostRelatedPosts";
@@ -63,6 +63,8 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
     commentConfig?.barrage_enable === undefined ||
     commentConfig?.barrage_enable === true ||
     commentConfig?.barrage_enable === "true";
+  
+  const isEnabledAiSummaryShow = useSiteConfigStore(state => state.siteConfig?.post?.default?.enable_ai_summary_show);
   const clearPageTitle = usePageStore(state => state.clearPageTitle);
 
   // 进入文章页面时立即跳到顶部（不带缓动）
@@ -139,8 +141,8 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
       <div className={styles.layout}>
         <main className={styles.postContentInner}>
           <div className={styles.postDetailContent}>
-            {/* 文章摘要 */}
-            <ArticleLeadSummary article={article} />
+            {/* AI 文章摘要 - 带打字效果 */}
+            <ArticleAiSummary article={article} />
 
             {/* 文章内容 */}
             <PostContent

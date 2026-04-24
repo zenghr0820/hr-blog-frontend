@@ -309,6 +309,7 @@ export interface SiteConfigData {
       default_cover?: string;
       double_column?: boolean | string;
       page_size?: number;
+      enable_ai_summary_show?: boolean | string;
     };
     // 复制版权配置
     copy?: {
