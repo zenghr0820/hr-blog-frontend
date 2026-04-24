@@ -1,3 +1,6 @@
+/* 引入通用评论内容样式 */
+@import "./comment-content.css";
+
 .commentItemContainer {
   width: 100%;
   padding: 10px;
@@ -157,50 +160,6 @@
 }
 
 .commentContentCanReply {
-}
-
-.commentContentCanReply blockquote {
-    position: static;
-    margin: 10px 0;
-    padding: 10px 20px;
-    background: var(--comment-color-grey);
-    color: var(--comment-color-font);
-    border-left: 4px solid #687a86;
-    border-radius: 12px;
-}
-
-.commentContent p {
-  margin: 0.5rem 0;
-}
-
-.commentContent code:not(.hljs) {
-  padding: 2px 4px;
-  margin: 0 4px;
-  line-height: 2;
-  color: #fff;
-  background: var(--anzhiyu-code-stress);
-  border-radius: 4px;
-  box-shadow: var(--anzhiyu-shadow-border);
-}
-
-.commentContent pre,
-.commentContent .md-editor-code {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.commentContent table {
-  max-width: 100%;
-  overflow-x: auto;
-  display: block;
-}
-
-.commentContent img {
-  max-width: 100%;
-  max-height: 300px;
-  height: auto;
-  vertical-align: middle;
-  border-radius: 4px;
 }
 
 .commentContent img:not(.anzhiyu-owo-emotion) {

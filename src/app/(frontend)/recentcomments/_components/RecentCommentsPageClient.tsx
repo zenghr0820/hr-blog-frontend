@@ -8,17 +8,12 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
 import { useLatestComments } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { Spinner } from "@/components/ui";
 import { BannerCard } from "@/components/common/BannerCard";
-import {
-  formatRelativeTime,
-  getAvatarUrl,
-  sanitizeCommentHtml,
-  type CommentDisplayConfig,
-} from "@/components/post/Comment/comment-utils";
+import { CommentCard } from "@/components/post/Comment/CommentCard";
+import type { CommentDisplayConfig } from "@/components/post/Comment/comment-utils";
 
 export function RecentCommentsPageClient() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
@@ -38,7 +33,7 @@ export function RecentCommentsPageClient() {
   );
 
   return (
-    <div className="cardWidget w-full max-w-[1400px] mx-auto px-6 py-8 space-y-6">
+    <div className="cardWidget w-full max-w-[1200px] mx-auto px-6 py-8 space-y-6">
       <BannerCard
         tips={bannerConfig?.title || "最近评论"}
         title={bannerConfig?.description || "Recent Comments"}
@@ -58,41 +53,14 @@ export function RecentCommentsPageClient() {
       {!isPending && comments.length === 0 && <div className="text-muted-foreground">暂无评论</div>}
 
       <div className="space-y-4">
-        {comments.map(comment => {
-          const avatarUrl = getAvatarUrl(comment, displayConfig);
-          const link = `${comment.target_path}#comment-${comment.id}`;
-          return (
-            <div key={comment.id} className="flex gap-4 p-4 rounded-xl border border-border bg-card shadow-sm">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={avatarUrl}
-                alt={`${comment.nickname}头像`}
-                className="w-12 h-12 rounded-full border border-border"
-              />
-              <div className="flex-1 min-w-0 space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="font-semibold text-foreground">{comment.nickname}</span>
-                  {comment.is_admin_comment && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                      {displayConfig.masterTag}
-                    </span>
-                  )}
-                  <span className="text-muted-foreground">{formatRelativeTime(comment.created_at)}</span>
-                </div>
-                <div
-                  className="text-sm text-foreground"
-                  dangerouslySetInnerHTML={{ __html: sanitizeCommentHtml(comment.content_html) }}
-                />
-                <Link
-                  href={link}
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition"
-                >
-                  {comment.target_title || comment.target_path}
-                </Link>
-              </div>
-            </div>
-          );
-        })}
+        {comments.map(comment => (
+          <CommentCard
+            key={comment.id}
+            comment={comment}
+            displayConfig={displayConfig}
+            showTargetLink={true}
+          />
+        ))}
       </div>
     </div>
   );

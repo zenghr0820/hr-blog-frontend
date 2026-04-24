@@ -18,8 +18,8 @@ import { PostHeader } from "./PostHeader";
 import { ArticleAiSummary } from "./ArticleAiSummary";
 import { PostContent } from "./PostContent";
 import { PostCopyright } from "./PostCopyright";
-import { PostRelatedPosts } from "./PostRelatedPosts";
-import { PostPagination } from "./PostPagination";
+import { PostRelatedPostsGrid } from "./PostRelatedPosts/PostRelatedPostsGrid";
+import { PostPaginationNew } from "./PostPagination/PostPaginationNew";
 import { PostPaginationFloat } from "./PostPaginationFloat";
 import { CommentSection } from "./Comment";
 import { CommentBarrage } from "./CommentBarrage";
@@ -142,7 +142,10 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
         <main className={styles.postContentInner}>
           <div className={styles.postDetailContent}>
             {/* AI 文章摘要 - 带打字效果 */}
-            <ArticleAiSummary article={article} />
+
+            {isEnabledAiSummaryShow && (
+              <ArticleAiSummary article={article} />
+            )}
 
             {/* 文章内容 */}
             <PostContent
@@ -175,9 +178,14 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
               </div>
             )}
 
+            <PostPaginationNew
+                prevArticle={article.prev_article}
+                nextArticle={article.next_article}
+              />
+
             {/* 喜欢这篇文章的人也看了（版权后、评论前） */}
             {isRelatedEnabled && (
-              <PostRelatedPosts
+              <PostRelatedPostsGrid 
                 articles={article.related_articles}
                 currentArticleId={article.id}
                 defaultCover={defaultCover}
@@ -185,12 +193,12 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
             )}
 
             {/* 上一篇/下一篇（屏宽 < 1400px 时在版权下方显示） */}
-            <div className={styles.paginationInlineWrap}>
+            {/* <div className={styles.paginationInlineWrap}>
               <PostPagination
                 prevArticle={article.prev_article}
                 nextArticle={article.next_article}
               />
-            </div>
+            </div> */}
 
             {/* 评论区 */}
             <CommentSection targetTitle={article.title} className={styles.commentSection} />

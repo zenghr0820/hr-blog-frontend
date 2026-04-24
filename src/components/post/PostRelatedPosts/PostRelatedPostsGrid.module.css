@@ -1,0 +1,142 @@
+/* 新相关推荐模块 - 网格卡片布局 */
+
+.relatedPostsNew {
+  margin-top: 40px;
+}
+
+.headline {
+  margin-bottom: 5px;
+  font-weight: 700;
+  font-size: 1.43em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headlineIcon {
+  font-size: 1.2em;
+  color: var(--foreground);
+}
+
+.headlineTitle {
+  margin: 0;
+  font-weight: inherit;
+  font-size: inherit;
+  color: var(--foreground);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.item {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  width: 100%;
+  height: 200px;
+  background: #000;
+  vertical-align: bottom;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.item:hover {
+  transform: scale(1.02);
+}
+
+.itemLink {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.item:hover .cover {
+  transform: scale(1.1);
+}
+
+.content {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+  text-align: center;
+  padding: 0 20px;
+  transform: translate(0, -50%);
+}
+
+.date {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 5px;
+  color:  rgba(255, 255, 255, 0.7);
+  font-size: 90%;
+}
+
+.dateIcon {
+  font-size: 0.9em;
+}
+
+.title {
+  margin: 0;
+  color: var(--anzhiyu-white, #fff);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* 平板端 */
+@media screen and (max-width: 768px) {
+  .list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+  }
+
+  .item {
+    margin: 2px;
+    width: calc(50% - 4px);
+    height: 150px;
+  }
+
+  .content {
+    padding: 0 15px 10px;
+  }
+
+  .title {
+    font-size: 0.9rem;
+  }
+}
+
+/* 移动端 */
+@media screen and (max-width: 600px) {
+  .list {
+    grid-template-columns: 1fr;
+  }
+
+  .item {
+    width: calc(100% - 4px);
+    height: 150px;
+  }
+}
