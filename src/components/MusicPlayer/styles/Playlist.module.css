@@ -99,6 +99,7 @@
 .playlistContent {
   max-height: 250px;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-color: rgb(255 255 255 / 40%) transparent;
   scrollbar-width: thin;
 }

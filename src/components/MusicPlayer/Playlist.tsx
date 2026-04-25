@@ -24,6 +24,7 @@ interface PlaylistProps {
   playlistStyle: React.CSSProperties;
   onClose: () => void;
   onSelectSong: (index: number) => void;
+  onMouseEnter: () => void;
 }
 
 export function Playlist({
@@ -35,11 +36,38 @@ export function Playlist({
   playlistStyle,
   onClose,
   onSelectSong,
+  onMouseEnter,
 }: PlaylistProps) {
   if (!isVisible) return null;
 
   return (
-    <div data-playlist-container className={styles.playlistContainer} style={playlistStyle}>
+    <div 
+      data-playlist-container 
+      className={styles.playlistContainer} 
+      style={playlistStyle}
+      onMouseEnter={(e) => {
+        onMouseEnter(e);
+      }}
+      onMouseLeave={(e) => {
+        // 检查鼠标是否移动回音乐胶囊
+        const target = e.relatedTarget as HTMLElement;
+        const musicContainer = document.querySelector("#nav-music");
+        
+        // 如果鼠标移动回音乐胶囊，不关闭列表
+        if (musicContainer && target && (musicContainer === target || musicContainer.contains(target))) {
+          return;
+        }
+        
+        // 检查鼠标是否移动到了播放列表的其他部分
+        const playlistContainer = document.querySelector("[data-playlist-container]");
+        if (playlistContainer && target && (playlistContainer === target || playlistContainer.contains(target))) {
+          return;
+        }
+        
+        // 否则关闭列表
+        onClose();
+      }}
+    >
       <div className={styles.playlistHeader}>
         <span>播放列表 ({playlist.length})</span>
         <div className={styles.closePlaylist} onClick={onClose}>

@@ -43,9 +43,8 @@ function MusicPlayerInner() {
 
   // Refs
   const playlistRef = useRef<Song[]>([]);
-  const playModeRef = useRef<"sequence" | "shuffle" | "repeat">("sequence");
+  const playModeRef = useRef<"sequence" | "shuffle" | "repeat"> ("sequence");
   const currentTimeRef = useRef(0);
-  const hoverTimerRef = useRef<number | null>(null);
 
   // Hooks
   const musicAPI = useMusicAPI();
@@ -257,10 +256,18 @@ function MusicPlayerInner() {
     const handleClickOutside = (event: MouseEvent) => {
       if (!showPlaylist) return;
       const target = event.target as HTMLElement;
-      const playlistContainer = document.querySelector("[data-playlist-container]");
-      if (playlistContainer && !playlistContainer.contains(target)) {
-        setShowPlaylist(false);
+      // 检查目标元素是否在音乐容器内
+      const musicContainer = document.querySelector("#nav-music");
+      if (musicContainer && (musicContainer === target || musicContainer.contains(target))) {
+        return;
       }
+      // 检查目标元素是否在播放列表内
+      const playlistContainer = document.querySelector("[data-playlist-container]");
+      if (playlistContainer && (playlistContainer === target || playlistContainer.contains(target))) {
+        return;
+      }
+      // 否则关闭列表
+      setShowPlaylist(false);
     };
 
     document.addEventListener("click", handleClickOutside);
@@ -289,21 +296,40 @@ function MusicPlayerInner() {
   // 处理播放列表切换
   const handleTogglePlaylist = useCallback(() => {
     setShowPlaylist(prev => !prev);
+    setIsHovered(true); // 打开列表时保持 hover 状态
   }, []);
 
   // hover 处理
-  const handleMouseEnter = useCallback(() => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-    }
+  const handleMouseEnter = useCallback((e?: React.MouseEvent) => {
     setIsHovered(true);
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
-    hoverTimerRef.current = window.setTimeout(() => {
-      setIsHovered(false);
-      setShowPlaylist(false);
-    }, 300);
+  const handleMouseLeave = useCallback((e: React.MouseEvent) => {
+    // 检查鼠标是否移动到了播放列表上
+    const target = e.relatedTarget as HTMLElement;
+    const playlistContainer = document.querySelector("[data-playlist-container]");
+    
+    // 检查目标元素是否在播放列表内，或者目标元素是否是播放列表本身
+    let isMouseOverPlaylist = false;
+    if (playlistContainer && target) {
+      // 检查直接包含关系
+      isMouseOverPlaylist = playlistContainer === target || playlistContainer.contains(target);
+      // 如果直接检查失败，尝试检查目标元素的祖先元素
+      if (!isMouseOverPlaylist) {
+        let current = target;
+        while (current) {
+          if (current === playlistContainer) {
+            isMouseOverPlaylist = true;
+            break;
+          }
+          current = current.parentElement;
+        }
+      }
+    }
+    // 如果鼠标移动到了播放列表上，不关闭列表
+    if (isMouseOverPlaylist) {
+      return;
+    }
   }, []);
 
   // 清理（stable via ref, run only on unmount）
@@ -312,9 +338,6 @@ function MusicPlayerInner() {
       audioPlayerRef.current.cleanup();
       lyricsHookRef.current.cleanup();
       colorExtractionRef.current.cleanup();
-      if (hoverTimerRef.current) {
-        clearTimeout(hoverTimerRef.current);
-      }
     };
   }, []);
 
@@ -349,6 +372,7 @@ function MusicPlayerInner() {
         playlistStyle={colorExtraction.getPlaylistStyle()}
         onClose={() => setShowPlaylist(false)}
         onSelectSong={audioPlayer.handlePlaylistItemClick}
+        onMouseEnter={handleMouseEnter}
       />
 
       {/* 音乐胶囊 */}
