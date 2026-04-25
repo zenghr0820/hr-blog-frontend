@@ -148,8 +148,12 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
     return {
       "--primary-color": article.primary_color || "var(--primary)",
       position: "relative" as const,
+      backgroundImage: `url(${topCoverUrl})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
     } as React.CSSProperties;
-  }, [article.primary_color]);
+  }, [article.primary_color, topCoverUrl]);
 
   // 滚动到评论区
   const scrollToComment = () => {

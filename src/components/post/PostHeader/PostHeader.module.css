@@ -6,13 +6,13 @@
   justify-content: center;
   width: 100%;
   /* 30rem + 60px(header高度) 来补偿 padding-top 占用的空间 */
-  height: calc(30rem + 60px);
+  height: calc(23rem + 60px);
   min-height: 360px;
-  margin-top: -100px;
-  padding-top: 100px;
+  margin-top: -60px;
+  padding-top: 60px;
   overflow: hidden;
   color: white;
-  backdrop-filter: blur(15px);
+  background-color: var(--anzhiyu-theme);
 }
 
 .postHeaderContainer::before {
@@ -27,6 +27,7 @@
   background-color: var(--anzhiyu-head-maskbg);
   opacity: 1;
   transition: 0s;
+  backdrop-filter: blur(12px);
 }
 
 /* 文章信息外层容器 - 只处理滚动缩放动画 */

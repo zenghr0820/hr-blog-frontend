@@ -1310,7 +1310,7 @@ html.dark [data-slot="content"][role="tooltip"] {
   min-height: 100vh;
   /* 建立层叠上下文，避免 ::before（z-index: -1）落到 body 背景下方导致一图流图片不可见 */
   isolation: isolate;
-  padding-top: 100px;
+  /* padding-top: 60px; */
 }
 
 /* ===================== Blog 专用 Yozai 字体 ===================== */
@@ -1330,6 +1330,7 @@ html.dark [data-slot="content"][role="tooltip"] {
 
 #frontend-main {
   animation: slide-in 0.6s 0.1s backwards;
+  padding-top: 20px;
 }
 
 @keyframes slide-in {

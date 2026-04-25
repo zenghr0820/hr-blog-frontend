@@ -37,15 +37,15 @@ const itemVariants: Variants = {
 export function HomePageContent() {
   return (
     <motion.div className="home-page-content" initial="hidden" animate="visible" variants={containerVariants}>
-      {/* 首页顶部区域 */}
-      <motion.div className="post-home-top-container" variants={itemVariants}>
-        {/* <HomeTop /> */}
-      </motion.div>
-
-      {/* 即刻条 */}
+       {/* 即刻条 */}
       <motion.div className="essay-bar-wrapper" variants={itemVariants}>
         <MomentWidget />
       </motion.div>
+
+      {/* 首页顶部区域 */}
+      {/* <motion.div className="post-home-top-container" variants={itemVariants}>
+        <HomeTop />
+      </motion.div> */}
 
       {/* 主内容区域 */}
       <motion.div className="content-inner" variants={itemVariants}>
