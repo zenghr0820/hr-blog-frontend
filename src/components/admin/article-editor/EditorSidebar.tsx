@@ -24,7 +24,8 @@ import {
   Loader2,
   Upload,
   TextQuote,
-  Sparkles
+  Sparkles,
+  Edit3
 } from "lucide-react";
 import {
   addToast,
@@ -50,6 +51,7 @@ import type { ArticleMeta } from "./use-article-meta";
 import { clipSummaryPlainText, SUMMARY_AUTO_MAX_CHARS } from "@/lib/article-summary";
 import { aiApi } from "@/lib/api/ai";
 import { SeoScorePanel } from "./SeoScorePanel";
+import  { CoverMakerDialog } from "./CoverMakerDialog";
 
 // ═══════════════════════════════════════════
 // Props & 常量
@@ -782,6 +784,7 @@ interface SettingsContentProps {
   isLoadingTags?: boolean;
   editorVariant: EditorSidebarProps["editorVariant"];
   getBodyPlainTextForSummary?: EditorSidebarProps["getBodyPlainTextForSummary"];
+  articleTitle?: string;
 }
 
 function SettingsContent({
@@ -794,6 +797,7 @@ function SettingsContent({
   isLoadingTags,
   editorVariant,
   getBodyPlainTextForSummary,
+  articleTitle,
 }: SettingsContentProps) {
   const queryClient = useQueryClient();
   const topImgInputRef = useRef<HTMLInputElement>(null);
@@ -802,6 +806,7 @@ function SettingsContent({
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [fillSummaryDialogOpen, setFillSummaryDialogOpen] = useState(false);
   const [pendingSummaryClip, setPendingSummaryClip] = useState<string | null>(null);
+  const [coverMakerOpen, setCoverMakerOpen] = useState(false);
 
   const maxSummarySlots = editorVariant === "pro" ? 3 : 1;
 
@@ -957,6 +962,31 @@ function SettingsContent({
     [onUpdateField]
   );
 
+  // 处理封面生成器保存
+  const handleCoverMakerSave = useCallback(
+    async (imageDataUrl: string) => {
+      try {
+        // 从 DataURL 中提取 MIME 类型和扩展名
+        const mimeMatch = imageDataUrl.match(/^data:(image\/\w+);base64,/);
+        const mimeType = mimeMatch ? mimeMatch[1] : "image/png";
+        const extension = mimeType.split("/")[1]; // png, webp, jpeg 等
+        
+        // 将 base64 转换为 Blob
+        const response = await fetch(imageDataUrl);
+        const blob = await response.blob();
+        const file = new File([blob], `cover.${extension}`, { type: mimeType });
+        
+        // 上传图片
+        const url = await postManagementApi.uploadArticleImage(file);
+        onUpdateField("cover_url", url);
+      } catch (err) {
+        console.error("封面图保存失败:", err);
+        addToast({ title: "封面图保存失败", color: "danger" });
+      }
+    },
+    [onUpdateField]
+  );
+
   return (
     <>
       <div className="sb-body">
@@ -1055,6 +1085,14 @@ function SettingsContent({
               title="上传封面图"
             >
               {isUploadingCover ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+            </button>
+            <button
+              type="button"
+              className="sb-upload-btn"
+              onClick={() => setCoverMakerOpen(true)}
+              title="制作封面"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
             </button>
             <input
               ref={coverImgInputRef}
@@ -1366,6 +1404,16 @@ function SettingsContent({
       )}
       </div>
 
+      {/* 封面生成器 */}
+      <CoverMakerDialog
+        isOpen={coverMakerOpen}
+        onClose={() => setCoverMakerOpen(false)}
+        onSave={handleCoverMakerSave}
+        title={articleTitle}
+        author={meta.author}
+        avatar={meta.avatar}
+      />
+
       <Modal
         isOpen={fillSummaryDialogOpen}
         onOpenChange={open => {
@@ -1455,6 +1503,7 @@ export function EditorSidebar({
             isLoadingTags={isLoadingTags}
             editorVariant={editorVariant}
             getBodyPlainTextForSummary={getBodyPlainTextForSummary}
+            articleTitle={articleTitle}
           />
         ) : (
           <div className="p-4">
