@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FaFileLines, FaTriangleExclamation } from "react-icons/fa6";
 import { useFeedList } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { FeedArticleCard } from "@/components/home/FeedArticleList";
+import { FeedArticleCardNew } from "@/components/home/FeedArticleList/FeedArticleCardNew";
 import { Pagination } from "@/components/home";
 import { cn } from "@/lib/utils";
 import styles from "@/components/home/FeedArticleList/FeedArticleList.module.css";
@@ -111,7 +111,7 @@ export function FilteredArticleList({ filterType, filterValue, page = 1, onPageC
     <div className={styles.feedArticleList}>
       <div className={cn(styles.articleList, isDoubleColumn && styles.doubleColumnContainer)}>
         {feedItems.map((article, index) => (
-          <FeedArticleCard
+          <FeedArticleCardNew
             key={article.id}
             article={article}
             isDoubleColumn={isDoubleColumn}
