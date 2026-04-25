@@ -77,6 +77,7 @@ export interface QQInfoResponse {
 // 上传图片响应
 export interface UploadCommentResponse {
   id: string;
+  url: string;
 }
 
 /**

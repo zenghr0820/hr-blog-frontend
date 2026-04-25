@@ -644,6 +644,7 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_ENABLE_MUSIC_EXTRACTOR, type: "boolean" },
     { backendKey: K.KEY_MUSIC_MAX_SIZE_LOCAL, type: "number" },
     { backendKey: K.KEY_MUSIC_MAX_SIZE_REMOTE, type: "number" },
+    { backendKey: K.KEY_FILE_USE_DIRECT_LINK, type: "boolean", defaultValue: "true" },
   ],
   "user-comment": [
     { backendKey: K.KEY_COMMENT_ENABLE, type: "boolean", defaultValue: "true" },

@@ -222,6 +222,7 @@ export const KEY_EXIF_USE_BRUTE_FORCE = "EXIF_USE_BRUTE_FORCE";
 export const KEY_ENABLE_MUSIC_EXTRACTOR = "ENABLE_MUSIC_EXTRACTOR";
 export const KEY_MUSIC_MAX_SIZE_LOCAL = "MUSIC_MAX_SIZE_LOCAL";
 export const KEY_MUSIC_MAX_SIZE_REMOTE = "MUSIC_MAX_SIZE_REMOTE";
+export const KEY_FILE_USE_DIRECT_LINK = "FILE_USE_DIRECT_LINK";
 
 // ==================== 评论配置 ====================
 export const KEY_COMMENT_ENABLE = "comment.enable";

@@ -39,6 +39,7 @@ import {
   KEY_ENABLE_MUSIC_EXTRACTOR,
   KEY_MUSIC_MAX_SIZE_LOCAL,
   KEY_MUSIC_MAX_SIZE_REMOTE,
+  KEY_FILE_USE_DIRECT_LINK,
 } from "@/lib/settings/setting-keys";
 
 interface FileSettingsFormProps {
@@ -73,6 +74,12 @@ export function FileSettingsForm({ values, onChange, loading }: FileSettingsForm
           value={values[KEY_UPLOAD_DENIED_EXTENSIONS]}
           onValueChange={v => onChange(KEY_UPLOAD_DENIED_EXTENSIONS, v)}
           description="优先级高于允许列表，多个扩展名用英文逗号分隔"
+        />
+        <FormSwitch
+          label="上传返回直链"
+          description="开启后上传文件返回直链URL，关闭后返回系统统一URL（/needcache/download/xxx）"
+          checked={values[KEY_FILE_USE_DIRECT_LINK] === "true"}
+          onCheckedChange={v => onChange(KEY_FILE_USE_DIRECT_LINK, String(v))}
         />
       </SettingsSection>
 
