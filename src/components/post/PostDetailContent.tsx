@@ -11,9 +11,11 @@
  */
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FaHashtag } from "react-icons/fa6";
+import { List, X, PanelLeftClose, Search } from "lucide-react";
 import { PostHeader } from "./PostHeader";
 import { ArticleAiSummary } from "./ArticleAiSummary";
 import { PostContent } from "./PostContent";
@@ -24,6 +26,7 @@ import { PostPaginationFloat } from "./PostPaginationFloat";
 import { CommentSection } from "./Comment";
 import { CommentBarrage } from "./CommentBarrage";
 import { PostSidebar } from "./Sidebar";
+import { DocSidebar } from "@/components/doc/DocSidebar";
 import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { useUiStore } from "@/store/ui-store";
@@ -31,7 +34,9 @@ import { usePageStore } from "@/store/page-store";
 import { scrollTo } from "@/store/scroll-store";
 import { setArticleMetaThemeColor, restoreMetaThemeColor } from "@/utils/theme-manager";
 import { resolvePostDefaultCoverUrl } from "@/utils/same-origin-media-url";
+import { docSeriesApi } from "@/lib/api/doc-series";
 import type { Article, RecentArticle } from "@/types/article";
+import type { DocSeriesWithArticles } from "@/types/doc-series";
 import styles from "./PostDetail.module.css";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +54,7 @@ function buildArticleContentWithCustomJS(contentHTML: string, customJS?: string)
 }
 
 export function PostDetailContent({ article, recentArticles = [] }: PostDetailContentProps) {
+  const router = useRouter();
   const commentConfig = useSiteConfigStore(useShallow(state => state.siteConfig?.comment));
   const appName = useSiteConfigStore(state => state.siteConfig?.APP_NAME);
   const siteOwnerName = useSiteConfigStore(state => state.siteConfig?.frontDesk?.siteOwner?.name);
@@ -68,6 +74,47 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const isEnabledAiSummaryShow = useSiteConfigStore(state => state.siteConfig?.post?.default?.enable_ai_summary_show);
   const clearPageTitle = usePageStore(state => state.clearPageTitle);
 
+  const isDoc = !!article.is_doc;
+  const currentDocId = article.id;
+
+  const [docSeries, setDocSeries] = useState<DocSeriesWithArticles | null>(null);
+  const [isDocSidebarOpen, setIsDocSidebarOpen] = useState(false);
+  const [isDocSidebarCollapsed, setIsDocSidebarCollapsed] = useState(false);
+
+  const activeDocSeries =
+    docSeries && article.doc_series_id && String(docSeries.id) === String(article.doc_series_id) ? docSeries : null;
+
+  useEffect(() => {
+    if (!isDoc || !article.doc_series_id) return;
+
+    let cancelled = false;
+    const fetchSeries = async () => {
+      try {
+        const data = await docSeriesApi.getPublicSeriesWithArticles(String(article.doc_series_id));
+        if (!cancelled) setDocSeries(data);
+      } catch (error) {
+        console.error("获取文档系列失败:", error);
+      }
+    };
+    fetchSeries();
+    return () => {
+      cancelled = true;
+    };
+  }, [isDoc, article.doc_series_id]);
+
+  const handleNavigateDoc = useCallback(
+    (docId: string) => {
+      setIsDocSidebarOpen(false);
+      router.push(`/doc/${docId}`);
+      scrollTo(0);
+    },
+    [router]
+  );
+
+  const openSearch = useCallback(() => {
+    window.dispatchEvent(new CustomEvent("frontend-open-search"));
+  }, []);
+
   // 进入文章页面时立即跳到顶部（不带缓动）
   useEffect(() => {
     scrollTo(0, { immediate: true });
@@ -81,46 +128,46 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
     };
   }, [article.title, setPageTitle, clearPageTitle]);
 
-  // 保存原始主题色
-  const originalPrimaryRef = useRef<string>("");
+  // // 保存原始主题色
+  // const originalPrimaryRef = useRef<string>("");
 
-  // 设置文章主题色（如果有）- 全局设置 --primary 并更新 meta theme-color
-  useEffect(() => {
-    if (article.primary_color) {
-      // 保存原始主题色
-      originalPrimaryRef.current = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim();
+  // // 设置文章主题色（如果有）- 全局设置 --primary 并更新 meta theme-color
+  // useEffect(() => {
+  //   if (article.primary_color) {
+  //     // 保存原始主题色
+  //     originalPrimaryRef.current = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim();
 
-      // 设置全局主题色
-      document.documentElement.style.setProperty("--primary", article.primary_color);
-      document.documentElement.style.setProperty("--article-primary-color", article.primary_color);
+  //     // 设置全局主题色
+  //     document.documentElement.style.setProperty("--primary", article.primary_color);
+  //     document.documentElement.style.setProperty("--article-primary-color", article.primary_color);
 
-      // 简单判断是否为 HEX 颜色以添加透明度变体
-      if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(article.primary_color)) {
-        document.documentElement.style.setProperty("--primary-op", `${article.primary_color}23`);
-        document.documentElement.style.setProperty("--primary-op-deep", `${article.primary_color}dd`);
-        document.documentElement.style.setProperty("--primary-op-light", `${article.primary_color}0d`);
-      }
+  //     // 简单判断是否为 HEX 颜色以添加透明度变体
+  //     if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(article.primary_color)) {
+  //       document.documentElement.style.setProperty("--primary-op", `${article.primary_color}23`);
+  //       document.documentElement.style.setProperty("--primary-op-deep", `${article.primary_color}dd`);
+  //       document.documentElement.style.setProperty("--primary-op-light", `${article.primary_color}0d`);
+  //     }
 
-      // 更新浏览器 meta theme-color
-      setArticleMetaThemeColor(article.primary_color);
-    }
+  //     // 更新浏览器 meta theme-color
+  //     setArticleMetaThemeColor(article.primary_color);
+  //   }
 
-    return () => {
-      // 恢复原始主题色
-      if (originalPrimaryRef.current) {
-        document.documentElement.style.setProperty("--primary", originalPrimaryRef.current);
-      } else {
-        document.documentElement.style.removeProperty("--primary");
-      }
-      document.documentElement.style.removeProperty("--article-primary-color");
-      document.documentElement.style.removeProperty("--primary-op");
-      document.documentElement.style.removeProperty("--primary-op-deep");
-      document.documentElement.style.removeProperty("--primary-op-light");
+  //   return () => {
+  //     // 恢复原始主题色
+  //     if (originalPrimaryRef.current) {
+  //       document.documentElement.style.setProperty("--primary", originalPrimaryRef.current);
+  //     } else {
+  //       document.documentElement.style.removeProperty("--primary");
+  //     }
+  //     document.documentElement.style.removeProperty("--article-primary-color");
+  //     document.documentElement.style.removeProperty("--primary-op");
+  //     document.documentElement.style.removeProperty("--primary-op-deep");
+  //     document.documentElement.style.removeProperty("--primary-op-light");
 
-      // 恢复默认 meta theme-color
-      restoreMetaThemeColor();
-    };
-  }, [article.primary_color]);
+  //     // 恢复默认 meta theme-color
+  //     restoreMetaThemeColor();
+  //   };
+  // }, [article.primary_color]);
 
   const siteName = appName || "安知鱼";
   const ownerName = siteOwnerName || "安知鱼";
@@ -138,8 +185,50 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
       {/* 文章头部 */}
       <PostHeader article={article} defaultCoverUrl={defaultCover} />
 
+      {/* 移动端文档侧边栏遮罩 */}
+      {isDoc && (
+        <div
+          className={cn(styles.docMobileOverlay, isDocSidebarOpen && styles.docMobileOverlayOpen)}
+          onClick={() => setIsDocSidebarOpen(false)}
+        />
+      )}
+
+      {/* PC 端文档侧边栏折叠后悬浮按钮 */}
+      {isDoc && isDocSidebarCollapsed && activeDocSeries && (
+        <div className={styles.docCollapsedFloat}>
+          <button className={styles.docFloatBtn} title="展开侧边栏" onClick={() => setIsDocSidebarCollapsed(false)}>
+            <PanelLeftClose className="w-[18px] h-[18px]" />
+          </button>
+          <button className={styles.docFloatBtn} title="搜索" onClick={openSearch}>
+            <Search className="w-[18px] h-[18px]" />
+          </button>
+        </div>
+      )}
+
       {/* 主内容区域 */}
-      <div className={styles.layout}>
+      <div className={cn(styles.layout, isDoc && styles.layoutWithDocSidebar)}>
+
+        {/* 左侧文档导航栏（仅 is_doc 为 true 时显示） */}
+        {isDoc && (
+          <aside
+            className={cn(
+              styles.docSidebarLeft,
+              isDocSidebarOpen && styles.docSidebarLeftOpen,
+              isDocSidebarCollapsed && styles.docSidebarLeftCollapsed
+            )}
+          >
+            <DocSidebar
+              series={activeDocSeries}
+              currentDocId={currentDocId}
+              onNavigate={id => {
+                handleNavigateDoc(id);
+                setIsDocSidebarOpen(false);
+              }}
+              onCollapse={() => setIsDocSidebarCollapsed(true)}
+            />
+          </aside>
+        )}
+
         <main className={`postContentInner ${styles.postContentInner}`}>
           <div className={styles.postDetailContent}>
             {/* AI 文章摘要 - 带打字效果 */}
@@ -209,6 +298,16 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
         {/* 文章详情侧边栏 */}
         <PostSidebar article={article} recentArticles={recentArticles} />
       </div>
+
+      {/* 移动端文档侧边栏切换按钮 */}
+      {isDoc && activeDocSeries && (
+        <button
+          className={styles.docMobileSidebarToggle}
+          onClick={() => setIsDocSidebarOpen(prev => !prev)}
+        >
+          {isDocSidebarOpen ? <X className="w-5 h-5" /> : <List className="w-5 h-5" />}
+        </button>
+      )}
 
       {/* 底部栏 */}
       <div className={styles.footerBar}>

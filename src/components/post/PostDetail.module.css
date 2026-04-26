@@ -14,18 +14,19 @@
   margin: 0 auto;
 }
 
+.layoutWithDocSidebar {
+  max-width: 1500px;
+}
+
 .postContentInner {
-  width: calc(100% - 300px);
+  flex: 1;
+  min-width: 0;
   transition: width 0.3s ease;
 }
 
 .postContentInner::selection {
   color: white;
   background-color: var(--primary);
-}
-
-.postContentInner.fullWidth {
-  width: 100%;
 }
 
 /* 文章内容卡片 */
@@ -194,6 +195,7 @@
 /* 平板端 */
 @media (max-width: 992px) {
   .postContentInner {
+    flex: none;
     width: 100%;
   }
 }
@@ -215,6 +217,7 @@
   }
 
   .postContentInner {
+    flex: none;
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
@@ -262,6 +265,7 @@
   }
 
   .postContentInner {
+    flex: none;
     width: 100% !important;
   }
 
@@ -484,4 +488,152 @@
   margin-left: auto;
   font-weight: 300;
   transition: 0.3s;
+}
+
+/* ===================== 文档模式左侧边栏样式 ===================== */
+
+.docSidebarLeft {
+  position: sticky;
+  top: 80px;
+  flex-shrink: 0;
+  width: 240px;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.docSidebarLeftCollapsed {
+  width: 0;
+  opacity: 0;
+  transform: translateX(-20px);
+  pointer-events: none;
+}
+
+.docCollapsedFloat {
+  position: fixed;
+  top: 80px;
+  left: 16px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  animation: docFloatIn 0.25s ease-out;
+}
+
+.docFloatBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.docFloatBtn:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+@keyframes docFloatIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.docMobileOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+.docMobileOverlayOpen {
+  display: block;
+}
+
+.docMobileSidebarToggle {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.docMobileSidebarToggle:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 992px) {
+  .docSidebarLeft {
+    position: fixed;
+    top: 80px;
+    left: -280px;
+    width: 280px;
+    height: calc(100vh - 100px);
+    z-index: 100;
+    transition: left 0.3s ease;
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
+
+  .docSidebarLeftOpen {
+    left: 16px;
+  }
+
+  .docSidebarLeftCollapsed {
+    width: 280px;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .docMobileSidebarToggle {
+    display: flex;
+  }
+
+  .docCollapsedFloat {
+    display: none;
+  }
+}
+
+@media print {
+  .docSidebarLeft,
+  .docCollapsedFloat,
+  .docMobileOverlay,
+  .docMobileSidebarToggle {
+    display: none !important;
+  }
 }
