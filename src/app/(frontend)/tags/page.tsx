@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TagPageContent } from "@/components/tags";
+import { TagPageContentNew } from "@/components/tags/TagPageContentNew";
 import { buildPageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,5 +11,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function TagsPage() {
-  return <TagPageContent />;
+  return <TagPageContentNew />;
 }

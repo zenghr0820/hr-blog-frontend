@@ -1,0 +1,66 @@
+.tagPageContainer {
+  margin-bottom: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 400px;
+  padding: 50px 40px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+}
+
+
+.tagCloudList a {
+  display: inline-block;
+  margin: 2px;
+  padding: 2px 7px;
+  line-height: 1.7;
+  transition: all .3s;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.tagCloudList a:hover {
+  background-color: var(--anzhiyu-theme);
+  span {
+    color: #fff!important;
+  }
+}
+
+
+.loadingTip,
+.errorTip,
+.emptyTip {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.errorTip {
+  color: var(--error-color, #ff4d4f);
+}
+
+.emptyTip {
+  color: var(--text-tertiary);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .tagPageContainer {
+    padding: 16px;
+  }
+
+  .pageTitle {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+}
+
+@media (max-width: 480px) {}
