@@ -15,6 +15,10 @@ import { scrollTo } from "@/store/scroll-store";
 import { useTheme } from "@/hooks/use-theme";
 import styles from "./styles.module.css";
 
+// Ctrl 键提示相关常量
+const TOOLTIP_KEY = "right-menu-ctrl-tooltip-last-shown";
+const TOOLTIP_DURATION = 3 * 60 * 1000; // 3分钟
+
 /**
  * 安全写入剪贴板（带错误处理）
  */
@@ -23,6 +27,24 @@ const safeClipboardWrite = (text: string, successMsg: string) => {
     () => addToast({ title: successMsg, color: "success", timeout: 2000 }),
     () => addToast({ title: "复制失败，请重试", color: "danger", timeout: 2000 })
   );
+};
+
+/**
+ * 显示首次使用提示
+ */
+const showFirstTimeTooltip = () => {
+  const lastShown = localStorage.getItem(TOOLTIP_KEY);
+  const now = Date.now();
+
+  // 如果从未显示过，或者距离上次显示已超过3分钟
+  if (!lastShown || now - parseInt(lastShown) > TOOLTIP_DURATION) {
+    addToast({ 
+      title: "按住 Ctrl 再点击右键，即可恢复原界面哦", 
+      color: "primary", 
+      timeout: 3000 
+    });
+    localStorage.setItem(TOOLTIP_KEY, now.toString());
+  }
 };
 
 export function RightMenu() {
@@ -126,7 +148,15 @@ export function RightMenu() {
       if (path.startsWith("/doc/")) return;
       if (window.innerWidth < 768) return;
 
+      // 如果按住Ctrl键，显示原生右键菜单
+      if (event.ctrlKey) {
+        return; // 不阻止默认行为，显示原生菜单
+      }
+
       event.preventDefault();
+
+      // 首次显示时给出提示
+      showFirstTimeTooltip();
 
       // 检查文本选中
       const selection = window.getSelection();
