@@ -6,6 +6,7 @@ import type { AboutPageConfig } from "./about";
 export interface PageOneImageItem {
   enable?: boolean;
   background?: string;
+  backgroundDark?: string; // 暗色模式背景图 URL
   mediaType?: "image" | "video";
   mainTitle?: string;
   subTitle?: string;
@@ -15,6 +16,7 @@ export interface PageOneImageItem {
   videoLoop?: boolean;
   videoMuted?: boolean;
   mobileBackground?: string;
+  mobileBackgroundDark?: string; // 移动端暗色模式背景图 URL
   mobileMediaType?: "image" | "video";
   mobileVideoAutoplay?: boolean;
   mobileVideoLoop?: boolean;

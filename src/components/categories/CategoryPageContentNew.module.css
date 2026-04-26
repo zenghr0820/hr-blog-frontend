@@ -1,0 +1,122 @@
+.categoryChartContainer {
+  margin-bottom: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 400px;
+  padding: 50px 40px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+  color: var(--anzhiyu-fontcolor);
+}
+
+
+.loadingTip,
+.errorTip,
+.emptyTip {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--anzhiyu-fontcolor);
+  font-size: 1.3rem;
+}
+
+.errorTip {
+  color: var(--anzhiyu-red);
+}
+
+
+.categoryLists .categoryTitle {
+    font-size: 2.57em
+}
+
+@media screen and (max-width: 768px) {
+    .categoryLists .categoryTitle {
+        font-size:2em
+    }
+}
+
+.categoryLists .categoryList {
+    margin-bottom: 0
+}
+
+.categoryLists ul li:before {
+    position: absolute;
+    top: .67em;
+    left: 0;
+    width: .83em;
+    height: .83em;
+    border: .215em solid #2679cc;
+    border-radius: .43em;
+    background: 0 0;
+    content: '';
+    cursor: pointer;
+    transition: all .3s ease-out;
+}
+
+.categoryLists ul li:hover:before {
+    border-color: #ff7242
+}
+
+
+.categoryLists .categoryList a {
+    color: var(--font-color)
+}
+
+.categoryLists .categoryList a:hover {
+    color: #2679cc
+}
+
+.categoryLists .categoryList .categoryListCount {
+    margin-left: 8px;
+    color: var(--card-meta)
+}
+
+.categoryLists .categoryList .categoryListCount:before {
+    content: '('
+}
+
+.categoryLists .categoryList .categoryListCount:after {
+    content: ')'
+}
+
+.categoryLists ul {
+    padding: 0 0 0 20px;
+}
+
+.categoryLists ul ul {
+    padding-left: 4px;
+}
+
+.categoryLists ul li {
+    position: relative;
+    margin: 6px 0;
+    padding: .12em .4em .12em 1.4em;
+    font-size: 1.1rem;
+}
+
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .categoryChartContainer {
+    padding: 16px;
+  }
+
+  .pageTitle {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .chartWrapper {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chartWrapper {
+    min-height: 350px;
+  }
+}

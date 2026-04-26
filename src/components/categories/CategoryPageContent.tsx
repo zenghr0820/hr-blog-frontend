@@ -53,7 +53,7 @@ export function CategoryPageContent() {
   );
 
   return (
-    <div className={styles.categoryCloudAmount}>
+    <div className={`cardWidget ${styles.categoryCloudAmount}`}>
       {!isOneImageEnabled && <h1 className={styles.pageTitle}>分类</h1>}
 
       {isLoading && <div className={styles.loadingTip}>分类加载中...</div>}

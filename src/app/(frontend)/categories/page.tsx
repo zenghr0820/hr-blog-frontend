@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CategoryPageContent } from "@/components/categories";
+import { CategoryPageContentNew } from "@/components/categories/CategoryPageContentNew";
 import { buildPageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,5 +11,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function CategoriesPage() {
-  return <CategoryPageContent />;
+  return <CategoryPageContentNew />;
 }

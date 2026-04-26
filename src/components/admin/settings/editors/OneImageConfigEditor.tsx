@@ -16,6 +16,7 @@ const ROUTE_LABELS: Record<(typeof ROUTE_KEYS)[number], string> = {
 const DEFAULT_ITEM: PageOneImageItem = {
   enable: false,
   background: "",
+  backgroundDark: "",
   mediaType: "image",
   mainTitle: "安和鱼",
   subTitle: "生活明朗，万物可爱",
@@ -25,6 +26,7 @@ const DEFAULT_ITEM: PageOneImageItem = {
   videoLoop: true,
   videoMuted: true,
   mobileBackground: "",
+  mobileBackgroundDark: "",
   mobileMediaType: "image",
   mobileVideoAutoplay: true,
   mobileVideoLoop: true,
@@ -181,12 +183,30 @@ function RouteCard({
               classNames={{ inputWrapper }}
             />
             <Input
+              label="暗色模式背景图 URL"
+              labelPlacement="outside"
+              size="sm"
+              value={item.backgroundDark ?? ""}
+              onValueChange={v => update({ backgroundDark: v })}
+              placeholder="留空则使用浅色背景"
+              classNames={{ inputWrapper }}
+            />
+            <Input
               label="移动端背景 URL"
               labelPlacement="outside"
               size="sm"
               value={item.mobileBackground ?? ""}
               onValueChange={v => update({ mobileBackground: v })}
               placeholder="留空则使用桌面背景"
+              classNames={{ inputWrapper }}
+            />
+            <Input
+              label="移动端暗色背景 URL"
+              labelPlacement="outside"
+              size="sm"
+              value={item.mobileBackgroundDark ?? ""}
+              onValueChange={v => update({ mobileBackgroundDark: v })}
+              placeholder="留空则使用移动端浅色背景"
               classNames={{ inputWrapper }}
             />
             <Select

@@ -6,6 +6,7 @@ import { Volume2, VolumeX, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { scrollTo } from "@/store/scroll-store";
+import { useTheme } from "@/hooks/use-theme";
 import type { PageOneImageItem } from "@/types/site-config";
 import styles from "./OneImageBanner.module.css";
 
@@ -25,6 +26,7 @@ export function OneImageBanner() {
   const pathname = usePathname();
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
   const routeKey = useMemo(() => getRouteKey(pathname), [pathname]);
+  const { isDark, mounted } = useTheme();
 
   const [isMobile, setIsMobile] = useState(false);
   const [displaySubtitle, setDisplaySubtitle] = useState("");
@@ -54,11 +56,24 @@ export function OneImageBanner() {
 
   const effectiveBackground = useMemo(() => {
     if (!currentConfig) return "";
-    if (isMobile && currentConfig.mobileBackground) {
-      return currentConfig.mobileBackground;
+    
+    // 优先使用移动端背景
+    const baseBackground = isMobile && currentConfig.mobileBackground 
+      ? currentConfig.mobileBackground 
+      : currentConfig.background || "";
+    
+    // 根据主题选择暗色或浅色背景
+    const darkBackground = isMobile && currentConfig.mobileBackgroundDark
+      ? currentConfig.mobileBackgroundDark
+      : currentConfig.backgroundDark || "";
+    
+    // 如果当前是暗色模式且有暗色背景配置，则使用暗色背景
+    if (mounted && isDark && darkBackground) {
+      return darkBackground;
     }
-    return currentConfig.background || "";
-  }, [currentConfig, isMobile]);
+    
+    return baseBackground;
+  }, [currentConfig, isMobile, isDark, mounted]);
 
   const effectiveMediaType = useMemo(() => {
     if (!currentConfig) return "image";

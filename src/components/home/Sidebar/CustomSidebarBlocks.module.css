@@ -15,9 +15,8 @@
 }
 
 .customBlockTitle {
-  margin-bottom: 12px;
   padding-bottom: 8px;
-  font-size: 14px;
+  font-size: 1.3rem;
   font-weight: 600;
   color: var(--anzhiyu-fontcolor);
   border-bottom: 1px solid var(--anzhiyu-card-border, var(--border));
