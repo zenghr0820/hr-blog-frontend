@@ -60,6 +60,7 @@ import  { CoverMakerDialog } from "./CoverMakerDialog";
 interface EditorSidebarProps {
   meta: ArticleMeta;
   onUpdateField: <K extends keyof ArticleMeta>(key: K, value: ArticleMeta[K]) => void;
+  onUpdateFields: (updates: Partial<ArticleMeta>) => void;
   isAdmin: boolean;
   categories: PostCategory[];
   tags: PostTag[];
@@ -777,6 +778,7 @@ function DocSeriesSelect({ value, onChange }: { value: string; onChange: (v: str
 interface SettingsContentProps {
   meta: ArticleMeta;
   onUpdateField: EditorSidebarProps["onUpdateField"];
+  onUpdateFields: EditorSidebarProps["onUpdateFields"];
   isAdmin: boolean;
   categories: PostCategory[];
   tags: PostTag[];
@@ -790,6 +792,7 @@ interface SettingsContentProps {
 function SettingsContent({
   meta,
   onUpdateField,
+  onUpdateFields,
   isAdmin,
   categories,
   tags,
@@ -1375,6 +1378,34 @@ function SettingsContent({
             />
           </div>
         )}
+        <SbToggle
+          label="密码保护"
+          description="需要密码才能查看全文"
+          checked={meta.is_password_protected}
+          onChange={v => {
+            onUpdateField("is_password_protected", v);
+            if (!v) {
+              onUpdateFields({ password: "", password_hint: "" });
+            }
+          }}
+        />
+        {meta.is_password_protected && (
+          <div className="sb-sub-group">
+            <SbInput
+              label="访问密码"
+              value={meta.password}
+              onChange={v => onUpdateField("password", v)}
+              placeholder="设置文章访问密码"
+              type="password"
+            />
+            <SbInput
+              label="密码提示"
+              value={meta.password_hint}
+              onChange={v => onUpdateField("password_hint", v)}
+              placeholder="可选，帮助访客回忆密码"
+            />
+          </div>
+        )}
       </SbSection>
 
       {/* ── 定时发布（仅定时状态时） ── */}
@@ -1455,6 +1486,7 @@ function SettingsContent({
 export function EditorSidebar({
   meta,
   onUpdateField,
+  onUpdateFields,
   isAdmin,
   categories,
   tags,
@@ -1496,6 +1528,7 @@ export function EditorSidebar({
           <SettingsContent
             meta={meta}
             onUpdateField={onUpdateField}
+            onUpdateFields={onUpdateFields}
             isAdmin={isAdmin}
             categories={categories}
             tags={tags}

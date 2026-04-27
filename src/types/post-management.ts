@@ -201,6 +201,12 @@ export interface CreateArticleRequest {
   copyright_url?: string;
   // 扩展配置
   extra_config?: ArticleExtraConfig;
+  // 访问控制
+  access_rule?: {
+    type: "free" | "password";
+    password_hash?: string;
+    hint?: string;
+  };
   // 文档模式
   is_doc?: boolean;
   doc_series_id?: string;

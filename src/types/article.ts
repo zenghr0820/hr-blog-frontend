@@ -171,6 +171,11 @@ export interface ArticleExtraConfig {
 /**
  * 完整文章详情
  */
+export interface AccessRule {
+  type: "free" | "password";
+  hint?: string;
+}
+
 export interface Article {
   id: string;
   created_at: string;
@@ -219,4 +224,7 @@ export interface Article {
   show_reward_button?: boolean;
   show_share_button?: boolean;
   show_subscribe_button?: boolean;
+  // 访问控制
+  access_rule?: AccessRule;
+  encrypted?: boolean;
 }

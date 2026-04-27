@@ -1845,7 +1845,7 @@ html.with-fancybox body.hide-scrollbar {
     position: absolute;
     top: calc(50% - 7px);
     color: #f47466;
-    content: '📝';
+    content: '';
     left: 0;
     line-height: 1;
     transition: all .2s ease-out;

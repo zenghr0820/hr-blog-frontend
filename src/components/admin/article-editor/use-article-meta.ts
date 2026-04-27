@@ -40,6 +40,10 @@ export interface ArticleMeta {
   is_doc: boolean;
   doc_series_id: string;
   doc_sort: number;
+  // 密码保护
+  is_password_protected: boolean;
+  password: string;
+  password_hint: string;
   // 定时发布
   scheduled_at: string;
   /** 自定义发布时间（datetime-local），对应后端 created_at；定时发布状态下不使用 */
@@ -72,6 +76,9 @@ const DEFAULT_META: ArticleMeta = {
   is_doc: false,
   doc_series_id: "",
   doc_sort: 0,
+  is_password_protected: false,
+  password: "",
+  password_hint: "",
   scheduled_at: "",
   custom_published_at: "",
 };
@@ -111,6 +118,9 @@ function initFromArticle(article: ArticleDetailForEdit, maxSummaries: number): A
     is_doc: article.is_doc || false,
     doc_series_id: article.doc_series_id || "",
     doc_sort: article.doc_sort || 0,
+    is_password_protected: (article as any).access_rule?.type === "password",
+    password: "",
+    password_hint: (article as any).access_rule?.hint || "",
     scheduled_at: isoStringToDatetimeLocal(article.scheduled_at ?? undefined),
     custom_published_at: isoStringToDatetimeLocal(article.created_at),
   };
@@ -178,6 +188,13 @@ export function useArticleMeta(
       is_doc: meta.is_doc,
       doc_series_id: meta.doc_series_id || undefined,
       doc_sort: meta.doc_sort,
+      access_rule: meta.is_password_protected
+        ? {
+            type: "password" as const,
+            password_hash: meta.password || undefined,
+            hint: meta.password_hint || undefined,
+          }
+        : { type: "free" as const },
     };
     const hasCustomJS = meta.custom_js.trim().length > 0;
     const customJSChanged = meta.custom_js !== initialCustomJsRef.current;

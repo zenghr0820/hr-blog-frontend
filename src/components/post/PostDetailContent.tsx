@@ -19,6 +19,7 @@ import { List, X, PanelLeftClose, Search } from "lucide-react";
 import { PostHeader } from "./PostHeader";
 import { ArticleAiSummary } from "./ArticleAiSummary";
 import { PostContent } from "./PostContent";
+import { ArticlePasswordGate } from "./ArticlePasswordGate";
 import { PostCopyright } from "./PostCopyright";
 import { PostRelatedPostsGrid } from "./PostRelatedPosts/PostRelatedPostsGrid";
 import { PostPaginationNew } from "./PostPagination/PostPaginationNew";
@@ -80,6 +81,10 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const [docSeries, setDocSeries] = useState<DocSeriesWithArticles | null>(null);
   const [isDocSidebarOpen, setIsDocSidebarOpen] = useState(false);
   const [isDocSidebarCollapsed, setIsDocSidebarCollapsed] = useState(false);
+  const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
+
+  const isPasswordProtected = article.access_rule?.type === "password" && !article.content_html;
+  const isUnlocked = unlockedContent !== null;
 
   const activeDocSeries =
     docSeries && article.doc_series_id && String(docSeries.id) === String(article.doc_series_id) ? docSeries : null;
@@ -176,8 +181,8 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const hasCustomJS = !!customJS && customJS.trim() !== "";
   const isRelatedEnabled = articleShowRelated !== false && articleShowRelated !== "false";
   const contentWithCustomJS = useMemo(
-    () => buildArticleContentWithCustomJS(article.content_html, customJS),
-    [article.content_html, customJS]
+    () => buildArticleContentWithCustomJS(unlockedContent ?? article.content_html, customJS),
+    [unlockedContent, article.content_html, customJS]
   );
 
   return (
@@ -233,10 +238,19 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
           <div className={styles.postDetailContent}>
             {/* AI 文章摘要 - 带打字效果 */}
 
-            {isEnabledAiSummaryShow && (
+            {isEnabledAiSummaryShow && !isPasswordProtected && (
               <ArticleAiSummary article={article} />
             )}
 
+            {/* 密码保护门控 */}
+            {isPasswordProtected && !isUnlocked ? (
+              <ArticlePasswordGate
+                articleId={article.id}
+                hint={article.access_rule?.hint}
+                onVerified={setUnlockedContent}
+              />
+            ) : (
+            <>
             {/* 文章内容 */}
             <PostContent
               content={contentWithCustomJS}
@@ -250,6 +264,8 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
 
             {/* 版权信息 */}
             <PostCopyright article={article} />
+            </>
+            )}
 
             {/* 版权下方标签（仅左侧标签集合，无右侧入口） */}
             {article.post_tags.length > 0 && (

@@ -138,7 +138,7 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
   }, []);
 
   // 文章元数据
-  const { meta, updateField, initFromData, getSubmitData } = useArticleMeta(undefined, {
+  const { meta, updateField, updateFields, initFromData, getSubmitData } = useArticleMeta(undefined, {
     isAdmin,
     maxSummaries: 1,
   });
@@ -445,6 +445,7 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
               <EditorSidebar
                 meta={meta}
                 onUpdateField={updateField}
+                onUpdateFields={updateFields}
                 isAdmin={isAdmin}
                 categories={categories}
                 tags={tags}
@@ -482,6 +483,7 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
                   <EditorSidebar
                     meta={meta}
                     onUpdateField={updateField}
+                    onUpdateFields={updateFields}
                     isAdmin={isAdmin}
                     categories={categories}
                     tags={tags}

@@ -3,6 +3,7 @@
  */
 
 export { PostDetailContent } from "./PostDetailContent";
+export { ArticlePasswordGate } from "./ArticlePasswordGate";
 export { PostHeader } from "./PostHeader";
 export { PostContent } from "./PostContent";
 export { PostCopyright } from "./PostCopyright";

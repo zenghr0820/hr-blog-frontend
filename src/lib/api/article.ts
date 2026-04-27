@@ -190,6 +190,36 @@ export const articleApi = {
 
     throw new Error(response.message || "获取归档列表失败");
   },
+
+  async verifyArticlePassword(
+    articleId: string,
+    password: string,
+    type: "full" | "block" = "full",
+    contentId?: string,
+  ): Promise<{
+    success: boolean;
+    encrypted?: boolean;
+    content_html?: string;
+    password_hint?: string;
+  }> {
+    const response = await apiClient.post<{
+      success: boolean;
+      encrypted?: boolean;
+      content_html?: string;
+      password_hint?: string;
+    }>(`/api/public/password-content/verify`, {
+      article_id: articleId,
+      password,
+      type,
+      content_id: contentId,
+    });
+
+    if (response.code === 200 && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || "密码验证失败");
+  },
 };
 
 export type {
