@@ -62,6 +62,13 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
   const appName = useSiteConfigStore(state => state.siteConfig?.APP_NAME);
   const siteOwnerName = useSiteConfigStore(state => state.siteConfig?.frontDesk?.siteOwner?.name);
 
+  // 刷新后高亮消失的根因，是 dangerouslySetInnerHTML 的内联对象在重渲染时引用变化，导致 React 强制重置 innerHTML。用 useMemo 缓存该对象即可修复
+  const innerHtml = useMemo(
+    () => ({ __html: restoreLazyImages(content) }),
+    [content]
+  );
+
+
   // ── 复制版权拦截 ──
   useEffect(() => {
     // 如果复制功能被禁用或版权追加未启用，直接返回
@@ -1703,7 +1710,7 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
       ref={contentRef}
       className={styles.postContent}
       data-post-content="true"
-      dangerouslySetInnerHTML={{ __html: restoreLazyImages(content) }}
+      dangerouslySetInnerHTML={innerHtml}
     />
   );
 }
