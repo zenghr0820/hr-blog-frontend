@@ -44,6 +44,7 @@ export interface ArticleMeta {
   is_password_protected: boolean;
   password: string;
   password_hint: string;
+  has_password: boolean;
   // 定时发布
   scheduled_at: string;
   /** 自定义发布时间（datetime-local），对应后端 created_at；定时发布状态下不使用 */
@@ -79,6 +80,7 @@ const DEFAULT_META: ArticleMeta = {
   is_password_protected: false,
   password: "",
   password_hint: "",
+  has_password: false,
   scheduled_at: "",
   custom_published_at: "",
 };
@@ -121,6 +123,7 @@ function initFromArticle(article: ArticleDetailForEdit, maxSummaries: number): A
     is_password_protected: (article as any).access_rule?.type === "password",
     password: "",
     password_hint: (article as any).access_rule?.hint || "",
+    has_password: (article as any).access_rule?.has_password || false,
     scheduled_at: isoStringToDatetimeLocal(article.scheduled_at ?? undefined),
     custom_published_at: isoStringToDatetimeLocal(article.created_at),
   };
@@ -194,7 +197,7 @@ export function useArticleMeta(
             password_hash: meta.password || undefined,
             hint: meta.password_hint || undefined,
           }
-        : { type: "free" as const },
+        : { type: "free" as const, password_hash: "" },
     };
     const hasCustomJS = meta.custom_js.trim().length > 0;
     const customJSChanged = meta.custom_js !== initialCustomJsRef.current;

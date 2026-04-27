@@ -11,6 +11,7 @@ import "./code-highlight.css";
 import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { apiClient } from "@/lib/api/client";
+import { articleApi } from "@/lib/api/article";
 
 interface ArticleCopyInfo {
   isReprint?: boolean;
@@ -494,50 +495,40 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
   const initPasswordContentEvents = useCallback(() => {
     if (!contentRef.current) return;
 
-    const verifyBtns = contentRef.current.querySelectorAll(".password-verify-btn");
-    verifyBtns.forEach(btn => {
+    const containers = contentRef.current.querySelectorAll(".password-content-lock");
+    containers.forEach(container => {
+      const btn = container.querySelector(".password-verify-btn") as HTMLElement | null;
+      const input = container.querySelector(".password-input") as HTMLInputElement | null;
+      if (!btn || !input) return;
+
+      const contentId = btn.getAttribute("data-content-id") || container.getAttribute("data-content-id") || "";
+
       const handleVerify = async () => {
-        const contentId = btn.getAttribute("data-content-id");
-        if (!contentId) return;
-
-        const container = btn.closest(".password-content-editor-preview");
-        if (!container) return;
-
-        const input = container.querySelector(`.password-input[data-content-id="${contentId}"]`) as HTMLInputElement;
-        if (!input || !input.value.trim()) {
+        if (!input.value.trim()) {
           addToast({ title: "提示", description: "请输入密码", color: "warning" });
           return;
         }
 
         try {
-          // 获取当前文章的 slug（从 URL 中提取）
           const pathParts = window.location.pathname.split("/").filter(Boolean);
           const slug = pathParts[pathParts.length - 1] || "";
 
-          const res = await apiClient.post<{ content: string }>(`/api/v1/password-content/verify`, {
-            slug,
-            content_id: contentId,
-            password: input.value.trim(),
-          });
+          const result = await articleApi.verifyArticlePassword(slug, input.value.trim(), "block", contentId);
 
-          if (res.data?.content) {
-            // 验证成功，替换锁定区域为实际内容
-            const lockedArea = container.querySelector(".password-content-locked");
-            if (lockedArea) {
-              const previewArea =
-                container.querySelector(".password-content-preview") ||
-                container.querySelector(".password-content-body");
-              if (previewArea) {
-                previewArea.innerHTML = res.data.content;
-              }
-            }
-            // 更新标题区域的徽章
-            const badge = container.querySelector(".password-badge, .password-pro-badge");
-            if (badge) {
-              badge.textContent = "已解锁";
-              (badge as HTMLElement).style.color = "#16a34a";
-              (badge as HTMLElement).style.background = "rgba(22, 163, 74, 0.08)";
-            }
+          if (result.success && result.content_html) {
+            const lockInner = container.querySelector(".password-content-lock-inner");
+            const inputContainer = container.querySelector(".password-input-container");
+            const hintEl = container.querySelector(".password-hint");
+            if (lockInner) lockInner.remove();
+            if (inputContainer) inputContainer.remove();
+            if (hintEl) hintEl.remove();
+
+            const contentDiv = document.createElement("div");
+            contentDiv.className = "password-content-unlocked";
+            contentDiv.innerHTML = result.content_html;
+            container.appendChild(contentDiv);
+
+            container.classList.add("password-content-lock--unlocked");
           } else {
             addToast({ title: "密码错误", description: "请检查密码后重试", color: "danger" });
           }
@@ -548,20 +539,12 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
 
       btn.addEventListener("click", handleVerify);
 
-      // 支持回车提交
-      const contentId = btn.getAttribute("data-content-id");
-      if (contentId) {
-        const container = btn.closest(".password-content-editor-preview");
-        const input = container?.querySelector(`.password-input[data-content-id="${contentId}"]`) as HTMLInputElement;
-        if (input) {
-          input.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleVerify();
-            }
-          });
+      input.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleVerify();
         }
-      }
+      });
     });
   }, []);
 

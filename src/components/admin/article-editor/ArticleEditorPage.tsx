@@ -266,19 +266,21 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
     editorSyncedRef.current = article.id;
     const contentHtml = article.content_html?.trim();
     const contentMd = article.content_md?.trim();
+    const hasEncryptedBlocks = contentHtml && /class="[^"]*password-content-lock[^"]*"/.test(contentHtml);
     queueMicrotask(() => {
       if (editor.isDestroyed) return;
-      if (contentHtml) {
-        // 清理 HTML，移除 heading 中的锚点链接，恢复为纯文本
+      if (contentHtml && !hasEncryptedBlocks) {
         const cleanedHtml = cleanHtmlForEditor(contentHtml);
         editor.commands.setContent(cleanedHtml);
         return;
       }
-      // 兼容仅返回 Markdown、或历史数据中 content_html 为空的场景：用 MD 转 HTML 初始化可视化编辑器
       if (contentMd) {
         const html = fixTaskListHtml(marked.parse(contentMd, { async: false }) as string);
         editor.commands.setContent(html);
         setSourceContent(contentMd);
+      } else if (contentHtml) {
+        const cleanedHtml = cleanHtmlForEditor(contentHtml);
+        editor.commands.setContent(cleanedHtml);
       }
     });
   }, [article, editor]);

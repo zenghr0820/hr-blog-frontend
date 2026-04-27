@@ -1395,7 +1395,7 @@ function SettingsContent({
               label="访问密码"
               value={meta.password}
               onChange={v => onUpdateField("password", v)}
-              placeholder="设置文章访问密码"
+              placeholder={meta.has_password ? "已设密码，留空则保留原密码" : "设置文章访问密码"}
               type="password"
             />
             <SbInput

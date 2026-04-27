@@ -1843,10 +1843,17 @@ html.with-fancybox body.hide-scrollbar {
 
 .postContentInner h1:before,.postContentInner h2:before,.postContentInner h3:before,.postContentInner h4:before,.postContentInner h5:before,.postContentInner h6::before {
     position: absolute;
-    top: calc(50% - 7px);
     color: #f47466;
-    content: '';
+    top: 50%;
     left: 0;
+    transform: translateY(-50%);
+    width: 1.5rem; /* 关键：用 em 自动跟随字体大小 */
+    height: 1.5rem;
+    content: "";
+    background: currentColor;
+    mask-image: url("/icons/tree-solid-full.svg");
+    mask-repeat: no-repeat;
+    mask-size: contain;
     line-height: 1;
     transition: all .2s ease-out;
 }

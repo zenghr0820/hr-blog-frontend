@@ -142,8 +142,8 @@ export function registerCustomRules(td: TurndownService) {
       if (originalPrice) attrs += ` original-price="${originalPrice}"`;
       if (currency !== "¥") attrs += ` currency="${currency}"`;
 
-      const body = el.querySelector(".paid-content-preview, .paid-content-body");
-      const inner = body ? body.innerHTML.trim() : "";
+      const body = el.querySelector(".paid-content-preview") || el.querySelector(".paid-content-body");
+      const inner = body ? td.turndown(body.innerHTML.trim()) : "";
 
       return `\n:::paid-content ${attrs}\n${inner}\n:::\n\n`;
     },
@@ -165,8 +165,8 @@ export function registerCustomRules(td: TurndownService) {
       if (hint) attrs += ` hint="${hint}"`;
       if (placeholder) attrs += ` placeholder="${placeholder}"`;
 
-      const body = el.querySelector(".password-content-preview, .password-content-body");
-      const inner = body ? body.innerHTML.trim() : "";
+      const body = el.querySelector(".password-content-preview") || el.querySelector(".password-content-body");
+      const inner = body ? td.turndown(body.innerHTML.trim()) : "";
 
       return `\n:::password-content ${attrs}\n${inner || "这里是密码保护的内容。"}\n:::\n\n`;
     },
@@ -185,10 +185,10 @@ export function registerCustomRules(td: TurndownService) {
       let attrs = `id="${id}" title="${title}"`;
       if (hint) attrs += ` hint="${hint}"`;
 
-      const body = el.querySelector(".login-required-content-preview, .login-required-content-body");
-      const inner = body ? body.innerHTML.trim() : "";
+      const body = el.querySelector(".login-required-content-preview") || el.querySelector(".login-required-content-body");
+      const inner = body ? td.turndown(body.innerHTML.trim()) : "";
 
-      return `\n:::login-required ${attrs}\n${inner || "<p>这里是登录后可查看的内容。</p>"}\n:::\n\n`;
+      return `\n:::login-required ${attrs}\n${inner || "这里是登录后可查看的内容。"}\n:::\n\n`;
     },
   });
 

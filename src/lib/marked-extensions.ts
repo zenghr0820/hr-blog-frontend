@@ -69,8 +69,9 @@ function matchContainerBlock(src: string): { raw: string; tagName: string; param
 
   while (pos < src.length && depth > 0) {
     const lineEnd = src.indexOf("\n", pos);
-    if (lineEnd === -1) break;
-    const line = src.slice(pos, lineEnd).trim();
+    const line = lineEnd === -1
+      ? src.slice(pos).trim()
+      : src.slice(pos, lineEnd).trim();
 
     const cm = line.match(/^(`{3,}|~{3,})/);
     if (cm) {
@@ -88,6 +89,10 @@ function matchContainerBlock(src: string): { raw: string; tagName: string; param
       else if (line === ":::") depth--;
     }
 
+    if (lineEnd === -1) {
+      pos = src.length;
+      break;
+    }
     pos = lineEnd + 1;
   }
 
@@ -126,8 +131,9 @@ function matchAdmonitionBlock(src: string): { raw: string; tagName: string; para
 
   while (pos < src.length && depth > 0) {
     const lineEnd = src.indexOf("\n", pos);
-    if (lineEnd === -1) break;
-    const line = src.slice(pos, lineEnd).trim();
+    const line = lineEnd === -1
+      ? src.slice(pos).trim()
+      : src.slice(pos, lineEnd).trim();
 
     const cm = line.match(/^(`{3,}|~{3,})/);
     if (cm) {
@@ -145,6 +151,10 @@ function matchAdmonitionBlock(src: string): { raw: string; tagName: string; para
       else if (ADMONITION_CLOSE_RE.test(line)) depth--;
     }
 
+    if (lineEnd === -1) {
+      pos = src.length;
+      break;
+    }
     pos = lineEnd + 1;
   }
 
