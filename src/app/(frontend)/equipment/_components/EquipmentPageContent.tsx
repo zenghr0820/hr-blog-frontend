@@ -6,6 +6,7 @@ import { Spinner } from "@/components/ui";
 import { BannerCard } from "@/components/common/BannerCard";
 import { CommentSection } from "@/components/post/Comment";
 import { EquipmentCard } from "./EquipmentCard";
+import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
 import type { EquipmentCategory } from "./types";
 
 function parseEquipmentList(raw: unknown): EquipmentCategory[] {
@@ -40,7 +41,9 @@ export function EquipmentPageContent() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
   const isLoaded = useSiteConfigStore(state => state.isLoaded);
 
-  const bannerConfig = siteConfig?.equipment?.banner;
+  // 使用统一的 Banner 配置提取器
+  const bannerConfig = extractBannerConfig(siteConfig, 'equipment');
+  const defaultConfig = getDefaultBannerConfig('equipment');
 
   const categories = useMemo(() => parseEquipmentList(siteConfig?.equipment?.list), [siteConfig?.equipment?.list]);
 
@@ -53,12 +56,12 @@ export function EquipmentPageContent() {
   }
 
   return (
-    <div className="cardWidget mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
       <BannerCard
-        tips={bannerConfig?.title || "我的装备"}
-        title={bannerConfig?.description || "Equipment"}
-        description={bannerConfig?.tip}
-        backgroundImage={bannerConfig?.background}
+        tips={bannerConfig.tips || defaultConfig.tips}
+        title={bannerConfig.title || defaultConfig.title}
+        description={bannerConfig.description || defaultConfig.description}
+        backgroundImage={bannerConfig.backgroundImage}
         height={300}
       />
 

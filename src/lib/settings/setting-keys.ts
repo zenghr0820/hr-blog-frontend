@@ -397,14 +397,18 @@ export const KEY_ABOUT_ENABLE_MUSIC = "about.page.enable.music";
 export const KEY_ABOUT_ENABLE_CUSTOM_CODE = "about.page.enable.custom_code";
 export const KEY_ABOUT_ENABLE_COMMENT = "about.page.enable.comment";
 
-// ==================== 装备页面配置 ====================
+// ==================== 统一 Banner 配置（新格式）====================
+// 所有页面的 Banner 配置统一使用 banner.{pageKey} 格式存储
+export const KEY_BANNER_CONFIG = "banner";
+
+// ==================== 装备页面配置（旧格式，向后兼容）====================
 export const KEY_EQUIPMENT_BANNER_BG = "equipment.banner.background";
 export const KEY_EQUIPMENT_BANNER_TITLE = "equipment.banner.title";
 export const KEY_EQUIPMENT_BANNER_DESC = "equipment.banner.description";
 export const KEY_EQUIPMENT_BANNER_TIP = "equipment.banner.tip";
 export const KEY_EQUIPMENT_LIST = "equipment.list";
 
-// ==================== 最近评论页面配置 ====================
+// ==================== 最近评论页面配置（旧格式，向后兼容）====================
 export const KEY_RECENT_COMMENTS_BANNER_BG = "recent_comments.banner.background";
 export const KEY_RECENT_COMMENTS_BANNER_TITLE = "recent_comments.banner.title";
 export const KEY_RECENT_COMMENTS_BANNER_DESC = "recent_comments.banner.description";

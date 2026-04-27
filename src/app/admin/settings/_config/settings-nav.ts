@@ -20,6 +20,7 @@ import {
   Share2,
   DatabaseBackup,
   Bot,
+  LayoutDashboard,
 } from "lucide-react";
 import type { SettingCategoryId } from "@/lib/settings/setting-descriptors";
 
@@ -57,6 +58,12 @@ export const settingsCategories: CategorySection[] = [
         label: "换肤与配色",
         icon: Sparkles,
         keywords: ["换肤", "主题", "配色", "品牌色", "语义色", "皮肤"],
+      },
+      {
+        id: "appearance-banner",
+        label: "Banner 管理",
+        icon: LayoutDashboard,
+        keywords: ["横幅", "banner", "顶部", "页面标题", "统一管理"],
       },
       {
         id: "appearance-home",

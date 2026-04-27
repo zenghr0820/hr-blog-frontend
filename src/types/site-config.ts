@@ -2,6 +2,7 @@
  * 站点配置类型（与 anheyu-app 后端 API 保持一致）
  */
 import type { AboutPageConfig } from "./about";
+import type { BannerStorageConfig } from "./banner";
 
 export interface PageOneImageItem {
   enable?: boolean;
@@ -418,6 +419,10 @@ export interface SiteConfigData {
     };
     list?: string;
   };
+
+  // 统一的 Banner 配置（新格式）
+  banner?: BannerStorageConfig
+;
 
   // 文章配置
   article?: {

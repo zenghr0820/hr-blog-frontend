@@ -2,13 +2,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSiteConfigStore } from "@/store/site-config-store";
-import Image from "next/image";
 import { Icon } from "@iconify/react";
+import { BannerCard } from "@/components/common/BannerCard";
+import { Spinner } from "@/components/ui";
+import { useSiteConfigStore } from "@/store/site-config-store";
+import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
 import { fcircleApi } from "@/lib/api/fcircle";
 import type { FCircleMoment, FCircleStatistics, LinkInfo } from "@/types/fcircle";
 import { CommentSection } from "@/components/post/Comment";
-import { BannerCard } from "@/components/common/BannerCard";
 import styles from "../_styles/fcircle.module.scss";
 
 interface LinkArticle {
@@ -127,7 +128,9 @@ export function FcirclePageClient() {
 
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
 
-  const bannerConfig = siteConfig?.fcircle?.banner;
+  // 使用统一的 Banner 配置提取器
+  const bannerConfig = extractBannerConfig(siteConfig, 'test');
+  const defaultConfig = getDefaultBannerConfig('fcircle');
 
   useEffect(() => {
     const data = loadFishingData();
@@ -324,10 +327,10 @@ export function FcirclePageClient() {
       <div className={`cardWidget ${styles.fcircle}`}>
 
         <BannerCard
-            tips={bannerConfig?.title || "朋友圈"}
-            title={bannerConfig?.description || "Fcircle"}
-            description={bannerConfig?.tip}
-            backgroundImage={bannerConfig?.background}
+            tips={bannerConfig.tips || defaultConfig.tips}
+            title={bannerConfig.title || defaultConfig.title}
+            description={bannerConfig.description || defaultConfig.description}
+            backgroundImage={bannerConfig.backgroundImage}
             height={300}
         />
 

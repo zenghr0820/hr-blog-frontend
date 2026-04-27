@@ -14,6 +14,9 @@ export const settingsFormRegistry: Record<SettingCategoryId, LazyForm> = {
   "appearance-skin": lazy(() =>
     import("@/components/admin/settings/AppearanceSkinForm").then(m => ({ default: m.AppearanceSkinForm }))
   ) as LazyForm,
+  "appearance-banner": lazy(() =>
+    import("@/components/admin/settings/BannerManagerForm").then(m => ({ default: m.BannerManagerForm }))
+  ) as LazyForm,
   "appearance-home": lazy(() =>
     import("@/components/admin/settings/HomePageForm").then(m => ({ default: m.HomePageForm }))
   ) as LazyForm,

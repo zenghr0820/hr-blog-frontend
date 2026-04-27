@@ -12,15 +12,19 @@ import { useLatestComments } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { Spinner } from "@/components/ui";
 import { BannerCard } from "@/components/common/BannerCard";
+import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
 import { CommentCard } from "@/components/post/Comment/CommentCard";
 import type { CommentDisplayConfig } from "@/components/post/Comment/comment-utils";
 
 export function RecentCommentsPageClient() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
+
+  // 使用统一的 Banner 配置提取器
+  const bannerConfig = extractBannerConfig(siteConfig, 'recent_comments');
+  const defaultConfig = getDefaultBannerConfig('recent_comments');
+
   const { data, isPending, isError } = useLatestComments({ page: 1, pageSize: 20 });
   const comments = data?.list || [];
-
-  const bannerConfig = siteConfig?.recent_comments?.banner;
 
   const displayConfig: CommentDisplayConfig = useMemo(
     () => ({
@@ -33,12 +37,12 @@ export function RecentCommentsPageClient() {
   );
 
   return (
-    <div className="cardWidget w-full max-w-[1200px] mx-auto px-6 py-8 space-y-6">
+    <div className="cardWidget w-full max-w-[1400px] mx-auto px-6 py-8 space-y-6">
       <BannerCard
-        tips={bannerConfig?.title || "最近评论"}
-        title={bannerConfig?.description || "Recent Comments"}
-        description={bannerConfig?.tip}
-        backgroundImage={bannerConfig?.background}
+        tips={bannerConfig.tips || defaultConfig.tips}
+        title={bannerConfig.title || defaultConfig.title}
+        description={bannerConfig.description || defaultConfig.description}
+        backgroundImage={bannerConfig.backgroundImage}
         height={300}
       />
 

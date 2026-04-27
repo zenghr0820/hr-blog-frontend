@@ -9,14 +9,19 @@ import { BannerCard } from "@/components/common/BannerCard";
 import { CommentSection } from "@/components/post/Comment";
 import { MomentCard } from "./MomentCard";
 import type { EssayItem } from "@/types/essay";
+import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
 import styles from "../essay.module.css";
 
 export function EssayPageClient() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
-  const momentsConfig = siteConfig?.moments;
+  
+  // 使用统一的 Banner 配置提取器（essay 对应 moments）
+  const bannerConfig = extractBannerConfig(siteConfig, 'essay');
+  const defaultConfig = getDefaultBannerConfig('essay');
+  
   const { data, isPending, isError } = useEssayList({
     page: 1,
-    page_size: momentsConfig?.display_limit || 30,
+    page_size: bannerConfig.display_limit || siteConfig?.moments?.display_limit || 30,
   });
 
   const moments = data?.list || [];
@@ -44,13 +49,13 @@ export function EssayPageClient() {
   return (
     <div className={`cardWidget ${styles.essayPage}`}>
       <BannerCard
-        tips={momentsConfig?.title || "动态"}
-        title={momentsConfig?.subtitle || "Moments"}
-        description={momentsConfig?.tips}
-        backgroundImage={momentsConfig?.top_background}
+        tips={bannerConfig.tips || defaultConfig.tips}
+        title={bannerConfig.title || defaultConfig.title}
+        description={bannerConfig.description || defaultConfig.description}
+        backgroundImage={bannerConfig.backgroundImage}
         height={300}
-        buttonText={momentsConfig?.button_text}
-        buttonLink={momentsConfig?.button_link}
+        buttonText={bannerConfig.buttonText}
+        buttonLink={bannerConfig.buttonLink}
       />
 
       {isPending && (

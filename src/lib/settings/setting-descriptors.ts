@@ -24,6 +24,7 @@ export type SettingCategoryId =
   | "site-basic"
   | "site-icon"
   | "appearance-skin"
+  | "appearance-banner"
   | "appearance-home"
   | "appearance-userpanel"
   | "appearance-sidebar"
@@ -461,6 +462,10 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_APPEARANCE_SKIN, type: "string", defaultValue: "brand_blue" },
     { backendKey: K.KEY_APPEARANCE_TOKENS, type: "json", defaultValue: "{}" },
   ],
+  "appearance-banner": [
+    // 预设的 Banner 配置
+    { backendKey: K.KEY_BANNER_CONFIG, type: "json" },
+  ],
   "appearance-home": [
     { backendKey: K.KEY_HOME_TOP, type: "json" },
     { backendKey: K.KEY_CREATIVITY, type: "json" },
@@ -845,5 +850,18 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_AI_AI_SUMMARY_PROMPT, type: "code" },
     { backendKey: K.KEY_AI_TITLE_PROMPT, type: "code" },
     { backendKey: K.KEY_AI_MCP_SECRET, type: "password" },
+  ],
+  "advanced-seo": [
+    { backendKey: K.KEY_SEO_AUTO_SUBMIT, type: "boolean", defaultValue: "false" },
+    { backendKey: K.KEY_SEO_BAIDU_ENABLE, type: "boolean", defaultValue: "false" },
+    { backendKey: K.KEY_SEO_BAIDU_SITE, type: "string" },
+    { backendKey: K.KEY_SEO_BAIDU_TOKEN, type: "password" },
+    { backendKey: K.KEY_SEO_BING_ENABLE, type: "boolean", defaultValue: "false" },
+    { backendKey: K.KEY_SEO_BING_API_KEY, type: "password" },
+    { backendKey: K.KEY_SEO_BING_SITE_URL, type: "string" },
+    { backendKey: K.KEY_SEO_GOOGLE_ENABLE, type: "boolean", defaultValue: "false" },
+    { backendKey: K.KEY_SEO_GOOGLE_CREDENTIAL, type: "password" },
+    { backendKey: K.KEY_SEO_RETRY_TIMES, type: "number", defaultValue: "3" },
+    { backendKey: K.KEY_SEO_RETRY_INTERVAL, type: "number", defaultValue: "60" },
   ],
 };
