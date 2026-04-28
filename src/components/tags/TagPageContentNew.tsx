@@ -4,10 +4,12 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useTags } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useMounted } from "@/hooks/use-mounted";
 import TagText from "@/components/common/TagText";
 import styles from "./TagPageContentNew.module.css";
 
 export function TagPageContentNew() {
+  const mounted = useMounted();
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
   const { data: tags = [], isLoading, isError } = useTags("count");
 
@@ -20,18 +22,21 @@ export function TagPageContentNew() {
     <div className={`cardWidget ${styles.tagPageContainer}`}>
       {!isOneImageEnabled && <h1 className={styles.pageTitle}>标签</h1>}
 
-      {isLoading && <div className={styles.loadingTip}>标签加载中...</div>}
-      {isError && <div className={styles.errorTip}>加载标签失败，请稍后重试</div>}
-
-      {!isLoading && !isError && (
-        <div className={styles.tagCloudList}>
-          {tags.map(tag => (
+      <div className={styles.tagCloudList}>
+        {!mounted || isLoading ? (
+          <div className={styles.loadingTip}>标签加载中...</div>
+        ) : isError ? (
+          <div className={styles.errorTip}>加载标签失败，请稍后重试</div>
+        ) : tags.length === 0 ? (
+          <div className={styles.emptyTip}>暂无标签</div>
+        ) : (
+          tags.map(tag => (
             <Link key={tag.id} className={styles.tagItem} href={`/tags/${encodeURIComponent(tag.name)}/`}>
               <TagText key={tag.id} tag={tag.name} />
             </Link>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }

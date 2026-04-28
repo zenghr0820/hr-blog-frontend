@@ -74,7 +74,7 @@ export const fcircleApi = {
    * POST /api/fcircle/moments/refresh
    */
   async refreshMoments(): Promise<void> {
-    const response = await apiClient.post("/api/fcircle/moments/refresh");
+    const response = await apiClient.get("/api/fcircle/moments/refresh");
 
     if (response.code !== 200) {
       throw new Error(response.message || "刷新动态失败");

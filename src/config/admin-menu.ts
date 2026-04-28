@@ -108,6 +108,13 @@ export const adminMenuConfig: AdminMenuGroup[] = [
         roles: ["admin"],
       },
       {
+        id: "fcircle",
+        label: "朋友圈管理",
+        href: "/admin/fcircle",
+        icon: "ri:global-line",
+        roles: ["admin"],
+      },
+      {
         id: "users",
         label: "用户管理",
         href: "/admin/users",
