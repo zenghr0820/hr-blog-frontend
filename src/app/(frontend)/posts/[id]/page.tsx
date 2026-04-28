@@ -3,6 +3,7 @@
  * 对接 anheyu-app 后端 API
  */
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { PostDetailContent } from "@/components/post";
 import { buildArticleJsonLd, buildPageMetadata, fetchSiteConfigForSeo, resolveSeoSiteInfo } from "@/lib/seo";
@@ -26,13 +27,23 @@ const API_BASE_URL = process.env.BACKEND_URL || "http://localhost:8091";
  * API: GET /api/public/articles/{id}
  * @param id 文章 ID 或 abbrlink
  */
-async function getArticle(id: string) {
+async function getArticle(id: string, cookieHeader?: string, urlToken?: string) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/public/articles/${id}`, {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (cookieHeader) {
+      headers["Cookie"] = cookieHeader;
+    }
+
+    let url = `${API_BASE_URL}/api/public/articles/${id}`;
+    if (urlToken) {
+      url += `?token=${encodeURIComponent(urlToken)}`;
+    }
+
+    const res = await fetch(url, {
       next: { revalidate: 60 },
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     });
 
     if (!res.ok) {
@@ -92,9 +103,13 @@ async function getRecentArticles() {
 }
 
 // 动态生成 Metadata
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ [key: string]: string | string[] | undefined }> }): Promise<Metadata> {
   const { id } = await params;
-  const article = await getArticle(id);
+  const sp = await searchParams;
+  const urlToken = typeof sp.token === "string" ? sp.token : undefined;
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
+  const article = await getArticle(id, cookieHeader, urlToken);
 
   if (!article) {
     return buildPageMetadata({
@@ -121,12 +136,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 // 页面组件
-export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PostDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const { id } = await params;
+  const sp = await searchParams;
+  const urlToken = typeof sp.token === "string" ? sp.token : undefined;
 
-  // 并行获取文章、最近文章与站点配置（用于 JSON-LD）
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
+
   const [article, recentArticles, siteConfig] = await Promise.all([
-    getArticle(id),
+    getArticle(id, cookieHeader, urlToken),
     getRecentArticles(),
     fetchSiteConfigForSeo(),
   ]);

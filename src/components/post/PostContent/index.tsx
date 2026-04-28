@@ -502,6 +502,9 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
       const input = container.querySelector(".password-input") as HTMLInputElement | null;
       if (!btn || !input) return;
 
+      if (btn.dataset.eventBound === "true") return;
+      btn.dataset.eventBound = "true";
+
       const contentId = btn.getAttribute("data-content-id") || container.getAttribute("data-content-id") || "";
 
       const handleVerify = async () => {
@@ -523,6 +526,11 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
             if (lockInner) lockInner.remove();
             if (inputContainer) inputContainer.remove();
             if (hintEl) hintEl.remove();
+
+            const divider = document.createElement("div");
+            divider.className = "password-content-unlocked-divider";
+            divider.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>已解锁</span>`;
+            container.appendChild(divider);
 
             const contentDiv = document.createElement("div");
             contentDiv.className = "password-content-unlocked";

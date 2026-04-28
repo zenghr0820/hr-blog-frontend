@@ -227,4 +227,5 @@ export interface Article {
   // 访问控制
   access_rule?: AccessRule;
   encrypted?: boolean;
+  has_encrypted_blocks?: boolean;
 }

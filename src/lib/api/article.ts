@@ -201,12 +201,14 @@ export const articleApi = {
     encrypted?: boolean;
     content_html?: string;
     password_hint?: string;
+    access_token?: string;
   }> {
     const response = await apiClient.post<{
       success: boolean;
       encrypted?: boolean;
       content_html?: string;
       password_hint?: string;
+      access_token?: string;
     }>(`/api/public/password-content/verify`, {
       article_id: articleId,
       password,
@@ -219,6 +221,18 @@ export const articleApi = {
     }
 
     throw new Error(response.message || "密码验证失败");
+  },
+
+  async getArticleWithToken(articleId: string, token: string): Promise<{ content_html?: string; encrypted?: boolean }> {
+    const response = await apiClient.get<{ content_html?: string; encrypted?: boolean }>(`/api/public/articles/${articleId}`, {
+      params: { token },
+    });
+
+    if (response.code === 200 && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || "获取文章失败");
   },
 };
 

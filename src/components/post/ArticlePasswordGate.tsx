@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Lock, Eye, EyeOff, Loader2, AlertCircle, KeyRound } from "lucide-react";
+import { Lock, Eye, EyeOff, Loader2, AlertCircle, KeyRound, Share2, Check } from "lucide-react";
+import { addToast } from "@heroui/react";
 import { articleApi } from "@/lib/api/article";
 
 interface ArticlePasswordGateProps {
@@ -15,6 +16,21 @@ export function ArticlePasswordGate({ articleId, hint, onVerified }: ArticlePass
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [shareToken, setShareToken] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyShareLink = useCallback(async () => {
+    if (!shareToken) return;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?token=${shareToken}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      addToast({ title: "分享链接已复制", color: "success", timeout: 2000 });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      addToast({ title: "复制失败，请手动复制", color: "danger", timeout: 2000 });
+    }
+  }, [shareToken]);
 
   const handleSubmit = useCallback(
     async (e: React.SubmitEvent) => {
@@ -28,6 +44,9 @@ export function ArticlePasswordGate({ articleId, hint, onVerified }: ArticlePass
       try {
         const result = await articleApi.verifyArticlePassword(articleId, password, "full");
         if (result.success && result.content_html) {
+          if (result.access_token) {
+            setShareToken(result.access_token);
+          }
           onVerified(result.content_html);
         } else {
           setError("密码错误，请重试");
@@ -110,6 +129,31 @@ export function ArticlePasswordGate({ articleId, hint, onVerified }: ArticlePass
               )}
             </button>
           </form>
+
+          {shareToken && (
+            <div className="mt-5 pt-4 border-t border-border">
+              <button
+                type="button"
+                onClick={handleCopyShareLink}
+                className="w-full py-2.5 px-4 bg-muted hover:bg-muted/80 text-muted-foreground rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    已复制
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-4 h-4" />
+                    复制分享链接
+                  </>
+                )}
+              </button>
+              <p className="mt-2 text-xs text-muted-foreground/60">
+                分享链接7天内有效，无需密码即可查看
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

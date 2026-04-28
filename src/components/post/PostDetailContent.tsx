@@ -36,6 +36,7 @@ import { scrollTo } from "@/store/scroll-store";
 import { setArticleMetaThemeColor, restoreMetaThemeColor } from "@/utils/theme-manager";
 import { resolvePostDefaultCoverUrl } from "@/utils/same-origin-media-url";
 import { docSeriesApi } from "@/lib/api/doc-series";
+import { articleApi } from "@/lib/api/article";
 import type { Article, RecentArticle } from "@/types/article";
 import type { DocSeriesWithArticles } from "@/types/doc-series";
 import styles from "./PostDetail.module.css";
@@ -85,7 +86,41 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
 
   const isPasswordProtected = article.access_rule?.type === "password" && !article.content_html;
+  const hasEncryptedBlocks = !isPasswordProtected && (article.has_encrypted_blocks ?? false);
+  const [checkingToken, setCheckingToken] = useState(false);
   const isUnlocked = unlockedContent !== null;
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("token");
+
+    if (!urlToken) {
+      return;
+    }
+
+    if (!isPasswordProtected && !hasEncryptedBlocks) {
+      window.history.replaceState({}, "", window.location.pathname);
+      return;
+    }
+
+    setCheckingToken(true);
+    let cancelled = false;
+    const autoUnlock = async () => {
+      try {
+        const data = await articleApi.getArticleWithToken(article.id, urlToken);
+        if (!cancelled && data?.content_html) {
+          setUnlockedContent(data.content_html);
+          window.history.replaceState({}, "", window.location.pathname);
+        }
+      } catch {
+      } finally {
+        if (!cancelled) setCheckingToken(false);
+      }
+    };
+    autoUnlock();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [article.id]);
 
   const activeDocSeries =
     docSeries && article.doc_series_id && String(docSeries.id) === String(article.doc_series_id) ? docSeries : null;
@@ -248,11 +283,22 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
 
             {/* 密码保护门控 */}
             {isPasswordProtected && !isUnlocked ? (
+              checkingToken ? (
+                <div className="flex items-center justify-center py-16">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <p className="text-sm text-muted-foreground">正在验证访问权限...</p>
+                  </div>
+                </div>
+              ) : (
               <ArticlePasswordGate
                 articleId={article.id}
                 hint={article.access_rule?.hint}
-                onVerified={setUnlockedContent}
+                onVerified={(contentHtml) => {
+                  setUnlockedContent(contentHtml);
+                }}
               />
+              )
             ) : (
             <>
             {/* 文章内容 */}
