@@ -23,6 +23,8 @@ export function useKeyboardShortcuts() {
   const [showShortcutsPanel, setShowShortcutsPanel] = useState(false);
   const [isShiftPressed, setIsShiftPressed] = useState(false);
   const pressedKeysRef = useRef<Set<string>>(new Set());
+  const hidePanelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hidePanelDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 快捷键定义
   const shortcuts: Shortcut[] = useMemo(
@@ -204,28 +206,36 @@ export function useKeyboardShortcuts() {
   const handleKeyUp = useCallback((event: KeyboardEvent) => {
     const key = event.key;
 
-    // 防止 key 为 undefined 的情况
+    if (hidePanelTimerRef.current) {
+      clearTimeout(hidePanelTimerRef.current);
+      hidePanelTimerRef.current = null;
+    }
+    if (hidePanelDelayTimerRef.current) {
+      clearTimeout(hidePanelDelayTimerRef.current);
+      hidePanelDelayTimerRef.current = null;
+    }
+
     if (!key) return;
 
     if (key === "Shift") {
       setIsShiftPressed(false);
       pressedKeysRef.current.delete("Shift");
 
-      // 延迟隐藏面板，给用户时间看到快捷键提示
-      setTimeout(() => {
+      hidePanelDelayTimerRef.current = setTimeout(() => {
         if (!pressedKeysRef.current.has("Shift") && pressedKeysRef.current.size === 0) {
           setShowShortcutsPanel(false);
         }
+        hidePanelDelayTimerRef.current = null;
       }, 300);
     } else {
       pressedKeysRef.current.delete(key.toUpperCase());
 
-      // 如果没有按键被按下，隐藏面板
       if (pressedKeysRef.current.size === 0) {
-        setTimeout(() => {
+        hidePanelTimerRef.current = setTimeout(() => {
           if (pressedKeysRef.current.size === 0) {
             setShowShortcutsPanel(false);
           }
+          hidePanelTimerRef.current = null;
         }, 100);
       }
     }
@@ -270,6 +280,14 @@ export function useKeyboardShortcuts() {
       window.removeEventListener("keyup", handleKeyUp);
       document.removeEventListener("click", handleClickOutside);
       window.removeEventListener("blur", closeShortcutsPanel);
+      if (hidePanelTimerRef.current) {
+        clearTimeout(hidePanelTimerRef.current);
+        hidePanelTimerRef.current = null;
+      }
+      if (hidePanelDelayTimerRef.current) {
+        clearTimeout(hidePanelDelayTimerRef.current);
+        hidePanelDelayTimerRef.current = null;
+      }
     };
   }, [handleKeyDown, handleKeyUp, handleClickOutside, closeShortcutsPanel]);
 

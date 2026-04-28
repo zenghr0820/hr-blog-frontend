@@ -17,7 +17,7 @@ export function ArticlePasswordGate({ articleId, hint, onVerified }: ArticlePass
   const [error, setError] = useState("");
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: React.SubmitEvent) => {
       e.preventDefault();
       if (!password.trim()) {
         setError("请输入密码");
@@ -49,7 +49,7 @@ export function ArticlePasswordGate({ articleId, hint, onVerified }: ArticlePass
             <Lock className="w-8 h-8 text-primary" />
           </div>
 
-          <h3 className="text-xl font-semibold mb-2">文章已加密</h3>
+          <p className="text-xl font-semibold mb-2">文章已加密</p>
           <p className="text-sm text-muted-foreground mb-6">
             这篇文章需要密码才能查看
           </p>

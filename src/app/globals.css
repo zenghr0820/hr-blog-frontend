@@ -1084,6 +1084,15 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-post-blockquote-bg: #fafcff;
   --anzhiyu-post-tabs-bg: #f2f5f8;
   --anzhiyu-nav-bg: #fffc;
+  --btn-hover-color: #ff7242;
+  --btn-color: #fff;
+  --btn-bg: rgba(31, 105, 179, 0.852);
+  --exit-btn-bg: #c0c0c0;
+  --exit-btn-color: #fff;
+  --exit-btn-hover: #8d8d8d;
+  --readmode-light-color: #fff;
+
+
 
   /* 遮罩 */
   --anzhiyu-head-maskbg: rgb(0 0 0 / 30%);
@@ -1219,6 +1228,15 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-post-blockquote-bg: #000;
   --anzhiyu-post-tabs-bg: #121212;
   --anzhiyu-nav-bg: hsla(0, 0%, 7%, .8);
+  --btn-hover-color: #787878;
+  --btn-color: rgba(255, 255, 255, 0.7);
+  --btn-bg: #1f1f1f;
+  --exit-btn-bg: #1f1f1f;
+  --exit-btn-color: rgba(255, 255, 255, 0.9);
+  --exit-btn-hover: #525252;
+  --readmode-light-color: #0d0d0d;
+
+
 
   /* 遮罩 */
   --anzhiyu-head-maskbg: rgb(0 0 0 / 60%);
@@ -1737,6 +1755,85 @@ html.with-fancybox body.hide-scrollbar {
   .frontend-layout::before {
     display: none !important;
   }
+}
+
+/* ===================== 阅读模式样式 ===================== */
+body.reading-mode {
+  background: var(--readmode-light-color) !important;
+}
+
+body.reading-mode #postDetailContent {
+  background: transparent !important;
+  box-shadow: none!important;
+  border: none;
+}
+
+body.reading-mode #postHeaderContainer,
+body.reading-mode #postHeaderContainer::before {
+  display: none!important;
+  background: none!important;
+  border: none!important;
+  box-shadow: none!important;
+}
+
+
+/* 侧边栏 */
+body.reading-mode #post-sidebar, 
+body.reading-mode #postTopCover,
+body.reading-mode #doc-sidebar-left,
+body.reading-mode #rightside {
+  display: none!important;
+}
+
+body.reading-mode .frontend-layout::before {
+  display: none !important;
+}
+
+body.reading-mode #frontend-main {
+  margin: 0 auto !important;
+  padding: 20px !important;
+}
+
+body.reading-mode .post-page {
+  background: transparent !important;
+}
+
+body.reading-mode .post-cover,
+body.reading-mode .post-hero {
+  display: none !important;
+}
+
+body.reading-mode .frontendHeader,
+body.reading-mode .oneImageBanner,
+body.reading-mode .site-footer,
+body.reading-mode .music-player {
+  display: none !important;
+}
+
+.exit-readmode {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  display: none;
+  background-color: var(--exit-btn-bg);
+  color: var(--exit-btn-color);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+/* 阅读模式退出按钮 */
+body.reading-mode .exit-readmode {
+  display: flex !important;
+}
+body.reading-mode .exit-readmode:hover {
+  background: var(--exit-btn-hover);
 }
 
 /* ===================== cardWidget 统一样式 ===================== */

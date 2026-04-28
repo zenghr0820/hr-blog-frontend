@@ -110,7 +110,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
   }, [siteConfig]);
 
   return (
-    <aside className={styles.postSidebar}>
+    <aside id="post-sidebar" className={styles.postSidebar}>
       {/* 作者信息卡片 */}
       {authorInfoConfig && <AuthorInfoCardCur config={authorInfoConfig} />}
 

@@ -166,7 +166,7 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
   };
 
   return (
-    <div ref={containerRef} className={styles.postHeaderContainer} style={dynamicStyles}>
+    <div ref={containerRef} id="postHeaderContainer" className={styles.postHeaderContainer} style={dynamicStyles}>
       {/* 文章信息区域 - 外层处理滚动缩放，内层处理入场动画 */}
       <motion.div className={styles.postInfoWrapper} style={{ scale: isMobile ? 1 : infoScale }}>
         <motion.div
@@ -288,8 +288,7 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
       </motion.div>
 
       {/* 封面图片 */}
-      <motion.div className={styles.postTopCover} style={isMobile ? undefined : { transform: coverTransform }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* <motion.div id="postTopCover" className={styles.postTopCover} style={isMobile ? undefined : { transform: coverTransform }}>
         <img
           ref={imageRef}
           src={currentImageSrc}
@@ -298,7 +297,7 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
           onLoad={() => setIsImageLoaded(true)}
           onError={handleImageError}
         />
-      </motion.div>
+      </motion.div> */}
 
       {/* 波浪动画 - 仅桌面端显示 */}
       {!isMobile && <WavesArea />}

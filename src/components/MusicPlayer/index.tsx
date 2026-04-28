@@ -345,6 +345,7 @@ function MusicPlayerInner() {
 
   const containerClasses = [
     styles.navMusic,
+    "music-player",
     isMusicPlayerVisible ? styles.musicHidden : "",
     isInFooterArea ? styles.inFooterArea : "",
   ]

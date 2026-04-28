@@ -4,7 +4,7 @@
 
 // ---- 设计 Token ----
 .sb-root {
-  --sb-bg: var(--anzhiyu-card-bg, #fff);
+  --sb-bg: var(--card-bg, #fff);
   --sb-bg2: var(--anzhiyu-card-bg-grey, #f6f7fa);
   --sb-border: var(--anzhiyu-card-border, #e8eaf0);
   --sb-text: var(--anzhiyu-fontcolor, #1a1a2e);
@@ -28,7 +28,7 @@
 
 // 暗色覆盖
 :is(html.dark) .sb-root {
-  --sb-bg: var(--anzhiyu-card-bg, #1d1e22);
+  --sb-bg: var(--card-bg, #1d1e22);
   --sb-bg2: var(--anzhiyu-card-bg-grey, #27282a);
   --sb-border: var(--anzhiyu-card-border, #3d3d3f);
   --sb-text: var(--anzhiyu-fontcolor, #f7f7fa);

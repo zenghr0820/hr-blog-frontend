@@ -116,6 +116,7 @@ export function CommentBarrage({
   const timeoutRef = useRef<number | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const barrageHiddenRef = useRef(false);
+  const scrollStabilizerTimerRef = useRef<number | null>(null);
 
   const { data } = useCommentsByPath({ target_path: pathname || "", pageSize }, { enabled: Boolean(pathname) });
 
@@ -235,24 +236,25 @@ export function CommentBarrage({
             if (settledTimer) window.clearTimeout(settledTimer);
             settledTimer = window.setTimeout(() => {
               if (Date.now() - startTime >= maxDurationMs) {
-                cleanup();
-                return;
+                if (resizeObserver) {
+                  resizeObserver.disconnect();
+                  resizeObserver = null;
+                }
               }
-              cleanup();
             }, settleQuietMs);
           });
           resizeObserver.observe(contentRoot);
           if (commentRoot !== contentRoot) resizeObserver.observe(commentRoot);
         }
 
-        const hardStopTimer = window.setTimeout(cleanup, maxDurationMs + STABILIZER_SETTLE_MS);
-
-        function cleanup() {
-          resizeObserver?.disconnect();
+        scrollStabilizerTimerRef.current = window.setTimeout(() => {
+          if (resizeObserver) {
+            resizeObserver.disconnect();
+            resizeObserver = null;
+          }
           if (settledTimer) window.clearTimeout(settledTimer);
-          window.clearTimeout(hardStopTimer);
           reAlign();
-        }
+        }, maxDurationMs + STABILIZER_SETTLE_MS);
       };
 
       let targetElement = getTargetElement();
@@ -335,6 +337,10 @@ export function CommentBarrage({
       mo.disconnect();
       window.clearTimeout(fallback);
       observerRef.current?.disconnect();
+      if (scrollStabilizerTimerRef.current) {
+        window.clearTimeout(scrollStabilizerTimerRef.current);
+        scrollStabilizerTimerRef.current = null;
+      }
     };
   }, [observeTargetId, pathname]);
 

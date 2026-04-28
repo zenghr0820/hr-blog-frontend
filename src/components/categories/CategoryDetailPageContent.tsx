@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CategoryBar, Sidebar } from "@/components/home";
 import { FilteredArticleList } from "@/components/articles";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useUiStore } from "@/store/ui-store";
 import { scrollTo } from "@/store/scroll-store";
 
 interface CategoryDetailPageContentProps {
@@ -20,6 +21,7 @@ export function CategoryDetailPageContent({
   const [currentCategory, setCurrentCategory] = useState(initialCategoryName);
   const [currentPage, setCurrentPage] = useState(page);
   const siteTitle = useSiteConfigStore(state => state.siteConfig.APP_NAME || "AnHeYu");
+  const isSidebarVisible = useUiStore(state => state.isSidebarVisible);
 
   const buildCategoryPath = useCallback((categoryIdentifier: string, pageNumber: number) => {
     const encoded = encodeURIComponent(categoryIdentifier);
@@ -88,7 +90,8 @@ export function CategoryDetailPageContent({
           onPageChange={handlePageChange}
         />
       </div>
-      <Sidebar />
+      {/* 右侧侧边栏 */}
+      {isSidebarVisible && <Sidebar />}
     </div>
   );
 }

@@ -64,7 +64,7 @@ export function CustomPageContent({ page }: CustomPageContentProps) {
   }, [customJS]);
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-6 py-8">
+    <div className="cardWidget w-full max-w-[1400px] mx-auto px-6 py-8">
       {customCSS ? <style data-custom-page-style={page.path} dangerouslySetInnerHTML={{ __html: customCSS }} /> : null}
 
       {/* 仅明确为草稿时展示标题区（预览）；已发布或缺省 is_published 时不展示，避免接口异常时重复标题 */}

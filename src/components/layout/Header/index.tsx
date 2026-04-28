@@ -226,7 +226,7 @@ export function Header() {
 
   return (
     <>
-      <header className={cn(styles.frontendHeader, isPostDetailPage && styles.isPostDetail, isOneImagePage && styles.isOneImage)}>
+      <header className={cn(styles.frontendHeader, "frontendHeader", isPostDetailPage && styles.isPostDetail, isOneImagePage && styles.isOneImage)}>
         <div
           className={cn(
             styles.headerWrapper,

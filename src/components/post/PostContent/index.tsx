@@ -58,6 +58,7 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
   const contentRef = useRef<HTMLDivElement>(null);
   const mermaidCleanupRef = useRef<MermaidCleanupFn>(null);
   const codeCopyCleanupRef = useRef<(() => void) | null>(null);
+  const imageObserverRef = useRef<IntersectionObserver | null>(null);
   const copyConfig = useSiteConfigStore(useShallow(state => state.siteConfig?.post?.copy));
   const codeBlockRawConfig = useSiteConfigStore(useShallow(state => state.siteConfig?.post?.code_block));
   const appName = useSiteConfigStore(state => state.siteConfig?.APP_NAME);
@@ -1563,18 +1564,21 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
 
         const stillRemaining = currentContent.querySelectorAll<HTMLImageElement>("img[data-src]");
         if (stillRemaining.length > 0 && "IntersectionObserver" in window) {
-          const observer = new IntersectionObserver(
+          if (imageObserverRef.current) {
+            imageObserverRef.current.disconnect();
+          }
+          imageObserverRef.current = new IntersectionObserver(
             entries => {
               entries.forEach(entry => {
                 if (entry.isIntersecting) {
                   loadImage(entry.target as HTMLImageElement);
-                  observer.unobserve(entry.target);
+                  imageObserverRef.current?.unobserve(entry.target);
                 }
               });
             },
             { rootMargin: "300px" }
           );
-          stillRemaining.forEach(img => observer.observe(img));
+          stillRemaining.forEach(img => imageObserverRef.current?.observe(img));
         }
       }
     }
@@ -1635,6 +1639,10 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
       if (mermaidCleanupRef.current) {
         mermaidCleanupRef.current();
         mermaidCleanupRef.current = null;
+      }
+      if (imageObserverRef.current) {
+        imageObserverRef.current.disconnect();
+        imageObserverRef.current = null;
       }
       delete window.__musicPlayerToggle;
       delete window.__musicPlayerSeek;

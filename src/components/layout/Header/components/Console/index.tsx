@@ -31,6 +31,8 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
   const isCommentBarrageVisible = useUiStore(state => state.isCommentBarrageVisible);
   const toggleCommentBarrage = useUiStore(state => state.toggleCommentBarrage);
   const isMusicPlayerVisible = useUiStore(state => state.isMusicPlayerVisible);
+  const isSidebarVisible = useUiStore(state => state.isSidebarVisible);
+  const toggleSidebar = useUiStore(state => state.toggleSidebar);
 
   const isDarkMode = mounted && isDark;
 
@@ -349,8 +351,20 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
             closeDelay={0}
             classNames={{ content: "custom-tooltip-content" }}
           >
-            <div className={styles.consoleBtnItem}>
-              <button className={styles.sidebarSwitch} aria-label="侧边栏开关">
+            <div className={cn(styles.consoleBtnItem, isSidebarVisible && styles.on)}>
+              <button
+                className={styles.sidebarSwitch}
+                aria-label="侧边栏开关"
+                onClick={() => {
+                  const wasVisible = isSidebarVisible;
+                  toggleSidebar();
+                  addToast({
+                    title: wasVisible ? "侧边栏已隐藏" : "侧边栏已显示",
+                    color: wasVisible ? "default" : "success",
+                    timeout: 2000,
+                  });
+                }}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="28" viewBox="0 0 24 24">
                   <g fill="currentColor">
                     <path d="M17 22h2a4 4 0 0 0 4-4V6a4 4 0 0 0-4-4h-2z" />

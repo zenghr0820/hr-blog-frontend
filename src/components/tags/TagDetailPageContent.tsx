@@ -5,6 +5,7 @@ import { Sidebar, TagBar } from "@/components/home";
 import { FilteredArticleList } from "@/components/articles";
 import { TagFilterContext } from "@/hooks/use-tag-filter";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useUiStore } from "@/store/ui-store";
 import { scrollTo } from "@/store/scroll-store";
 
 interface TagDetailPageContentProps {
@@ -16,6 +17,7 @@ export function TagDetailPageContent({ tagName: initialTagName, page = 1 }: TagD
   const [currentTag, setCurrentTag] = useState(initialTagName);
   const [currentPage, setCurrentPage] = useState(page);
   const siteTitle = useSiteConfigStore(state => state.siteConfig.APP_NAME || "AnHeYu");
+  const isSidebarVisible = useUiStore(state => state.isSidebarVisible);
 
   const buildTagPath = useCallback((tagIdentifier: string, pageNumber: number) => {
     const encoded = encodeURIComponent(tagIdentifier);
@@ -86,7 +88,8 @@ export function TagDetailPageContent({ tagName: initialTagName, page = 1 }: TagD
             onPageChange={handlePageChange}
           />
         </div>
-        <Sidebar />
+        {/* 右侧侧边栏 */}
+        {isSidebarVisible && <Sidebar />}
       </div>
     </TagFilterContext.Provider>
   );

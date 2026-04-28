@@ -3,9 +3,11 @@ import { Header, Footer, OneImageBanner, KeyboardShortcutsProvider } from "@/com
 import { ScrollInitializer } from "@/providers/scroll-initializer";
 import { ExternalLinkInterceptor } from "@/providers/external-link-interceptor";
 import { ConsolePrinter } from "@/providers/console-printer";
+import { ReadingModeExit } from "@/components/ReadingModeExit";
 
 const MusicPlayer = dynamic(() => import("@/components/MusicPlayer").then(mod => mod.MusicPlayer));
 const RightMenu = dynamic(() => import("@/components/RightMenu").then(mod => mod.RightMenu));
+const GlobalSidebar = dynamic(() => import("@/components/GlobalSidebar").then(mod => mod.GlobalSidebar));
 
 export default function FrontendLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -24,6 +26,9 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
         <Footer />
         <MusicPlayer />
         <RightMenu />
+        <GlobalSidebar />
+
+        <ReadingModeExit />
       </div>
     </>
   );

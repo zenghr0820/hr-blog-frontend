@@ -83,7 +83,7 @@
 /* ========== 左侧边栏 ========== */
 .sidebarLeft {
   position: sticky;
-  top: 80px;
+  top: 60px;
   flex-shrink: 0;
   width: 240px;
   height: calc(100vh - 100px);
@@ -242,10 +242,12 @@
   flex-direction: column;
   height: 100%;
   padding: 0;
-  background: var(--card);
+  /* background: var(--card); */
   border-radius: 12px;
   border: 1px solid var(--border);
   overflow: hidden;
+  /* border-radius: 8px;    */
+  background-color: var(--anzhiyu-card-bg); 
 }
 
 .sidebarBrand {

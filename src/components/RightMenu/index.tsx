@@ -13,6 +13,7 @@ import { useUiStore } from "@/store/ui-store";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { scrollTo } from "@/store/scroll-store";
 import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 import styles from "./styles.module.css";
 
 // Ctrl 键提示相关常量
@@ -365,9 +366,7 @@ export function RightMenu() {
   };
 
   // ===== 渲染 =====
-  const menuClasses = [styles.rightMenu, isVisible ? styles.visible : "", isHiding ? styles.hiding : ""]
-    .filter(Boolean)
-    .join(" ");
+  const menuClasses = cn(styles.rightMenu, "right-menu", isVisible && styles.visible, isHiding && styles.hiding);
 
   return (
     <div

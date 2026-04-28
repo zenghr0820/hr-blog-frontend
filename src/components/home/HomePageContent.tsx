@@ -8,7 +8,8 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { HomeTop, CategoryBar, FeedArticleList, Sidebar, MomentWidget } from "@/components/home";
+import { CategoryBar, FeedArticleList, Sidebar, MomentWidget } from "@/components/home";
+import { useUiStore } from "@/store/ui-store";
 
 // 动画变体
 const containerVariants: Variants = {
@@ -35,6 +36,8 @@ const itemVariants: Variants = {
 };
 
 export function HomePageContent() {
+  const isSidebarVisible = useUiStore(state => state.isSidebarVisible);
+
   return (
     <motion.div className="home-page-content" initial="hidden" animate="visible" variants={containerVariants}>
        {/* 即刻条 */}
@@ -56,7 +59,7 @@ export function HomePageContent() {
         </div>
 
         {/* 右侧侧边栏 */}
-        <Sidebar />
+        {isSidebarVisible && <Sidebar />}
       </motion.div>
     </motion.div>
   );

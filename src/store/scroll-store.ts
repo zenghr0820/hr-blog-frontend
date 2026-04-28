@@ -9,12 +9,12 @@
  */
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 // 滚动方向
 type ScrollDirection = "up" | "down" | "none";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type LenisInstance = any;
+type LenisInstance = InstanceType<typeof import("lenis").default> | null;
 
 interface ScrollState {
   scrollY: number;
@@ -44,17 +44,14 @@ export const useScrollStore = create<ScrollState>()(() => ({
  * 用于替代原有的 useHeader hook
  */
 export function useScrollForHeader() {
-  const isAtTop = useScrollStore(state => state.isAtTop);
-  const isScrolled = useScrollStore(state => state.isScrolled);
-  const scrollPercent = useScrollStore(state => state.scrollPercent);
-  const isFooterVisible = useScrollStore(state => state.isFooterVisible);
-
-  return {
-    isHeaderTransparent: isAtTop,
-    isScrolled,
-    scrollPercent,
-    isFooterVisible,
-  };
+  return useScrollStore(
+    useShallow(state => ({
+      isHeaderTransparent: state.isAtTop,
+      isScrolled: state.isScrolled,
+      scrollPercent: state.scrollPercent,
+      isFooterVisible: state.isFooterVisible,
+    }))
+  );
 }
 
 /**

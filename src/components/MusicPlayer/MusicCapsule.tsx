@@ -135,11 +135,10 @@ export function MusicCapsule({
 
       {/* 播放控制 */}
       <PlayControls
-        isVisible={isExpanded && isHovered}
+        isVisible={isExpanded}
         isPlaying={isPlaying}
         isMuted={isMuted}
         volume={volume}
-        dominantColor={dominantColor}
         onPrevious={onPrevious}
         onTogglePlay={onTogglePlay}
         onNext={onNext}

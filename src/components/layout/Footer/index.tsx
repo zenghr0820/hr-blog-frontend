@@ -345,6 +345,7 @@ export function Footer() {
   const isPostDetailPage = pathname?.startsWith("/posts/");
   const footerContainerClass = [
     styles.footerContainer,
+    "site-footer",
     isPostDetailPage ? styles.footerContainerPostDetail : "",
   ]
     .filter(Boolean)

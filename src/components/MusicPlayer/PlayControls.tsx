@@ -13,7 +13,6 @@ interface PlayControlsProps {
   isPlaying: boolean;
   isMuted: boolean;
   volume: number;
-  dominantColor: string;
   onPrevious: () => void;
   onTogglePlay: () => void;
   onNext: () => void;
@@ -27,7 +26,6 @@ export function PlayControls({
   isPlaying,
   isMuted,
   volume,
-  dominantColor,
   onPrevious,
   onTogglePlay,
   onNext,
@@ -121,10 +119,7 @@ export function PlayControls({
       <div
         data-music-controls
         className={`${styles.musicControls}${isVisible ? ` ${styles.visible}` : ""}`}
-        style={{
-          background: `linear-gradient(to left, ${dominantColor} 60%, transparent)`,
-        }}
-        onClick={e => e.stopPropagation()}
+        onClick={isVisible ? (e => e.stopPropagation()) : undefined}
       >
         {/* 上一首 */}
         <div className={styles.controlBtn} onClick={onPrevious}>

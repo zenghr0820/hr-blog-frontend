@@ -365,7 +365,7 @@ export function OneImageBanner() {
   if (!isEnabled) return null;
 
   return (
-    <section className={styles.oneImageBanner} style={imageBackgroundStyle}>
+    <section className={cn(styles.oneImageBanner, "oneImageBanner")} style={imageBackgroundStyle}>
       {effectiveMediaType === "video" && effectiveBackground && (
         <video
           ref={videoRef}

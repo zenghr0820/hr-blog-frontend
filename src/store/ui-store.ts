@@ -14,6 +14,8 @@ interface UiState {
   isMusicPlayerVisible: boolean;
   // 评论弹幕是否可见
   isCommentBarrageVisible: boolean;
+  // 侧边栏是否可见
+  isSidebarVisible: boolean;
   // 切换快捷键启用状态
   toggleShortcuts: (value?: boolean) => void;
   // 切换右键菜单模式
@@ -22,6 +24,8 @@ interface UiState {
   toggleMusicPlayer: (value?: boolean) => void;
   // 切换评论弹幕可见状态
   toggleCommentBarrage: (value?: boolean) => void;
+  // 切换侧边栏可见状态
+  toggleSidebar: (value?: boolean) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -31,6 +35,7 @@ export const useUiStore = create<UiState>()(
       useCustomContextMenu: true,
       isMusicPlayerVisible: true,
       isCommentBarrageVisible: true,
+      isSidebarVisible: true,
 
       toggleShortcuts: (value?: boolean) => {
         if (typeof value === "boolean") {
@@ -63,6 +68,14 @@ export const useUiStore = create<UiState>()(
           set({ isCommentBarrageVisible: !get().isCommentBarrageVisible });
         }
       },
+
+      toggleSidebar: (value?: boolean) => {
+        if (typeof value === "boolean") {
+          set({ isSidebarVisible: value });
+        } else {
+          set({ isSidebarVisible: !get().isSidebarVisible });
+        }
+      },
     }),
     {
       name: "anheyu-ui-store",
@@ -71,6 +84,7 @@ export const useUiStore = create<UiState>()(
         useCustomContextMenu: state.useCustomContextMenu,
         isMusicPlayerVisible: state.isMusicPlayerVisible,
         isCommentBarrageVisible: state.isCommentBarrageVisible,
+        isSidebarVisible: state.isSidebarVisible,
       }),
     }
   )

@@ -65,6 +65,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const defaultGravatarType = useSiteConfigStore(state => state.siteConfig?.DEFAULT_GRAVATAR_TYPE);
   const setPageTitle = usePageStore(state => state.setPageTitle);
   const isCommentBarrageVisible = useUiStore(state => state.isCommentBarrageVisible);
+  const isSidebarVisible = useUiStore(state => state.isSidebarVisible);
   const isCommentEnabled =
     commentConfig?.enable === undefined || commentConfig?.enable === true || commentConfig?.enable === "true";
   const isCommentBarrageEnabledBySite =
@@ -110,7 +111,8 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const handleNavigateDoc = useCallback(
     (docId: string) => {
       setIsDocSidebarOpen(false);
-      router.push(`/doc/${docId}`);
+      router.push(`/posts/${docId}`);
+      // router.push(`/doc/${docId}`);
       scrollTo(0);
     },
     [router]
@@ -138,6 +140,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
 
   // // 设置文章主题色（如果有）- 全局设置 --primary 并更新 meta theme-color
   // useEffect(() => {
+  //   console.log("article.primary_color", article.primary_color);
   //   if (article.primary_color) {
   //     // 保存原始主题色
   //     originalPrimaryRef.current = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim();
@@ -216,6 +219,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
         {/* 左侧文档导航栏（仅 is_doc 为 true 时显示） */}
         {isDoc && (
           <aside
+            id="doc-sidebar-left"
             className={cn(
               styles.docSidebarLeft,
               isDocSidebarOpen && styles.docSidebarLeftOpen,
@@ -235,7 +239,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
         )}
 
         <main className={`postContentInner ${styles.postContentInner}`}>
-          <div className={styles.postDetailContent}>
+          <div id="postDetailContent" className={styles.postDetailContent}>
             {/* AI 文章摘要 - 带打字效果 */}
 
             {isEnabledAiSummaryShow && !isPasswordProtected && (
@@ -312,7 +316,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
         </main>
 
         {/* 文章详情侧边栏 */}
-        <PostSidebar article={article} recentArticles={recentArticles} />
+        {isSidebarVisible && <PostSidebar article={article} recentArticles={recentArticles} />}
       </div>
 
       {/* 移动端文档侧边栏切换按钮 */}
