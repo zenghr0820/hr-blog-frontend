@@ -266,7 +266,7 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
     editorSyncedRef.current = article.id;
     const contentHtml = article.content_html?.trim();
     const contentMd = article.content_md?.trim();
-    const hasEncryptedBlocks = contentHtml && /class="[^"]*password-content-lock[^"]*"/.test(contentHtml);
+    const hasEncryptedBlocks = contentHtml && /class="[^"]*password-content-editor-preview[^"]*"[^>]*data-locked="true"/.test(contentHtml);
     queueMicrotask(() => {
       if (editor.isDestroyed) return;
       if (contentHtml && !hasEncryptedBlocks) {

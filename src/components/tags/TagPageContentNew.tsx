@@ -6,6 +6,8 @@ import { useTags } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { useMounted } from "@/hooks/use-mounted";
 import TagText from "@/components/common/TagText";
+import { BannerCard } from "@/components/common/BannerCard";
+import { extractBannerConfig } from "@/lib/banner-config";
 import styles from "./TagPageContentNew.module.css";
 
 export function TagPageContentNew() {
@@ -18,9 +20,21 @@ export function TagPageContentNew() {
     return pageConfig?.tags?.enable || false;
   }, [siteConfig]);
 
+    // 使用统一的 Banner 配置提取器
+  const bannerConfig = extractBannerConfig(siteConfig, 'tag');
+
   return (
     <div className={`cardWidget ${styles.tagPageContainer}`}>
-      {!isOneImageEnabled && <h1 className={styles.pageTitle}>标签</h1>}
+      {!isOneImageEnabled && Object.keys(bannerConfig).length === 0 && <h1 className={styles.pageTitle}>标签</h1>}
+
+      <BannerCard
+            tips={bannerConfig.tips || "分类标签"}
+            title={bannerConfig.title || "文章分类"}
+            description={bannerConfig.description || ""}
+            backgroundImage={bannerConfig.backgroundImage}
+            height={300}
+        />
+
 
       <div className={styles.tagCloudList}>
         {!mounted || isLoading ? (

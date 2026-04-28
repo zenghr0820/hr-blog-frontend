@@ -496,12 +496,21 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
   const initPasswordContentEvents = useCallback(() => {
     if (!contentRef.current) return;
 
-    const containers = contentRef.current.querySelectorAll(".password-content-lock");
+    const containers = contentRef.current.querySelectorAll(".password-content-editor-preview");
     containers.forEach(container => {
+      const header = container.querySelector(".password-content-header") as HTMLElement | null;
+      if (header && header.dataset.collapseBound !== "true") {
+        header.dataset.collapseBound = "true";
+        header.addEventListener("click", (e: Event) => {
+          const target = e.target as HTMLElement;
+          if (target.closest(".password-input") || target.closest(".password-verify-btn")) return;
+          container.classList.toggle("password-collapsed");
+        });
+      }
+
       const btn = container.querySelector(".password-verify-btn") as HTMLElement | null;
       const input = container.querySelector(".password-input") as HTMLInputElement | null;
       if (!btn || !input) return;
-
       if (btn.dataset.eventBound === "true") return;
       btn.dataset.eventBound = "true";
 
@@ -520,24 +529,18 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
           const result = await articleApi.verifyArticlePassword(slug, input.value.trim(), "block", contentId);
 
           if (result.success && result.content_html) {
-            const lockInner = container.querySelector(".password-content-lock-inner");
-            const inputContainer = container.querySelector(".password-input-container");
-            const hintEl = container.querySelector(".password-hint");
-            if (lockInner) lockInner.remove();
-            if (inputContainer) inputContainer.remove();
-            if (hintEl) hintEl.remove();
+            const preview = container.querySelector(".password-content-preview");
+            if (preview) {
+              preview.innerHTML = result.content_html;
+            }
 
-            const divider = document.createElement("div");
-            divider.className = "password-content-unlocked-divider";
-            divider.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>已解锁</span>`;
-            container.appendChild(divider);
+            container.removeAttribute("data-locked");
+            container.classList.add("password-content-unlocked");
 
-            const contentDiv = document.createElement("div");
-            contentDiv.className = "password-content-unlocked";
-            contentDiv.innerHTML = result.content_html;
-            container.appendChild(contentDiv);
-
-            container.classList.add("password-content-lock--unlocked");
+            const badge = container.querySelector(".password-badge");
+            if (badge) {
+              badge.textContent = "已解锁";
+            }
           } else {
             addToast({ title: "密码错误", description: "请检查密码后重试", color: "danger" });
           }

@@ -13,6 +13,10 @@
   color: var(--text-primary);
 }
 
+.tagCloudList {
+  margin-top: 16px;
+}
+
 
 .tagCloudList a {
   display: inline-block;
