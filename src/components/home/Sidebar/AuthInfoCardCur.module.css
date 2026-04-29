@@ -64,7 +64,7 @@
 
 /* 支持动态配置的作者卡片背景图片 */
 .cardInfo::before {
-    background-image: var(--author-card-bg-before), url(https://blog.zenghr.cn/author_bg.webp);
+    background-image: var(--author-card-bg-before), url(/author_bg.webp);
 }
 
 .cardInfo:hover::before {

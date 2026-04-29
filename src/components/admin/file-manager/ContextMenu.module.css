@@ -10,7 +10,7 @@
   width: 220px;
   padding: 6px;
   border-radius: 14px;
-  background: var(--anzhiyu-card-bg);
+  background: var(--card-bg);
   border: var(--style-border);
   box-shadow: var(--anzhiyu-shadow-border);
 }

@@ -5,6 +5,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
@@ -35,6 +36,11 @@ export function PostCopyright({ article }: PostCopyrightProps) {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [codeCountdown, setCodeCountdown] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // 倒计时效果
   useEffect(() => {
@@ -226,8 +232,40 @@ export function PostCopyright({ article }: PostCopyrightProps) {
     return rewardVisible || showShareButton || showSubscribeButton;
   }, [showRewardButton, showShareButton, showSubscribeButton, siteConfig.post?.reward?.enable, hasAnyRewardMethod]);
 
-  // 获取当前文章URL
-  const articleUrl = typeof window !== "undefined" ? window.location.href : "";
+  const isArticleEncrypted = article.access_rule?.type === "password" || article.has_encrypted_blocks;
+
+  const getShareUrl = useCallback(() => {
+    if (typeof window === "undefined") return "";
+
+    const base = window.location.origin + window.location.pathname;
+
+    if (!isArticleEncrypted) return base;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has("token")) return base + "?token=" + searchParams.get("token");
+
+    const cookies = document.cookie.split(";").map(c => c.trim());
+    const articleSlug = window.location.pathname.split("/").filter(Boolean).pop() || "";
+
+    const articleTokenCookie = cookies.find(c => c.startsWith(`article_token_${articleSlug}=`));
+    if (articleTokenCookie) {
+      const token = articleTokenCookie.split("=").slice(1).join("=");
+      return base + "?token=" + encodeURIComponent(token);
+    }
+
+    const blockTokenCookies = cookies.filter(c => c.startsWith(`block_token_${articleSlug}--`));
+    if (blockTokenCookies.length > 0) {
+      const tokens = blockTokenCookies.map(c => {
+        const value = c.split("=").slice(1).join("=");
+        return encodeURIComponent(value);
+      });
+      return base + "?token=" + tokens.join(",");
+    }
+
+    return base;
+  }, [isArticleEncrypted]);
+
+  const articleUrl = getShareUrl();
 
   // 复制链接
   const handleCopyLink = useCallback(async () => {
@@ -507,7 +545,7 @@ export function PostCopyright({ article }: PostCopyrightProps) {
       <div className={styles.copyrightNotice} dangerouslySetInnerHTML={{ __html: copyrightInfo }} />
 
       {/* 分享弹窗 */}
-      {showPosterDialog && (
+      {showPosterDialog && mounted && createPortal(
         <div className={styles.dialogOverlay} onClick={() => setShowPosterDialog(false)}>
           <div className={`${styles.dialog} ${styles.posterDialog}`} onClick={e => e.stopPropagation()}>
             <div className={styles.dialogHeader}>
@@ -568,11 +606,12 @@ export function PostCopyright({ article }: PostCopyrightProps) {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 订阅弹窗 */}
-      {showSubscribeDialog && (
+      {showSubscribeDialog && mounted && createPortal(
         <div className={styles.dialogOverlay} onClick={() => setShowSubscribeDialog(false)}>
           <div className={styles.dialog} onClick={e => e.stopPropagation()}>
             <div className={styles.dialogHeader}>
@@ -616,7 +655,8 @@ export function PostCopyright({ article }: PostCopyrightProps) {
               <p className={styles.subscribeTips}>您可以随时通过邮件中的链接取消订阅</p>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

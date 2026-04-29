@@ -77,32 +77,24 @@ export function GlobalSidebar() {
     ariaLabel?: string
   ) => (
     <button
-        type="button"
-        className={`${styles.button} ${isActive ? styles.active : ""}`}
-        onClick={onClick}
-        aria-label={ariaLabel || text}
-      >
-        <Icon icon={icon} className={styles.icon} />
-        <span className={styles.text}>{text}</span>
+      type="button"
+      className={`${styles.button} ${isActive ? styles.active : ""}`}
+      onClick={onClick}
+      aria-label={ariaLabel || text}
+    >
+      <Icon icon={icon} className={styles.icon} />
+      <span className={styles.text}>{text}</span>
     </button>
   );
 
   return (
-    <div id = "rightside" className={`${styles.sidebar} ${styles.show}`}>
+    <div id="rightside" className={`${styles.sidebar} ${styles.show}`}>
       {renderButton(
         isDarkMode ? "solar:sun-bold" : "solar:moon-bold",
         "亮暗切换",
         handleThemeToggle,
         undefined,
         "主题切换"
-      )}
-
-      {renderButton(
-        "ri:book-open-fill",
-        "阅读模式",
-        handleReadingModeToggle,
-        isReadingMode,
-        "阅读模式"
       )}
 
       {renderButton(
@@ -113,14 +105,6 @@ export function GlobalSidebar() {
         "侧边栏开关"
       )}
 
-      {renderButton(
-        "ri:message-3-fill",
-        "热评弹幕",
-        handleCommentBarrageToggle,
-        isCommentBarrageVisible,
-        "热评弹幕"
-      )}
-
       {isPostDetail && (
         <>
           {renderButton(
@@ -129,6 +113,20 @@ export function GlobalSidebar() {
             handleScrollToComment,
             undefined,
             "快速评论"
+          )}
+          {renderButton(
+            "ri:book-open-fill",
+            "阅读模式",
+            handleReadingModeToggle,
+            isReadingMode,
+            "阅读模式"
+          )}
+          {renderButton(
+            "ri:message-3-fill",
+            "热评弹幕",
+            handleCommentBarrageToggle,
+            isCommentBarrageVisible,
+            "热评弹幕"
           )}
         </>
       )}
