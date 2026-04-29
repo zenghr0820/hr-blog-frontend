@@ -1004,6 +1004,15 @@ html.dark [data-slot="content"][role="tooltip"] {
   margin: 0 auto;
 }
 
+/* 首页轮播容器 */
+.post-swiper-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+  user-select: none;
+}
+
 /* 首页顶部区域容器 */
 .post-home-top-container {
   width: 100%;
