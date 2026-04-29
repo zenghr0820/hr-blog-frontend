@@ -1,0 +1,208 @@
+.swiper {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+  border-radius: 12px;
+  background: var(--anzhiyu-card-bg);
+  border: 1px solid var(--border);
+  user-select: none;
+  padding: 10px;
+}
+
+.slide {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  gap: 24px;
+}
+
+.slide:active {
+  cursor: grabbing;
+}
+
+.imageLink {
+  display: block;
+  width: 35%;
+  height: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+  border-radius: 5px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding-top: 8px;
+  padding-right: 24px;
+}
+
+.title {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--foreground);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.title:hover {
+  color: var(--primary);
+}
+
+.date {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  max-width: 100%;
+  margin: 6px 0 8px;
+  padding: 3px 8px;
+  line-height: 1;
+  font-size: 15px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--muted-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desc {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.actions {
+  display: none;
+  margin-top: auto;
+}
+
+.button {
+  display: block;
+  width: 100%;
+  padding: 6px 14px;
+  border-radius: 10px;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  text-align: center;
+  font-size: 14px;
+  text-decoration: none;
+  transition: opacity 0.25s;
+}
+
+.button:hover {
+  opacity: 0.85;
+}
+
+.pagination {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transform: translateY(-50%);
+}
+
+.bullet {
+  margin: 0;
+  padding: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 20px;
+  border: none;
+  background: var(--muted-foreground);
+  opacity: 0.22;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.bullet:hover {
+  opacity: 0.5;
+}
+
+.bulletActive {
+  height: 30px;
+  background: var(--primary);
+  opacity: 1;
+}
+
+@media screen and (max-width: 768px) {
+  .swiper {
+    height: 500px;
+  }
+
+  .slide {
+    flex-direction: column;
+  }
+
+  .imageLink {
+    width: 100%;
+    min-width: 100%;
+    height: 220px;
+    flex-shrink: 0;
+  }
+
+  .content {
+    align-items: center;
+    padding: 10px 20px 20px;
+    text-align: center;
+  }
+
+  .date {
+    align-self: center;
+  }
+
+  .actions {
+    display: flex;
+    width: 100%;
+  }
+
+  .pagination {
+    top: 242px;
+    right: auto;
+    left: 50%;
+    flex-direction: row;
+    transform: translateX(-50%);
+  }
+
+  .bulletActive {
+    width: 30px;
+    height: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    transition: none !important;
+  }
+
+  .bullet {
+    transition: none !important;
+  }
+}

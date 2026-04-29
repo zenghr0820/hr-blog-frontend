@@ -205,10 +205,11 @@
 /* 移动端 */
 @media (max-width: 768px) {
   .layout {
-    position: relative;
+    /* position: relative;
     z-index: 3;
     padding: 0;
-    background-color: var(--primary);
+    background-color: var(--primary); */
+    padding: 15px 5px;
   }
 
   .postDetailContent {

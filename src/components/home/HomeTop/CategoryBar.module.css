@@ -121,13 +121,10 @@
 
 /* 移动端样式 */
 @media (max-width: 768px) {
-  .catalogMore {
-    display: none;
-  }
 
   .categoryBar {
-    padding: 0 2px;
-    background: transparent;
+    /* padding: 0 2px; */
+    /* background: transparent; */
     border: none;
   }
 
@@ -147,17 +144,6 @@
 
   .categoryBar .catalogBar .catalogListItem.select span {
     background: var(--anzhiyu-main);
-  }
-
-  .categoryBar .catalogBar .catalogListItem span {
-    display: flex;
-    align-items: center;
-    height: 80%;
-    padding: 0 19px;
-    font-size: 14px;
-    background: var(--anzhiyu-card-bg);
-    border: var(--style-border-always);
-    border-radius: 30px;
   }
 
   .categoryBar .catalogBar .catalogListItem span:hover {

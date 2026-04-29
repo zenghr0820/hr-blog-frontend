@@ -111,7 +111,7 @@
 
 @media screen and (max-width: 900px) {
   .momentWidget {
-    padding: 0 12px;
+    padding: 0 .5rem;
   }
 
   .momentContainer {

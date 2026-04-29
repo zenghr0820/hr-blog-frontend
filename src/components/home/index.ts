@@ -10,6 +10,9 @@ export * from "./ArticleList";
 // FeedArticleList - Feed 风格文章列表
 export * from "./FeedArticleList";
 
+// ArticleSwiper - 文章轮播
+export * from "./ArticleSwiper";
+
 // Pagination - 分页组件
 export * from "./Pagination";
 

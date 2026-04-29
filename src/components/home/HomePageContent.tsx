@@ -8,7 +8,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { CategoryBar, FeedArticleList, Sidebar, MomentWidget } from "@/components/home";
+import { CategoryBar, FeedArticleList, Sidebar, MomentWidget, ArticleSwiperSection } from "@/components/home";
 import { useUiStore } from "@/store/ui-store";
 
 // 动画变体
@@ -52,9 +52,14 @@ export function HomePageContent() {
 
       {/* 主内容区域 */}
       <motion.div className="content-inner" variants={itemVariants}>
+        
         {/* 左侧文章区 */}
         <div className="main-content">
           <CategoryBar />
+          {/* 首页文章轮播 */}
+          <motion.div className="post-swiper-container" variants={itemVariants}>
+            <ArticleSwiperSection />
+          </motion.div>
           <FeedArticleList />
         </div>
 

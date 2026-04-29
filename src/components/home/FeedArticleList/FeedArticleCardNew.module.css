@@ -306,16 +306,6 @@
     font-size: 1.35rem;
   }
 
-  .postItems .articleMetaWrap,
-  .postItems .singleColumnMeta {
-    font-size: 0.85rem;
-  }
-
-  .postItems .postDesc,
-  .singleColumnItem .singleColumnDesc {
-    font-size: 0.95rem;
-  }
-
   .singleColumnItem .singleColumnCover {
     width: 35%;
   }
@@ -338,16 +328,6 @@
     line-height: 1.3;
   }
 
-  .postItems .articleMetaWrap {
-    font-size: 0.78rem;
-    flex-wrap: wrap;
-  }
-
-  .postItems .postDesc {
-    font-size: 0.88rem;
-    line-height: 1.6;
-  }
-
   .singleColumnItem {
     flex-direction: column;
   }
@@ -364,13 +344,5 @@
 
   .singleColumnItem .singleColumnTitle {
     font-size: 1.2rem;
-  }
-
-  .singleColumnItem .singleColumnMeta {
-    font-size: 0.78rem;
-  }
-
-  .singleColumnItem .singleColumnDesc {
-    font-size: 0.88rem;
   }
 }
