@@ -132,13 +132,13 @@ export const FeedArticleCardNew = memo(function FeedArticleCardNew({
       <span className={styles.articleDate}>
         <Icon className={styles.metaIcon} icon="fa:calendar" />
         <span className={styles.articleMetaLabel}>发表于</span>
-        <time dateTime={article.created_at}>{formatDate(article.created_at)}</time>
+        <span>{formatDate(article.created_at)}</span>
       </span>
 
       <span className={styles.articleMeta}>
         <Icon className={styles.metaIcon} icon="fa:history" />
         <span className={styles.articleMetaLabel}>修改于</span>
-        <time dateTime={article.updated_at}>{formatDate(article.updated_at)}</time>
+        <span>{formatDate(article.updated_at)}</span>
       </span>
 
       {firstCategory && (

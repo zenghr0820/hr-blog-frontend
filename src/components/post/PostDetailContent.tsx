@@ -93,6 +93,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlToken = urlParams.get("token");
+    const urlBlocks = urlParams.get("blocks");
 
     if (!urlToken) {
       return;
@@ -107,7 +108,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
     let cancelled = false;
     const autoUnlock = async () => {
       try {
-        const data = await articleApi.getArticleWithToken(article.id, urlToken);
+        const data = await articleApi.getArticleWithToken(article.id, urlToken, urlBlocks || undefined);
         if (!cancelled && data?.content_html) {
           setUnlockedContent(data.content_html);
           window.history.replaceState({}, "", window.location.pathname);

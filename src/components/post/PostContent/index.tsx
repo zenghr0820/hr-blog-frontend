@@ -541,6 +541,20 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
             if (badge) {
               badge.textContent = "已解锁";
             }
+
+            if (result.access_token) {
+              try {
+                const stored = JSON.parse(localStorage.getItem("article_access_tokens") || "{}");
+                const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
+                if (!stored[slug]) stored[slug] = { article: "", blocks: [] };
+                if (!Array.isArray(stored[slug].blocks)) stored[slug].blocks = [];
+                const exists = stored[slug].blocks.some((b: { contentId: string }) => b.contentId === contentId);
+                if (!exists) {
+                  stored[slug].blocks.push({ contentId, token: result.access_token });
+                }
+                localStorage.setItem("article_access_tokens", JSON.stringify(stored));
+              } catch {}
+            }
           } else {
             addToast({ title: "密码错误", description: "请检查密码后重试", color: "danger" });
           }

@@ -242,25 +242,39 @@ export function PostCopyright({ article }: PostCopyrightProps) {
     if (!isArticleEncrypted) return base;
 
     const searchParams = new URLSearchParams(window.location.search);
-    if (searchParams.has("token")) return base + "?token=" + searchParams.get("token");
-
-    const cookies = document.cookie.split(";").map(c => c.trim());
-    const articleSlug = window.location.pathname.split("/").filter(Boolean).pop() || "";
-
-    const articleTokenCookie = cookies.find(c => c.startsWith(`article_token_${articleSlug}=`));
-    if (articleTokenCookie) {
-      const token = articleTokenCookie.split("=").slice(1).join("=");
-      return base + "?token=" + encodeURIComponent(token);
+    if (searchParams.has("token")) {
+      let url = base + "?token=" + searchParams.get("token");
+      if (searchParams.has("blocks")) {
+        url += "&blocks=" + searchParams.get("blocks");
+      }
+      return url;
     }
 
-    const blockTokenCookies = cookies.filter(c => c.startsWith(`block_token_${articleSlug}--`));
-    if (blockTokenCookies.length > 0) {
-      const tokens = blockTokenCookies.map(c => {
-        const value = c.split("=").slice(1).join("=");
-        return encodeURIComponent(value);
-      });
-      return base + "?token=" + tokens.join(",");
-    }
+    try {
+      const stored = JSON.parse(localStorage.getItem("article_access_tokens") || "{}");
+      const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
+      const tokenData = stored[slug];
+      if (!tokenData) return base;
+
+      const tokens: string[] = [];
+      const blockIDs: string[] = [];
+
+      if (tokenData.article) tokens.push(tokenData.article);
+      if (Array.isArray(tokenData.blocks)) {
+        tokenData.blocks.forEach((b: { contentId: string; token: string }) => {
+          if (b.token) tokens.push(b.token);
+          if (b.contentId) blockIDs.push(b.contentId);
+        });
+      }
+
+      if (tokens.length === 0) return base;
+
+      let url = base + "?token=" + tokens.map(t => encodeURIComponent(t)).join(",");
+      if (blockIDs.length > 0) {
+        url += "&blocks=" + blockIDs.map(id => encodeURIComponent(id)).join(",");
+      }
+      return url;
+    } catch {}
 
     return base;
   }, [isArticleEncrypted]);

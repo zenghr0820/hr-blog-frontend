@@ -223,9 +223,13 @@ export const articleApi = {
     throw new Error(response.message || "密码验证失败");
   },
 
-  async getArticleWithToken(articleId: string, token: string): Promise<{ content_html?: string; encrypted?: boolean }> {
+  async getArticleWithToken(articleId: string, token: string, blocks?: string): Promise<{ content_html?: string; encrypted?: boolean }> {
+    const params: Record<string, string> = { token };
+    if (blocks) {
+      params.blocks = blocks;
+    }
     const response = await apiClient.get<{ content_html?: string; encrypted?: boolean }>(`/api/public/articles/${articleId}`, {
-      params: { token },
+      params,
     });
 
     if (response.code === 200 && response.data) {

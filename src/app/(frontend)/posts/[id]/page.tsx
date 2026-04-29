@@ -27,7 +27,7 @@ const API_BASE_URL = process.env.BACKEND_URL || "http://localhost:8091";
  * API: GET /api/public/articles/{id}
  * @param id 文章 ID 或 abbrlink
  */
-async function getArticle(id: string, cookieHeader?: string, urlToken?: string) {
+async function getArticle(id: string, cookieHeader?: string, urlToken?: string, urlBlocks?: string) {
   try {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -37,8 +37,15 @@ async function getArticle(id: string, cookieHeader?: string, urlToken?: string) 
     }
 
     let url = `${API_BASE_URL}/api/public/articles/${id}`;
+    const params: string[] = [];
     if (urlToken) {
-      url += `?token=${encodeURIComponent(urlToken)}`;
+      params.push(`token=${encodeURIComponent(urlToken)}`);
+    }
+    if (urlBlocks) {
+      params.push(`blocks=${encodeURIComponent(urlBlocks)}`);
+    }
+    if (params.length > 0) {
+      url += `?${params.join("&")}`;
     }
 
     const res = await fetch(url, {
@@ -107,9 +114,10 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const { id } = await params;
   const sp = await searchParams;
   const urlToken = typeof sp.token === "string" ? sp.token : undefined;
+  const urlBlocks = typeof sp.blocks === "string" ? sp.blocks : undefined;
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
-  const article = await getArticle(id, cookieHeader, urlToken);
+  const article = await getArticle(id, cookieHeader, urlToken, urlBlocks);
 
   if (!article) {
     return buildPageMetadata({
@@ -140,12 +148,13 @@ export default async function PostDetailPage({ params, searchParams }: { params:
   const { id } = await params;
   const sp = await searchParams;
   const urlToken = typeof sp.token === "string" ? sp.token : undefined;
+  const urlBlocks = typeof sp.blocks === "string" ? sp.blocks : undefined;
 
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
 
   const [article, recentArticles, siteConfig] = await Promise.all([
-    getArticle(id, cookieHeader, urlToken),
+    getArticle(id, cookieHeader, urlToken, urlBlocks),
     getRecentArticles(),
     fetchSiteConfigForSeo(),
   ]);

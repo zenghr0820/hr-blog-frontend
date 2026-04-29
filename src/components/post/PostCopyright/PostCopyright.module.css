@@ -336,7 +336,8 @@
   top: 0;
   left: 0;
   z-index: 101;
-  display: flex;
+  /* display: flex; */
+  display: none;
   width: 100vw;
   height: 100vh;
   margin: 0;
