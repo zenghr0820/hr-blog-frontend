@@ -12,7 +12,7 @@ const GlobalSidebar = dynamic(() => import("@/components/GlobalSidebar").then(mo
 export default function FrontendLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <link rel="stylesheet" href="https://jsd.liiiu.cn/gh/willow-god/Sharding-fonts/Yozai-Medium/result.min.css" />
+      <link rel="stylesheet" href="https://cdn.jsdmirror.com/gh/zenghr0820/Sharding-fonts/Yozai-Medium/result.css" />
       <div id="frontend-layout" className="frontend-layout">
         <ScrollInitializer />
         <ConsolePrinter />

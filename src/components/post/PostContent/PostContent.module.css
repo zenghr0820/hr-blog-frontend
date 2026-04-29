@@ -845,7 +845,7 @@
   transition: opacity 0.15s ease;
 }
 
-.postContent :global(.anzhiyu-tip .tip-content) {
+.postContent :global(.anzhiyu-tip) {
   padding: 8px 12px;
   background: rgba(0, 0, 0, 0.85);
   border-radius: 6px;
@@ -890,19 +890,19 @@
 }
 
 /* Tip 主题样式 */
-.postContent :global(.anzhiyu-tip.tip-info .tip-content) {
+.postContent :global(.anzhiyu-tip.tip-info) {
   background: #3b82f6;
 }
-.postContent :global(.anzhiyu-tip.tip-warning .tip-content) {
+.postContent :global(.anzhiyu-tip.tip-warning) {
   background: #f59e0b;
 }
-.postContent :global(.anzhiyu-tip.tip-error .tip-content) {
+.postContent :global(.anzhiyu-tip.tip-error) {
   background: #ef4444;
 }
-.postContent :global(.anzhiyu-tip.tip-success .tip-content) {
+.postContent :global(.anzhiyu-tip.tip-success) {
   background: #10b981;
 }
-.postContent :global(.anzhiyu-tip.tip-light .tip-content) {
+.postContent :global(.anzhiyu-tip.tip-light) {
   color: var(--foreground);
   background: var(--card);
   border: 1px solid var(--border);
@@ -1020,6 +1020,7 @@
   margin: -16px;
   margin-top: 0;
   border-radius: 0 0 16px 16px;
+  background: var(--card-bg);
 }
 
 /* 嵌套在折叠块内的代码块修复 */
@@ -1105,11 +1106,12 @@
   display: flex;
   flex-direction: column;
   padding: 0.5rem 1rem !important;
-  text-decoration: none;
-  background: var(--muted);
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 8px !important;
+  text-decoration: none !important;
   transition: all 0.3s ease;
+  color: var(--anzhiyu-fontcolor);
 }
 
 .postContent :global(.anzhiyu-tag-link .tag-Link:hover) {
@@ -3124,7 +3126,7 @@
     font-size: 13px;
   }
 
-  .postContent :global(.anzhiyu-tip .tip-content) {
+  .postContent :global(.anzhiyu-tip) {
     padding: 6px 10px;
   }
 

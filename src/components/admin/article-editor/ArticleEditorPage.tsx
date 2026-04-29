@@ -299,8 +299,8 @@ export function ArticleEditorPage({ articleId }: ArticleEditorPageProps) {
 
     if (editorMode === "visual") {
       const rawHtml = editor?.getHTML() ?? "";
-      markdown = turndownArticleMarkdown(editor, turndownService, processHtmlForSave(rawHtml));
-      html = processHtmlForSave(fixTaskListHtml(marked.parse(markdown, { async: false }) as string));
+      html = processHtmlForSave(rawHtml);
+      markdown = turndownArticleMarkdown(editor, turndownService, html);
     } else if (editorMode === "html") {
       html = processHtmlForSave(sourceContent);
       markdown = turndownService.turndown(html);

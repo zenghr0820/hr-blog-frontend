@@ -26,8 +26,10 @@
 }
 
 .badgeUnread {
-  background: var(--anzhiyu-secondbg);
-  color: var(--anzhiyu-secondtext);
+  /* background: var(--anzhiyu-secondbg);
+  color: var(--anzhiyu-secondtext); */
+  background: #9c0000;
+  color: #ffffffcc;
 }
 
 /* ============================================

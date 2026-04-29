@@ -5,6 +5,22 @@ import Image from 'next/image';
 import { addToast } from '@heroui/react';
 import { X, Plus, ImageIcon, Search, Loader2 } from 'lucide-react';
 
+// 动态加载外部字体(仅在组件挂载时执行一次)
+const loadExternalFont = () => {
+  if (typeof document === 'undefined') return;
+  
+  // 检查是否已经加载过
+  const existingLink = document.getElementById('xuanzongti-font');
+  if (existingLink) return;
+  
+  const link = document.createElement('link');
+  link.id = 'xuanzongti-font';
+  link.rel = 'stylesheet';
+  // link.href = 'https://fontsapi.zeoseven.com/970/main/result.css';
+  link.href = 'https://fontsapi.zeoseven.com/445/main/result.css'; // 云峰静龙行书 https://fonts.zeoseven.com/items/445/
+  document.head.appendChild(link);
+};
+
 interface TextElement {
   text: string;
   x: number; // 百分比 0-100
@@ -47,6 +63,11 @@ function clamp(value: number, min: number, max: number) {
 }
 
 export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle, author: initialAuthor, avatar: initialAvatar }: CoverMakerProps) {
+  // ---------- 字体加载 ----------
+  useEffect(() => {
+    loadExternalFont();
+  }, []);
+
   // ---------- 状态 ----------
   const [imageSource, setImageSource] = useState<'unsplash' | 'pixabay' | 'pexels' | 'upload'>('unsplash');
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,7 +94,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
       x: 50,
       y: 40,
       fontSize: 148,
-      fontFamily: 'SlidefontKBK, sans-serif',
+      fontFamily: 'YFJLXS, sans-serif',
       color: '#ffffff',
     },
     subtitle: {
@@ -81,7 +102,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
       x: 50,
       y: 25,
       fontSize: 78,
-      fontFamily: 'SlidefontKBK, sans-serif',
+      fontFamily: 'YFJLXS, sans-serif',
       color: '#ffffff',
     },
     author: {
@@ -89,7 +110,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
       x: 50,
       y: 57.5,
       fontSize: 95,
-      fontFamily: 'SlidefontKBK, sans-serif',
+      fontFamily: 'YFJLXS, sans-serif',
       color: '#ffffff',
     },
     avatar: {
@@ -299,7 +320,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
 
   // 点击外部关闭下拉菜单
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
         setExportMenuOpen(false);
       }
@@ -529,7 +550,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
 
       // 绘制文字
       if (textElements.title.text) {
-        tempCtx.font = `${textElements.title.fontSize}px 'SlidefontKBK', Arial`;
+        tempCtx.font = `${textElements.title.fontSize}px 'YFJLXS', Arial`;
         tempCtx.fillStyle = textElements.title.color;
         const titleX = (textElements.title.x / 100) * CANVAS_WIDTH;
         const titleY = (textElements.title.y / 100) * CANVAS_HEIGHT;
@@ -537,7 +558,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
       }
 
       if (textElements.subtitle.text) {
-        tempCtx.font = `${textElements.subtitle.fontSize}px 'SlidefontKBK', Arial`;
+        tempCtx.font = `${textElements.subtitle.fontSize}px 'YFJLXS', Arial`;
         tempCtx.fillStyle = textElements.subtitle.color;
         const subtitleX = (textElements.subtitle.x / 100) * CANVAS_WIDTH;
         const subtitleY = (textElements.subtitle.y / 100) * CANVAS_HEIGHT;
@@ -545,7 +566,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
       }
 
       if (textElements.author.text) {
-        tempCtx.font = `${textElements.author.fontSize}px 'SlidefontKBK', Arial`;
+        tempCtx.font = `${textElements.author.fontSize}px 'YFJLXS', Arial`;
         tempCtx.fillStyle = textElements.author.color;
         const authorX = (textElements.author.x / 100) * CANVAS_WIDTH;
         const authorY = (textElements.author.y / 100) * CANVAS_HEIGHT;

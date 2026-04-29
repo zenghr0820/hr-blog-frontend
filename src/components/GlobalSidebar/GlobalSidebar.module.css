@@ -27,8 +27,8 @@
   min-width: 35px;
   width: 35px;
   height: 35px;
-  background-color: var(--btn-bg);
-  color: var(--btn-color);
+  background-color: var(--side-btn-bg);
+  color: var(--side-btn-color);
   -webkit-box-align: center;
   -moz-box-align: center;
   -o-box-align: center;

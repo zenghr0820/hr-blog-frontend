@@ -393,7 +393,17 @@ function renderInlineLinkcard(params: string): string {
   const icon = extractAttr(params, "icon") || "rivet-icons:link";
   const tips = extractAttr(params, "tips") || "引用站外地址";
 
-  return `<div class="anzhiyu-tag-link"><a class="tag-Link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"><div class="tag-link-left"><img src="https://api.iconify.design/${escapeHtml(icon)}.svg" data-iconify="${escapeHtml(icon)}" alt="icon" /></div><div class="tag-link-right"><div class="tag-link-title">${escapeHtml(title)}</div><div class="tag-link-sitename">${escapeHtml(sitename)}</div></div><div class="tag-link-tips">${escapeHtml(tips)}</div></a></div>`;
+  // 判断是否为 Iconify 格式（包含 ":"）
+  const isIconify = icon.includes(":");
+  const [prefix, name] = isIconify ? icon.split(":") : ["", ""];
+  const iconUrl = isIconify && prefix && name 
+    ? `https://api.iconify.design/${escapeHtml(prefix)}/${escapeHtml(name)}.svg?color=currentColor`
+    : `https://api.iconify.design/rivet-icons/link.svg?color=currentColor`;
+
+  // 箭头图标固定使用 fa6-solid:angle-right
+  const arrowIconUrl = "https://api.iconify.design/fa6-solid/angle-right.svg?color=currentColor";
+
+  return `<div class="anzhiyu-tag-link"><a class="tag-Link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"><div class="tag-link-tips">${escapeHtml(tips)}</div><div class="tag-link-bottom"><div class="tag-link-left"><img src="${iconUrl}" data-iconify="${escapeHtml(icon)}" alt="" loading="lazy" /></div><div class="tag-link-right"><div class="tag-link-title">${escapeHtml(title)}</div><div class="tag-link-sitename">${escapeHtml(sitename)}</div></div><img class="tag-link-arrow-icon" src="${arrowIconUrl}" alt="" loading="lazy" aria-hidden="true" data-iconify="fa6-solid:angle-right" /></div></a></div>`;
 }
 
 function renderInlineBtn(params: string): string {
