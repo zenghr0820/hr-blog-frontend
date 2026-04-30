@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     image: article.cover_url,
     publishedTime: article.created_at,
     modifiedTime: article.updated_at,
-    authors: [article.copyright_author || "安知鱼"],
+    authors: [article.copyright_author || "Zenghr"],
   });
 }
 

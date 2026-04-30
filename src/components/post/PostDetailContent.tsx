@@ -213,8 +213,8 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   //   };
   // }, [article.primary_color]);
 
-  const siteName = appName || "安知鱼";
-  const ownerName = siteOwnerName || "安知鱼";
+  const siteName = appName || "Zenghr";
+  const ownerName = siteOwnerName || "Zenghr";
   const defaultCover = useMemo(() => resolvePostDefaultCoverUrl(postDefaultCover), [postDefaultCover]);
   const customJS = article.extra_config?.custom_js;
   const hasCustomJS = !!customJS && customJS.trim() !== "";

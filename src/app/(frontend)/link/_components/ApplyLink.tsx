@@ -39,8 +39,8 @@ export function ApplyLink() {
   const customCodeRef = useRef<HTMLDivElement>(null);
   const customCodeHtml = (siteConfig?.FRIEND_LINK_APPLY_CUSTOM_CODE_HTML as string) || "";
   useCodeBlockEnhancer(customCodeRef, customCodeHtml);
-  const placeholderName = (siteConfig?.FRIEND_LINK_PLACEHOLDER_NAME as string) || "例如：安知鱼";
-  const placeholderURL = (siteConfig?.FRIEND_LINK_PLACEHOLDER_URL as string) || "https://blog.anheyu.com/";
+  const placeholderName = (siteConfig?.FRIEND_LINK_PLACEHOLDER_NAME as string) || "例如：Zenghr";
+  const placeholderURL = (siteConfig?.FRIEND_LINK_PLACEHOLDER_URL as string) || "https://blog.zenghr.com/";
   const placeholderLogo = (siteConfig?.FRIEND_LINK_PLACEHOLDER_LOGO as string) || "https://example.com/logo.png";
   const placeholderDesc = (siteConfig?.FRIEND_LINK_PLACEHOLDER_DESCRIPTION as string) || "一句话介绍你的站点";
   const placeholderSiteshot =

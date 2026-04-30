@@ -63,7 +63,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
     if (!author?.enable) return null;
     const owner = siteConfig?.frontDesk?.siteOwner;
     return {
-      ownerName: owner?.name || "安知鱼",
+      ownerName: owner?.name || "Zenghr",
       subTitle: siteConfig?.SUB_TITLE || "",
       description: author.description || "",
       userAvatar: siteConfig?.USER_AVATAR || "",
