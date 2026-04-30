@@ -14,9 +14,9 @@ interface PostPaginationProps {
 }
 
 function getArticleHref(link: ArticleLink): string {
-  if (link.is_doc) {
-    return `/doc/${link.id}`;
-  }
+  // if (link.is_doc) {
+  //   return `/doc/${link.id}`;
+  // }
   return `/posts/${link.abbrlink || link.id}`;
 }
 

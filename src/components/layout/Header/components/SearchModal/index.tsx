@@ -258,12 +258,14 @@ export function SearchModal({ isOpen, onClose, initialKeyword = "" }: SearchModa
 
   const handleResultClick = useCallback(
     (result: SearchResult) => {
-      if (result.is_doc) {
-        router.push(`/doc/${result.id}`);
-      } else {
-        const targetId = result.abbrlink || result.id;
-        router.push(`/posts/${targetId}`);
-      }
+      // if (result.is_doc) {
+      //   router.push(`/doc/${result.id}`);
+      // } else {
+      //   const targetId = result.abbrlink || result.id;
+      //   router.push(`/posts/${targetId}`);
+      // }
+      const targetId = result.abbrlink || result.id;
+      router.push(`/posts/${targetId}`);
       onClose();
     },
     [router, onClose]

@@ -64,11 +64,12 @@ export default function NotFound() {
   const goToArticle = useCallback(
     (article: FeedItem) => {
       // 如果是文档类型，跳转到文档详情页
-      if (article.is_doc) {
-        router.push(`/doc/${article.id}`);
-      } else {
-        router.push(`/posts/${article.id}`);
-      }
+      // if (article.is_doc) {
+      //   router.push(`/doc/${article.id}`);
+      // } else {
+      //   router.push(`/posts/${article.id}`);
+      // }
+      router.push(`/posts/${article.id}`);
     },
     [router]
   );

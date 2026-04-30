@@ -546,7 +546,8 @@ export function EditorHeader({
                 variant="light"
                 size="sm"
                 as="a"
-                href={isDoc ? `/doc/${articleId}` : `/posts/${articleId}`}
+                // href={isDoc ? `/doc/${articleId}` : `/posts/${articleId}`}
+                href={`/posts/${articleId}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="查看文章"

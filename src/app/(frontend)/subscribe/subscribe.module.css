@@ -1,0 +1,472 @@
+.page {
+  width: 100%;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.pageTitle {
+  margin: 0 0 10px;
+  font-weight: bold;
+  font-size: 2rem;
+  color: var(--foreground);
+}
+
+.pageSubtitle {
+  margin: 0 0 30px;
+  color: var(--muted-foreground);
+  font-size: 1rem;
+}
+
+.subscribeList {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  position: relative;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.subscribeItem {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 240px;
+  height: 240px;
+  overflow: hidden;
+  text-decoration: none;
+  width: calc(100% / 3 - 8px);
+  transition: all 0.4s ease-in-out;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  position: relative;
+  cursor: pointer;
+  color: white;
+}
+
+.subscribeItem:visited {
+  color: white;
+}
+
+.wechat {
+  background: linear-gradient(135deg, #07c160 0%, #059c4e 100%);
+}
+
+.mail {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.rss {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.subscribeItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 15%);
+}
+
+.subscribeItem:hover .subscribeIcon {
+  transform: translate(-3px, -3px) scale(1.05);
+  opacity: 0.6;
+  filter: blur(1px);
+}
+
+.subscribeDescription {
+  font-size: 16px;
+  color: white;
+  margin: 26px 0 0 30px;
+  line-height: 1.6;
+  text-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  position: relative;
+  z-index: 2;
+}
+
+.subscribeInfoGroup {
+  position: relative;
+  margin: 0 0 26px 30px;
+  color: white;
+  z-index: 2;
+}
+
+.subscribeTitle {
+  font-size: 36px;
+  font-weight: 700;
+  width: fit-content;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+.subscribeInfo {
+  width: fit-content;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.subscribeIcon {
+  position: absolute;
+  bottom: -125px;
+  right: -25px;
+  font-size: 140px;
+  user-select: none;
+  transition: all 0.8s cubic-bezier(0.39, 0.575, 0.565, 1);
+  transform-origin: bottom right;
+  filter: blur(3px);
+  opacity: 0.3;
+  z-index: 1;
+  color: rgb(255 255 255 / 30%);
+}
+
+/* Dialog Styles */
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 50%);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dialogPanel {
+  position: relative;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 30%);
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dialogClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.dialogClose:hover {
+  color: white;
+  background: var(--primary);
+}
+
+.dialogHeader {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.dialogHeaderIcon {
+  font-size: 1.75rem;
+  color: var(--primary);
+}
+
+.dialogTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.dialogBody {
+  padding: 2rem;
+}
+
+.dialogFooter {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.5rem 2rem;
+  background: var(--background);
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 20px 20px;
+}
+
+.dialogDesc {
+  color: var(--muted-foreground);
+  margin: 0 0 20px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.inputGroup {
+  margin-bottom: 16px;
+}
+
+.inputLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--foreground);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgb(102 126 234 / 10%);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.formError {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--destructive, #d80020);
+}
+
+/* Unsubscribe Dialog */
+.unsubscribeContent {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loadingIcon {
+  font-size: 48px;
+  color: var(--primary);
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loadingState p {
+  color: var(--muted-foreground);
+  font-size: 1rem;
+}
+
+.resultState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.successIcon {
+  font-size: 64px;
+  color: #4caf50;
+  margin-bottom: 16px;
+}
+
+.errorIcon {
+  font-size: 64px;
+  color: #f44336;
+  margin-bottom: 16px;
+}
+
+.resultState h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--foreground);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Buttons */
+.btnSecondary {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  cursor: pointer;
+  background: var(--muted);
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+
+.btnSecondary:hover {
+  background: var(--card);
+}
+
+.btnPrimary {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: var(--foreground);
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media screen and (max-width: 1024px) {
+  .page {
+    padding: 30px;
+  }
+
+  .pageTitle {
+    font-size: 1.75rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+  }
+
+  .subscribeItem {
+    width: calc(50% - 6px);
+    height: 220px;
+  }
+
+  .subscribeDescription {
+    font-size: 15px;
+    margin: 22px 0 0 25px;
+  }
+
+  .subscribeInfoGroup {
+    margin: 0 0 22px 25px;
+  }
+
+  .subscribeTitle {
+    font-size: 32px;
+  }
+
+  .subscribeIcon {
+    font-size: 120px;
+    bottom: -110px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .page {
+    padding: 18px;
+    margin: 0 5px;
+  }
+
+  .pageTitle {
+    font-size: 1.4rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.875rem;
+    margin-bottom: 20px;
+  }
+
+  .subscribeList {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .subscribeItem {
+    width: 100%;
+    height: 200px;
+  }
+
+  .subscribeDescription {
+    font-size: 14px;
+    margin: 20px 0 0 20px;
+  }
+
+  .subscribeInfoGroup {
+    margin: 0 0 20px 20px;
+  }
+
+  .subscribeTitle {
+    font-size: 28px;
+  }
+
+  .subscribeInfo {
+    font-size: 0.8rem;
+  }
+
+  .subscribeIcon {
+    font-size: 100px;
+    bottom: -90px;
+  }
+
+  .dialogPanel {
+    width: 95%;
+  }
+
+  .dialogHeader,
+  .dialogBody,
+  .dialogFooter {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+}

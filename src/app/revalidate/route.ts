@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       if (articleSlugs.size > 0) {
         for (const slug of articleSlugs) {
           revalidatePath(`/posts/${slug}`, "page");
-          revalidatePath(`/doc/${slug}`, "page");
+          // revalidatePath(`/doc/${slug}`, "page");
         }
         revalidatePath("/", "page");
         revalidatePath("/tags", "page");

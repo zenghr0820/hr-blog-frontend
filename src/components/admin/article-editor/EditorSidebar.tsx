@@ -42,6 +42,7 @@ import {
 import { FormColorPicker } from "@/components/ui/form-color-picker";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDocSeriesList } from "@/hooks/queries/use-doc-series";
+import { useSiteConfigStore } from "@/store/site-config-store";
 import { articleApi } from "@/lib/api/article";
 import { postManagementApi } from "@/lib/api/post-management";
 import type { Editor } from "@tiptap/react";
@@ -803,6 +804,7 @@ function SettingsContent({
   articleTitle,
 }: SettingsContentProps) {
   const queryClient = useQueryClient();
+  const siteConfig = useSiteConfigStore(state => state.siteConfig);
   const topImgInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingTopImg, setIsUploadingTopImg] = useState(false);
   const coverImgInputRef = useRef<HTMLInputElement>(null);
@@ -1441,8 +1443,8 @@ function SettingsContent({
         onClose={() => setCoverMakerOpen(false)}
         onSave={handleCoverMakerSave}
         title={articleTitle}
-        author={meta.author}
-        avatar={meta.avatar}
+        author={meta.copyright_author || siteConfig?.frontDesk?.siteOwner?.name || ""}
+        avatar={siteConfig?.USER_AVATAR || ""}
       />
 
       <Modal

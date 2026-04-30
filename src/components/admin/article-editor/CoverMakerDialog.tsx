@@ -68,6 +68,10 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
     loadExternalFont();
   }, []);
 
+  // ---------- 初始化追踪 ----------
+  const initializedRef = useRef(false);
+  const prevIsOpenRef = useRef(false);
+
   // ---------- 状态 ----------
   const [imageSource, setImageSource] = useState<'unsplash' | 'pixabay' | 'pexels' | 'upload'>('unsplash');
   const [searchQuery, setSearchQuery] = useState('');
@@ -229,10 +233,12 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
   );
 
   // ---------- 初始化与副作用 ----------
-  // 打开/关闭响应 isOpen
   useEffect(() => {
-    if (isOpen) {
-      // 同步 props 到 state，确保每次打开时都使用最新的初始值
+    const justOpened = isOpen && !prevIsOpenRef.current;
+    prevIsOpenRef.current = isOpen;
+
+    if (justOpened && !initializedRef.current) {
+      initializedRef.current = true;
       setTextElements(prev => ({
         ...prev,
         title: { ...prev.title, text: initialTitle || '' },
@@ -253,12 +259,12 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
           })()
         },
       }));
-      // 首次打开时自动搜索
-      if (imageSource !== 'upload' && platformPhotos.length === 0) {
-        searchPhotos();
-      }
     }
-  }, [isOpen, initialTitle, initialAuthor, initialAvatar, imageSource, platformPhotos.length, searchPhotos]);
+
+    if (justOpened && imageSource !== 'upload') {
+      searchPhotos();
+    }
+  }, [isOpen, initialTitle, initialAuthor, initialAvatar, imageSource, searchPhotos]);
 
   // 图片源切换时重新搜索
   useEffect(() => {
@@ -909,6 +915,24 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
                 placeholder="请输入标题"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-blue-500"
               />
+              <div className="flex items-center gap-3 mt-2">
+                <span className="text-xs text-gray-500 shrink-0">字号</span>
+                <input
+                  type="range"
+                  min={40}
+                  max={300}
+                  step={4}
+                  value={textElements.title.fontSize}
+                  onChange={e =>
+                    setTextElements(prev => ({
+                      ...prev,
+                      title: { ...prev.title, fontSize: Number(e.target.value) },
+                    }))
+                  }
+                  className="flex-1"
+                />
+                <span className="w-10 text-right text-xs text-gray-500">{textElements.title.fontSize}</span>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide text-gray-700 mb-2">副标题</label>
@@ -923,6 +947,24 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
                 placeholder="请输入副标题"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-blue-500"
               />
+              <div className="flex items-center gap-3 mt-2">
+                <span className="text-xs text-gray-500 shrink-0">字号</span>
+                <input
+                  type="range"
+                  min={20}
+                  max={200}
+                  step={4}
+                  value={textElements.subtitle.fontSize}
+                  onChange={e =>
+                    setTextElements(prev => ({
+                      ...prev,
+                      subtitle: { ...prev.subtitle, fontSize: Number(e.target.value) },
+                    }))
+                  }
+                  className="flex-1"
+                />
+                <span className="w-10 text-right text-xs text-gray-500">{textElements.subtitle.fontSize}</span>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide text-gray-700 mb-2">作者</label>
@@ -937,6 +979,24 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
                 placeholder="请输入作者名称"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-blue-500"
               />
+              <div className="flex items-center gap-3 mt-2">
+                <span className="text-xs text-gray-500 shrink-0">字号</span>
+                <input
+                  type="range"
+                  min={20}
+                  max={200}
+                  step={4}
+                  value={textElements.author.fontSize}
+                  onChange={e =>
+                    setTextElements(prev => ({
+                      ...prev,
+                      author: { ...prev.author, fontSize: Number(e.target.value) },
+                    }))
+                  }
+                  className="flex-1"
+                />
+                <span className="w-10 text-right text-xs text-gray-500">{textElements.author.fontSize}</span>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide text-gray-700 mb-2">头像</label>

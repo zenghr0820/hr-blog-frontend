@@ -82,10 +82,10 @@ export function ArchiveList({ year, month, page = 1 }: ArchiveListProps) {
 
   const goToPost = useCallback(
     (article: Article) => {
-      if (article.is_doc) {
-        router.push(`/doc/${article.id}`);
-        return;
-      }
+      // if (article.is_doc) {
+      //   router.push(`/doc/${article.id}`);
+      //   return;
+      // }
       router.push(`/posts/${article.id}`);
     },
     [router]

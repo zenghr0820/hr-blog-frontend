@@ -157,9 +157,11 @@ export const FeedArticleCard = memo(function FeedArticleCard({
     // 根据类型跳转
     if (isProduct) {
       router.push(`/products/${id}`);
-    } else if (article.is_doc) {
-      router.push(`/doc/${id}`);
-    } else {
+    } 
+    // else if (article.is_doc) {
+    //   router.push(`/doc/${id}`);
+    // } 
+    else {
       router.push(`/posts/${id}`);
     }
   };
