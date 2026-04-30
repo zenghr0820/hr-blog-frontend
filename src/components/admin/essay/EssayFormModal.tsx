@@ -15,9 +15,10 @@ import {
   PopoverContent,
   addToast,
 } from "@heroui/react";
-import { MessageSquare, Pencil, Link2, Video, Music, X, MapPin, Tag, ImagePlus, Upload } from "lucide-react";
+import { MessageSquare, Pencil, Link2, Video, Music, X, MapPin, Tag, ImagePlus, Upload, ChevronDown } from "lucide-react";
 import { AdminDialog } from "@/components/admin/AdminDialog";
 import { useCreateEssay, useUpdateEssay } from "@/hooks/queries/use-essays";
+import { useIsMobile } from "@/hooks/use-media-query";
 import { toolsApi } from "@/lib/api/tools";
 import { postManagementApi } from "@/lib/api/post-management";
 import {
@@ -45,12 +46,13 @@ interface EssayFormModalProps {
 
 export default function EssayFormModal({ isOpen, onClose, editItem }: EssayFormModalProps) {
   const isEdit = !!editItem;
+  const isMobile = useIsMobile();
 
   return (
     <AdminDialog
       isOpen={isOpen}
       onClose={onClose}
-      size="2xl"
+      size={isMobile ? "full" : "2xl"}
       scrollBehavior="inside"
       header={{
         title: isEdit ? "编辑说说" : "新增说说",
@@ -330,9 +332,275 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
   ]);
 
   const isSubmitting = createEssay.isPending || updateEssay.isPending;
+  const isMobile = useIsMobile();
 
   const popoverClassNames = {
     content: "p-4 bg-content1 border border-border rounded-xl shadow-lg w-[340px]",
+  };
+
+  const imageSection = (
+    <div className="space-y-3">
+      <p className="text-sm font-medium">动态配图</p>
+      <div className="flex gap-2">
+        <Input
+          placeholder="输入图片链接"
+          value={imageUrlInput}
+          onValueChange={setImageUrlInput}
+          size="sm"
+          className="flex-1"
+          onKeyDown={e => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addImageUrl();
+            }
+          }}
+        />
+        <Button
+          color="primary"
+          size="sm"
+          onPress={addImageUrl}
+          isDisabled={!imageUrlInput.trim()}
+        >
+          添加
+        </Button>
+      </div>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="flat"
+          size="sm"
+          startContent={<Upload className="w-3.5 h-3.5" />}
+          onPress={handleImageUpload}
+          isLoading={uploadingImage}
+          className="flex-1"
+        >
+          上传图片
+        </Button>
+      </div>
+      {imageItems.length > 0 && (
+        <div className="space-y-2 max-h-[200px] overflow-y-auto">
+          {imageItems.map(item => (
+            <div key={item.id} className="flex items-center gap-2 p-1.5 bg-default-50 rounded">
+              <div className="w-8 h-8 rounded overflow-hidden flex-shrink-0 bg-default-100">
+                {item.uploading ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-xs text-muted-foreground">...</span>
+                  </div>
+                ) : (
+                  <img
+                    src={item.url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                )}
+              </div>
+              <span className="text-xs text-muted-foreground truncate flex-1">
+                {item.uploading ? "上传中..." : item.url}
+              </span>
+              <Button
+                isIconOnly
+                size="sm"
+                variant="light"
+                className="text-default-400 hover:text-danger flex-shrink-0 min-w-6 w-6 h-6"
+                onPress={() => removeImage(item.id)}
+              >
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const linkSection = (
+    <div className="space-y-3">
+      <p className="text-sm font-medium">网站分享</p>
+      <div className="flex gap-2">
+        <Input
+          placeholder="请输入网站地址"
+          value={linkUrl}
+          onValueChange={setLinkUrl}
+          size="sm"
+          className="flex-1"
+        />
+        <Button
+          color="primary"
+          size="sm"
+          isLoading={fetchingLink}
+          onPress={handleParseLink}
+        >
+          解析
+        </Button>
+      </div>
+      <Input
+        placeholder="网站标题"
+        value={linkTitle}
+        onValueChange={setLinkTitle}
+        size="sm"
+      />
+      <div className="flex items-center gap-2">
+        <Input
+          placeholder="网站图标URL"
+          value={linkFavicon}
+          onValueChange={setLinkFavicon}
+          size="sm"
+          className="flex-1"
+        />
+        {linkFavicon && (
+          <img
+            src={linkFavicon}
+            alt="图标"
+            className="w-8 h-8 rounded object-contain border border-border flex-shrink-0"
+            onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        )}
+      </div>
+    </div>
+  );
+
+  const musicSection = (
+    <div className="space-y-3">
+      <p className="text-sm font-medium">动态音乐</p>
+      <Select
+        label="音乐平台"
+        selectedKeys={new Set([musicServer])}
+        onSelectionChange={keys => {
+          const v = Array.from(keys)[0] as string;
+          if (v) setMusicServer(v);
+        }}
+        size="sm"
+      >
+        {MUSIC_SERVERS.map(s => (
+          <SelectItem key={s.key}>{s.label}</SelectItem>
+        ))}
+      </Select>
+      <Select
+        label="类型"
+        selectedKeys={new Set([musicType])}
+        onSelectionChange={keys => {
+          const v = Array.from(keys)[0] as string;
+          if (v) setMusicType(v);
+        }}
+        size="sm"
+      >
+        {MUSIC_TYPES.map(t => (
+          <SelectItem key={t.key}>{t.label}</SelectItem>
+        ))}
+      </Select>
+      <div className="flex gap-2">
+        <Input
+          label="音乐ID"
+          placeholder="平台歌曲ID"
+          value={musicId}
+          onValueChange={setMusicId}
+          size="sm"
+          className="flex-1"
+        />
+        <Button
+          color="primary"
+          size="sm"
+          className="mt-5"
+          isLoading={fetchingMusic}
+          onPress={handleParseMusic}
+        >
+          解析
+        </Button>
+      </div>
+      {musicTitle && musicId && (
+        <div className="flex items-center gap-3 p-2 bg-primary/5 rounded-lg">
+          {musicCover && (
+            <img
+              src={musicCover}
+              alt="封面"
+              className="w-10 h-10 rounded object-cover flex-shrink-0"
+              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium truncate">{musicTitle}</p>
+            <p className="text-xs text-muted-foreground truncate">
+              {musicAuthor || "未知艺术家"}
+              <span className="ml-1">
+                · {MUSIC_SERVERS.find(s => s.key === musicServer)?.label}
+                · {MUSIC_TYPES.find(t => t.key === musicType)?.label}
+              </span>
+            </p>
+          </div>
+        </div>
+      )}
+      <Input
+        label="音乐URL（备选）"
+        placeholder="直接播放链接"
+        value={musicUrl}
+        onValueChange={setMusicUrl}
+        size="sm"
+        description="有音乐ID时可省略"
+      />
+      <div className="grid grid-cols-2 gap-2">
+        <Input
+          label="歌曲名称"
+          placeholder="歌曲名称"
+          value={musicTitle}
+          onValueChange={setMusicTitle}
+          size="sm"
+        />
+        <Input
+          label="歌手"
+          placeholder="歌手名"
+          value={musicAuthor}
+          onValueChange={setMusicAuthor}
+          size="sm"
+        />
+      </div>
+    </div>
+  );
+
+  const videoSection = (
+    <div className="space-y-3">
+      <p className="text-sm font-medium">动态视频</p>
+      <div className="flex gap-2">
+        <Input
+          placeholder="输入视频链接"
+          value={videoUrl}
+          onValueChange={setVideoUrl}
+          size="sm"
+          className="flex-1"
+        />
+        <Button
+          color="primary"
+          size="sm"
+          isLoading={fetchingVideo}
+          onPress={handleParseVideo}
+        >
+          解析
+        </Button>
+      </div>
+      {videoPlatform && videoId && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-primary/5 rounded-lg">
+          <span className="text-xs text-primary font-medium">
+            {VIDEO_PLATFORM_LABELS[videoPlatform] || videoPlatform}
+          </span>
+          <span className="text-xs text-muted-foreground">{videoId}</span>
+        </div>
+      )}
+    </div>
+  );
+
+  const activeSection = imagePopoverOpen ? "image" : linkPopoverOpen ? "link" : musicPopoverOpen ? "music" : videoPopoverOpen ? "video" : null;
+
+  const toggleSection = (section: "image" | "link" | "music" | "video") => {
+    if (activeSection === section) {
+      setImagePopoverOpen(false);
+      setLinkPopoverOpen(false);
+      setMusicPopoverOpen(false);
+      setVideoPopoverOpen(false);
+    } else {
+      setImagePopoverOpen(section === "image");
+      setLinkPopoverOpen(section === "link");
+      setMusicPopoverOpen(section === "music");
+      setVideoPopoverOpen(section === "video");
+    }
   };
 
   return (
@@ -357,7 +625,7 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
           maxLength={2000}
         />
 
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className={`flex items-center gap-3 ${isMobile ? "flex-col" : "flex-wrap"}`}>
           <Input
             label="位置"
             placeholder="如：北京·故宫"
@@ -365,7 +633,7 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
             onValueChange={setLocation}
             maxLength={100}
             startContent={<MapPin className="w-3.5 h-3.5 text-default-400" />}
-            className="flex-1 min-w-[140px]"
+            className={isMobile ? "w-full" : "flex-1 min-w-[140px]"}
           />
           <Input
             label="标签"
@@ -374,338 +642,169 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
             onValueChange={setTags}
             maxLength={100}
             startContent={<Tag className="w-3.5 h-3.5 text-default-400" />}
-            className="flex-1 min-w-[140px]"
+            className={isMobile ? "w-full" : "flex-1 min-w-[140px]"}
           />
         </div>
 
-        <div className="flex items-center gap-2 py-2 border-t border-border/40">
+        <div className={`flex items-center gap-2 py-2 border-t border-border/40 ${isMobile ? "flex-wrap" : ""}`}>
           <span className="text-xs text-muted-foreground mr-1">添加：</span>
 
-          <Popover
-            placement="bottom-start"
-            offset={8}
-            showArrow
-            isOpen={imagePopoverOpen}
-            onOpenChange={setImagePopoverOpen}
-            classNames={popoverClassNames}
-          >
-            <PopoverTrigger>
+          {isMobile ? (
+            <>
               <Button
                 size="sm"
-                variant={hasImages ? "solid" : "flat"}
-                color={hasImages ? "primary" : "default"}
+                variant={hasImages || activeSection === "image" ? "solid" : "flat"}
+                color={hasImages || activeSection === "image" ? "primary" : "default"}
                 startContent={<ImagePlus className="w-4 h-4" />}
+                endContent={
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform ${activeSection === "image" ? "rotate-180" : ""}`}
+                  />
+                }
+                onPress={() => toggleSection("image")}
               >
                 图片{hasImages ? ` ${imageItems.length}` : ""}
               </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <div className="space-y-3">
-                <p className="text-sm font-medium">动态配图</p>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="输入图片链接"
-                    value={imageUrlInput}
-                    onValueChange={setImageUrlInput}
-                    size="sm"
-                    className="flex-1"
-                    onKeyDown={e => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addImageUrl();
-                      }
-                    }}
-                  />
-                  <Button
-                    color="primary"
-                    size="sm"
-                    onPress={addImageUrl}
-                    isDisabled={!imageUrlInput.trim()}
-                  >
-                    添加
-                  </Button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="flat"
-                    size="sm"
-                    startContent={<Upload className="w-3.5 h-3.5" />}
-                    onPress={handleImageUpload}
-                    isLoading={uploadingImage}
-                    className="flex-1"
-                  >
-                    上传图片
-                  </Button>
-                </div>
-                {imageItems.length > 0 && (
-                  <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                    {imageItems.map(item => (
-                      <div key={item.id} className="flex items-center gap-2 p-1.5 bg-default-50 rounded">
-                        <div className="w-8 h-8 rounded overflow-hidden flex-shrink-0 bg-default-100">
-                          {item.uploading ? (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-xs text-muted-foreground">...</span>
-                            </div>
-                          ) : (
-                            <img
-                              src={item.url}
-                              alt=""
-                              className="w-full h-full object-cover"
-                              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                            />
-                          )}
-                        </div>
-                        <span className="text-xs text-muted-foreground truncate flex-1">
-                          {item.uploading ? "上传中..." : item.url}
-                        </span>
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="light"
-                          className="text-default-400 hover:text-danger flex-shrink-0 min-w-6 w-6 h-6"
-                          onPress={() => removeImage(item.id)}
-                        >
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          <Popover
-            placement="bottom-start"
-            offset={8}
-            showArrow
-            isOpen={linkPopoverOpen}
-            onOpenChange={setLinkPopoverOpen}
-            classNames={popoverClassNames}
-          >
-            <PopoverTrigger>
               <Button
                 size="sm"
-                variant={hasLink ? "solid" : "flat"}
-                color={hasLink ? "primary" : "default"}
+                variant={hasLink || activeSection === "link" ? "solid" : "flat"}
+                color={hasLink || activeSection === "link" ? "primary" : "default"}
                 startContent={<Link2 className="w-4 h-4" />}
+                endContent={
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform ${activeSection === "link" ? "rotate-180" : ""}`}
+                  />
+                }
+                onPress={() => toggleSection("link")}
               >
                 链接
               </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <div className="space-y-3">
-                <p className="text-sm font-medium">网站分享</p>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="请输入网站地址"
-                    value={linkUrl}
-                    onValueChange={setLinkUrl}
-                    size="sm"
-                    className="flex-1"
-                  />
-                  <Button
-                    color="primary"
-                    size="sm"
-                    isLoading={fetchingLink}
-                    onPress={handleParseLink}
-                  >
-                    解析
-                  </Button>
-                </div>
-                <Input
-                  placeholder="网站标题"
-                  value={linkTitle}
-                  onValueChange={setLinkTitle}
-                  size="sm"
-                />
-                <div className="flex items-center gap-2">
-                  <Input
-                    placeholder="网站图标URL"
-                    value={linkFavicon}
-                    onValueChange={setLinkFavicon}
-                    size="sm"
-                    className="flex-1"
-                  />
-                  {linkFavicon && (
-                    <img
-                      src={linkFavicon}
-                      alt="图标"
-                      className="w-8 h-8 rounded object-contain border border-border flex-shrink-0"
-                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                    />
-                  )}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          <Popover
-            placement="bottom-start"
-            offset={8}
-            showArrow
-            isOpen={musicPopoverOpen}
-            onOpenChange={setMusicPopoverOpen}
-            classNames={popoverClassNames}
-          >
-            <PopoverTrigger>
               <Button
                 size="sm"
-                variant={hasMusic ? "solid" : "flat"}
-                color={hasMusic ? "primary" : "default"}
+                variant={hasMusic || activeSection === "music" ? "solid" : "flat"}
+                color={hasMusic || activeSection === "music" ? "primary" : "default"}
                 startContent={<Music className="w-4 h-4" />}
+                endContent={
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform ${activeSection === "music" ? "rotate-180" : ""}`}
+                  />
+                }
+                onPress={() => toggleSection("music")}
               >
                 音乐
               </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <div className="space-y-3">
-                <p className="text-sm font-medium">动态音乐</p>
-                <Select
-                  label="音乐平台"
-                  selectedKeys={new Set([musicServer])}
-                  onSelectionChange={keys => {
-                    const v = Array.from(keys)[0] as string;
-                    if (v) setMusicServer(v);
-                  }}
-                  size="sm"
-                >
-                  {MUSIC_SERVERS.map(s => (
-                    <SelectItem key={s.key}>{s.label}</SelectItem>
-                  ))}
-                </Select>
-                <Select
-                  label="类型"
-                  selectedKeys={new Set([musicType])}
-                  onSelectionChange={keys => {
-                    const v = Array.from(keys)[0] as string;
-                    if (v) setMusicType(v);
-                  }}
-                  size="sm"
-                >
-                  {MUSIC_TYPES.map(t => (
-                    <SelectItem key={t.key}>{t.label}</SelectItem>
-                  ))}
-                </Select>
-                <div className="flex gap-2">
-                  <Input
-                    label="音乐ID"
-                    placeholder="平台歌曲ID"
-                    value={musicId}
-                    onValueChange={setMusicId}
-                    size="sm"
-                    className="flex-1"
-                  />
-                  <Button
-                    color="primary"
-                    size="sm"
-                    className="mt-5"
-                    isLoading={fetchingMusic}
-                    onPress={handleParseMusic}
-                  >
-                    解析
-                  </Button>
-                </div>
-                {musicTitle && musicId && (
-                  <div className="flex items-center gap-3 p-2 bg-primary/5 rounded-lg">
-                    {musicCover && (
-                      <img
-                        src={musicCover}
-                        alt="封面"
-                        className="w-10 h-10 rounded object-cover flex-shrink-0"
-                        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                      />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{musicTitle}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {musicAuthor || "未知艺术家"}
-                        <span className="ml-1">
-                          · {MUSIC_SERVERS.find(s => s.key === musicServer)?.label}
-                          · {MUSIC_TYPES.find(t => t.key === musicType)?.label}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                )}
-                <Input
-                  label="音乐URL（备选）"
-                  placeholder="直接播放链接"
-                  value={musicUrl}
-                  onValueChange={setMusicUrl}
-                  size="sm"
-                  description="有音乐ID时可省略"
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    label="歌曲名称"
-                    placeholder="歌曲名称"
-                    value={musicTitle}
-                    onValueChange={setMusicTitle}
-                    size="sm"
-                  />
-                  <Input
-                    label="歌手"
-                    placeholder="歌手名"
-                    value={musicAuthor}
-                    onValueChange={setMusicAuthor}
-                    size="sm"
-                  />
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          <Popover
-            placement="bottom-start"
-            offset={8}
-            showArrow
-            isOpen={videoPopoverOpen}
-            onOpenChange={setVideoPopoverOpen}
-            classNames={popoverClassNames}
-          >
-            <PopoverTrigger>
               <Button
                 size="sm"
-                variant={hasVideo ? "solid" : "flat"}
-                color={hasVideo ? "primary" : "default"}
+                variant={hasVideo || activeSection === "video" ? "solid" : "flat"}
+                color={hasVideo || activeSection === "video" ? "primary" : "default"}
                 startContent={<Video className="w-4 h-4" />}
+                endContent={
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform ${activeSection === "video" ? "rotate-180" : ""}`}
+                  />
+                }
+                onPress={() => toggleSection("video")}
               >
                 视频
               </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <div className="space-y-3">
-                <p className="text-sm font-medium">动态视频</p>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="输入视频链接"
-                    value={videoUrl}
-                    onValueChange={setVideoUrl}
-                    size="sm"
-                    className="flex-1"
-                  />
+            </>
+          ) : (
+            <>
+              <Popover
+                placement="bottom-start"
+                offset={8}
+                showArrow
+                isOpen={imagePopoverOpen}
+                onOpenChange={setImagePopoverOpen}
+                classNames={popoverClassNames}
+              >
+                <PopoverTrigger>
                   <Button
-                    color="primary"
                     size="sm"
-                    isLoading={fetchingVideo}
-                    onPress={handleParseVideo}
+                    variant={hasImages ? "solid" : "flat"}
+                    color={hasImages ? "primary" : "default"}
+                    startContent={<ImagePlus className="w-4 h-4" />}
                   >
-                    解析
+                    图片{hasImages ? ` ${imageItems.length}` : ""}
                   </Button>
-                </div>
-                {videoPlatform && videoId && (
-                  <div className="flex items-center gap-2 px-3 py-2 bg-primary/5 rounded-lg">
-                    <span className="text-xs text-primary font-medium">
-                      {VIDEO_PLATFORM_LABELS[videoPlatform] || videoPlatform}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{videoId}</span>
-                  </div>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+                </PopoverTrigger>
+                <PopoverContent>{imageSection}</PopoverContent>
+              </Popover>
+
+              <Popover
+                placement="bottom-start"
+                offset={8}
+                showArrow
+                isOpen={linkPopoverOpen}
+                onOpenChange={setLinkPopoverOpen}
+                classNames={popoverClassNames}
+              >
+                <PopoverTrigger>
+                  <Button
+                    size="sm"
+                    variant={hasLink ? "solid" : "flat"}
+                    color={hasLink ? "primary" : "default"}
+                    startContent={<Link2 className="w-4 h-4" />}
+                  >
+                    链接
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>{linkSection}</PopoverContent>
+              </Popover>
+
+              <Popover
+                placement="bottom-start"
+                offset={8}
+                showArrow
+                isOpen={musicPopoverOpen}
+                onOpenChange={setMusicPopoverOpen}
+                classNames={popoverClassNames}
+              >
+                <PopoverTrigger>
+                  <Button
+                    size="sm"
+                    variant={hasMusic ? "solid" : "flat"}
+                    color={hasMusic ? "primary" : "default"}
+                    startContent={<Music className="w-4 h-4" />}
+                  >
+                    音乐
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>{musicSection}</PopoverContent>
+              </Popover>
+
+              <Popover
+                placement="bottom-start"
+                offset={8}
+                showArrow
+                isOpen={videoPopoverOpen}
+                onOpenChange={setVideoPopoverOpen}
+                classNames={popoverClassNames}
+              >
+                <PopoverTrigger>
+                  <Button
+                    size="sm"
+                    variant={hasVideo ? "solid" : "flat"}
+                    color={hasVideo ? "primary" : "default"}
+                    startContent={<Video className="w-4 h-4" />}
+                  >
+                    视频
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>{videoSection}</PopoverContent>
+              </Popover>
+            </>
+          )}
         </div>
+
+        {isMobile && activeSection && (
+          <div className="p-3 bg-content2 rounded-lg border border-border/30">
+            {activeSection === "image" && imageSection}
+            {activeSection === "link" && linkSection}
+            {activeSection === "music" && musicSection}
+            {activeSection === "video" && videoSection}
+          </div>
+        )}
 
         {(hasImages || hasLink || hasMusic || hasVideo) && (
           <div className="space-y-2">
@@ -728,7 +827,7 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
                 <div className="flex flex-wrap gap-2">
                   {imageItems.map(item => (
                     <div key={item.id} className="relative group">
-                      <div className="w-20 h-20 rounded-lg overflow-hidden border border-border/50 bg-default-50">
+                      <div className={`${isMobile ? "w-16 h-16" : "w-20 h-20"} rounded-lg overflow-hidden border border-border/50 bg-default-50`}>
                         {item.uploading ? (
                           <div className="w-full h-full flex items-center justify-center">
                             <span className="text-xs text-muted-foreground animate-pulse">上传中</span>
@@ -749,7 +848,7 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
                       {!item.uploading && (
                         <button
                           type="button"
-                          className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-danger text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          className={`absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-danger text-white flex items-center justify-center transition-opacity ${isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                           onClick={() => removeImage(item.id)}
                         >
                           <X className="w-3 h-3" />
@@ -892,11 +991,11 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
         </Switch>
       </ModalBody>
 
-      <ModalFooter>
-        <Button variant="flat" onPress={onClose}>
+      <ModalFooter className={isMobile ? "flex-col gap-2" : ""}>
+        <Button variant="flat" onPress={onClose} className={isMobile ? "w-full" : ""}>
           取消
         </Button>
-        <Button color="primary" onPress={handleSubmit} isLoading={isSubmitting}>
+        <Button color="primary" onPress={handleSubmit} isLoading={isSubmitting} className={isMobile ? "w-full" : ""}>
           {isEdit ? "保存修改" : isPublish ? "发布说说" : "保存草稿"}
         </Button>
       </ModalFooter>

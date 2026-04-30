@@ -58,6 +58,7 @@
 @media (max-width: 768px) {
   .tagPageContainer {
     padding: 16px;
+    margin: 0 5px;
   }
 
   .pageTitle {

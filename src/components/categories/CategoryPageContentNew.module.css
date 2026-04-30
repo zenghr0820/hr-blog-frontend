@@ -103,6 +103,7 @@
 @media (max-width: 768px) {
   .categoryChartContainer {
     padding: 16px;
+    margin: 0 5px;
   }
 
   .pageTitle {

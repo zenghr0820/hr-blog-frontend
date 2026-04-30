@@ -23,7 +23,6 @@ import { ReducedMotionSync } from "./ReducedMotionSync";
 import { BackgroundImageSync } from "./BackgroundImageSync";
 import { VisitStatisticsTracker } from "./visit-statistics-tracker";
 import { LenisScroll } from "./LenisScroll";
-import { ContainerAliasLoader } from "./container-alias-loader";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -126,7 +125,6 @@ export function Providers({ children }: ProvidersProps) {
         <HeroUIProviderWrapper>
           <AuthTokenInitializer>
             <SiteConfigLoader>
-              <ContainerAliasLoader>
               <SiteConfigSyncListener />
               <DefaultThemeSync />
               <SiteThemeColorsSync />
@@ -136,7 +134,6 @@ export function Providers({ children }: ProvidersProps) {
               <GlobalLoading />
               <VisitStatisticsTracker />
               {children}
-              </ContainerAliasLoader>
             </SiteConfigLoader>
           </AuthTokenInitializer>
         </HeroUIProviderWrapper>

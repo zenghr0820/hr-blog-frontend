@@ -135,7 +135,7 @@ export function AuthorInfoCardCur({ config }: AuthorInfoCardProps) {
 
       {/* 统计数据区域 */}
       <div className={styles.siteData}>
-        <Link href="/archive" aria-label={`查看全部 ${config.totalPostCount} 篇文章`}>
+        <Link href="/archives" aria-label={`查看全部 ${config.totalPostCount} 篇文章`}>
           <div className={styles.headline}>文章</div>
           <div className={styles.lengthNum}>{config.totalPostCount}</div>
         </Link>

@@ -7,6 +7,7 @@ import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/use-theme";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useTags, useCategories, useLatestComments } from "@/hooks/queries";
 import { friendsApi } from "@/lib/api/friends";
 
 import styles from "./styles.module.css";
@@ -49,22 +50,15 @@ interface MobileMenuProps {
   menuConfig?: MenuItem[];
 }
 
-// 模拟数据
-const mockTags = [
-  { name: "JavaScript", count: 12 },
-  { name: "TypeScript", count: 8 },
-  { name: "React", count: 15 },
-  { name: "Next.js", count: 6 },
-  { name: "Vue", count: 10 },
-  { name: "Node.js", count: 7 },
-  { name: "CSS", count: 5 },
-  { name: "前端", count: 20 },
-];
-
 export function MobileMenu({ isOpen, onClose, navConfig, menuConfig }: MobileMenuProps) {
   const { isDark, toggleTheme, mounted } = useTheme();
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
   const isDarkMode = mounted && isDark;
+
+  const { data: tags = [] } = useTags("count");
+  const { data: categories = [] } = useCategories();
+  const { data: commentsData } = useLatestComments({ page: 1, pageSize: 1 });
+  const commentCount = commentsData?.total ?? 0;
   // 菜单中 /travelling 项：跳转随机友链（对齐 anheyu-app articleStore.navigateToRandomLink）
   const navigateToRandomLink = useCallback(async () => {
     try {
@@ -79,16 +73,15 @@ export function MobileMenu({ isOpen, onClose, navConfig, menuConfig }: MobileMen
 
   // 站点数据
   const siteData = useMemo(() => {
-    // 从配置中获取侧边栏信息
     const sidebar = siteConfig?.sidebar as { siteinfo?: { totalPostCount?: number } } | undefined;
     const totalPostCount = sidebar?.siteinfo?.totalPostCount || 0;
     return [
       { name: "文章", link: "/archives", count: String(totalPostCount) },
-      { name: "标签", link: "/tags", count: String(mockTags.length) },
-      { name: "分类", link: "/categories", count: "10" },
-      { name: "评论", link: "/recentcomments", count: "128" },
+      { name: "标签", link: "/tags", count: String(tags.length) },
+      { name: "分类", link: "/categories", count: String(categories.length) },
+      { name: "评论", link: "/recentcomments", count: String(commentCount) },
     ];
-  }, [siteConfig]);
+  }, [siteConfig, tags.length, categories.length, commentCount]);
 
   // 快捷菜单组
   const quickMenuGroups = useMemo(() => {
@@ -348,10 +341,10 @@ export function MobileMenu({ isOpen, onClose, navConfig, menuConfig }: MobileMen
         {/* 标签云 */}
         <span className={styles.sidebarMenuItemTitle}>标签</span>
         <div className={styles.cardWidget}>
-          {mockTags.length > 0 ? (
+          {tags.length > 0 ? (
             <div className={styles.cardTagCloud}>
-              {mockTags.map(tag => (
-                <Link key={tag.name} href={`/tags/${tag.name}/`} prefetch={false} onClick={handleInternalLinkClick}>
+              {tags.map(tag => (
+                <Link key={tag.id} href={`/tags/${encodeURIComponent(tag.name)}/`} prefetch={false} onClick={handleInternalLinkClick}>
                   {tag.name}
                   <sup>{tag.count}</sup>
                 </Link>

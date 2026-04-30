@@ -129,7 +129,7 @@ export function FcirclePageClient() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
 
   // 使用统一的 Banner 配置提取器
-  const bannerConfig = extractBannerConfig(siteConfig, 'test');
+  const bannerConfig = extractBannerConfig(siteConfig, 'fcircle');
   const defaultConfig = getDefaultBannerConfig('fcircle');
 
   useEffect(() => {

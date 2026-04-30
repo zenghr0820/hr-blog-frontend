@@ -43,7 +43,7 @@ export function SeoSettingsForm({ values, onChange, loading }: SeoSettingsFormPr
       <SettingsSection title="通用配置">
         <FormSwitch
           label="自动提交"
-          description="发布或更新文章时自动推送到搜索引擎"
+          description="发布文章时自动推送到搜索引擎（更新不触发）"
           checked={values[KEY_SEO_AUTO_SUBMIT] === "true"}
           onCheckedChange={v => onChange(KEY_SEO_AUTO_SUBMIT, String(v))}
         />
