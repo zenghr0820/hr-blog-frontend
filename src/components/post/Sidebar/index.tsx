@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { AuthorInfoCardCur } from "@/components/home/Sidebar/AuthorInfoCardCur";
 import { CardWechat } from "@/components/home/Sidebar/CardWechat";
 import { CardClock } from "@/components/home/Sidebar/CardClock";
@@ -13,6 +13,7 @@ import { CardToc } from "./CardToc";
 import { CardSeriesPost } from "./CardSeriesPost";
 import { CardRecentPost } from "./CardRecentPost";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useCategories, useTags } from "@/hooks/queries/use-articles";
 import { resolvePostDefaultCoverUrl } from "@/utils/same-origin-media-url";
 import type { Article, RecentArticle } from "@/types/article";
 import styles from "./PostSidebar.module.css";
@@ -24,6 +25,13 @@ interface PostSidebarProps {
 
 export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
+  const { data: categories } = useCategories();
+  const { data: tags } = useTags();
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   // 提取系列分类
   const seriesCategory = useMemo(() => {
@@ -63,8 +71,10 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
       skills: author.skills || [],
       social: author.social || {},
       totalPostCount: siteConfig?.sidebar?.siteinfo?.totalPostCount || 0,
+      totalCategoryCount: mounted ? (categories?.length || 0) : 0,
+      totalTagCount: mounted ? (tags?.length || 0) : 0,
     };
-  }, [siteConfig]);
+  }, [siteConfig, categories, tags, mounted]);
 
   // 微信配置 - 从 sidebar.wechat 获取
   const wechatConfig = useMemo(() => {

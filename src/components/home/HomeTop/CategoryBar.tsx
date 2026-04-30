@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaAnglesRight } from "react-icons/fa6";
@@ -8,10 +8,12 @@ import { useCategories } from "@/hooks/queries";
 import { cn } from "@/lib/utils";
 import styles from "./CategoryBar.module.css";
 
+const emptySubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 interface CategoryBarProps {
-  /** 状态驱动模式：当前选中的分类名称 */
   selectedCategory?: string;
-  /** 状态驱动模式：分类变化回调 */
   onCategoryChange?: (categoryName: string | null) => void;
 }
 
@@ -20,18 +22,16 @@ export function CategoryBar({ selectedCategory: controlledCategory, onCategoryCh
   const catalogBarRef = useRef<HTMLDivElement>(null);
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, getClientSnapshot, getServerSnapshot);
 
-  const { data: categories = [] } = useCategories();
+  const { data: categories = [], isLoading } = useCategories();
 
-  // 是否为状态驱动模式
   const isControlled = controlledCategory !== undefined && onCategoryChange !== undefined;
 
-  // 从路径中获取当前选中的分类名称（路由模式）
   const currentCategoryName = pathname?.startsWith("/categories/")
     ? decodeURIComponent(pathname.split("/")[2] || "")
     : null;
 
-  // 根据模式确定选中的分类
   const activeCategoryName = isControlled ? controlledCategory : currentCategoryName;
   const selectedCategoryObj = categories.find(c => c.name === activeCategoryName);
   const selectedId = selectedCategoryObj?.id || null;
@@ -68,7 +68,6 @@ export function CategoryBar({ selectedCategory: controlledCategory, onCategoryCh
     }
   };
 
-  // 点击分类处理（状态驱动模式）
   const handleCategoryClick = (e: React.MouseEvent, categoryName: string | null) => {
     if (isControlled) {
       e.preventDefault();
@@ -76,12 +75,15 @@ export function CategoryBar({ selectedCategory: controlledCategory, onCategoryCh
     }
   };
 
+  if (!mounted || isLoading) {
+    return <div className={styles.categoryBarContainer} />;
+  }
+
   return (
     <div className={styles.categoryBarContainer}>
       <div className={`cardWidget ${styles.categoryBar}`}>
         <div ref={catalogBarRef} className={styles.catalogBar} onScroll={checkScrollPosition}>
           <div className={styles.catalogList}>
-            {/* 首页 */}
             <Link
               href="/"
               onClick={e => handleCategoryClick(e, null)}
@@ -89,7 +91,6 @@ export function CategoryBar({ selectedCategory: controlledCategory, onCategoryCh
             >
               <span>首页</span>
             </Link>
-            {/* 分类列表 */}
             {categories.map(category => (
               <Link
                 key={category.id}

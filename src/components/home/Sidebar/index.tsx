@@ -1,14 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { useSiteConfigStore } from "@/store/site-config-store";
-// import { AuthorInfoCard } from "./AuthorInfoCard";
+import { useCategories, useTags } from "@/hooks/queries/use-articles";
 import { AuthorInfoCardCur } from "./AuthorInfoCardCur";
 import { CardWechat } from "./CardWechat";
 import { CustomSidebarBlocks } from "./CustomSidebarBlocks";
 import { StickyCards } from "./StickyCards";
 import styles from "./Sidebar.module.css";
+
+const emptySubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 const CardClock = dynamic(() => import("./CardClock").then(m => m.CardClock), {
   ssr: false,
@@ -16,8 +20,10 @@ const CardClock = dynamic(() => import("./CardClock").then(m => m.CardClock), {
 
 export function Sidebar() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
+  const { data: categories } = useCategories();
+  const { data: tags } = useTags();
+  const mounted = useSyncExternalStore(emptySubscribe, getClientSnapshot, getServerSnapshot);
 
-  // 作者信息卡片配置
   const authorInfoConfig = useMemo(() => {
     if (!siteConfig?.sidebar?.author?.enable) return null;
     return {
@@ -29,8 +35,10 @@ export function Sidebar() {
       ownerName: siteConfig.frontDesk?.siteOwner?.name || "",
       subTitle: siteConfig.SUB_TITLE || "",
       totalPostCount: siteConfig?.sidebar?.siteinfo?.totalPostCount || 0,
+      totalCategoryCount: mounted ? (categories?.length || 0) : 0,
+      totalTagCount: mounted ? (tags?.length || 0) : 0,
     };
-  }, [siteConfig]);
+  }, [siteConfig, categories, tags, mounted]);
 
   // 微信公众号卡片配置
   const wechatConfig = useMemo(() => {

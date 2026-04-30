@@ -15,6 +15,8 @@ interface AuthorConfig {
   ownerName: string;
   subTitle: string;
   totalPostCount: number;
+  totalCategoryCount: number;
+  totalTagCount: number;
 }
 
 interface AuthorInfoCardProps {
@@ -139,13 +141,13 @@ export function AuthorInfoCardCur({ config }: AuthorInfoCardProps) {
           <div className={styles.headline}>文章</div>
           <div className={styles.lengthNum}>{config.totalPostCount}</div>
         </Link>
-        <Link href="/categories" aria-label={`查看全部 ${0} 个分类`}>
+        <Link href="/categories" aria-label={`查看全部 ${config.totalCategoryCount} 个分类`}>
           <div className={styles.headline}>分类</div>
-          <div className={styles.lengthNum}>{0}</div>
+          <div className={styles.lengthNum}>{config.totalCategoryCount}</div>
         </Link>
-        <Link href="/tags" aria-label={`查看全部 ${0} 个标签`}>
+        <Link href="/tags" aria-label={`查看全部 ${config.totalTagCount} 个标签`}>
           <div className={styles.headline}>标签</div>
-          <div className={styles.lengthNum}>{0}</div>
+          <div className={styles.lengthNum}>{config.totalTagCount}</div>
         </Link>
       </div>
 
