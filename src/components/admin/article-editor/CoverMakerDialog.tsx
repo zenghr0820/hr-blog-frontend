@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { addToast } from '@heroui/react';
-import { X, Plus, ImageIcon, Search, Loader2 } from 'lucide-react';
+import { X, Plus, ImageIcon, Search, Loader2, Image as ImageLucide, Settings2, Palette } from 'lucide-react';
 
 // 动态加载外部字体(仅在组件挂载时执行一次)
 const loadExternalFont = () => {
@@ -133,6 +133,8 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
   // 下拉菜单状态
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  const [mobileTab, setMobileTab] = useState<'images' | 'canvas' | 'settings'>('canvas');
 
   // 画布容器引用
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -723,8 +725,26 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
 
         {/* 主体 */}
         <main className="flex-1 flex flex-col md:flex-row bg-gray-100 min-h-0">
+          {/* 移动端 Tab 栏 */}
+          <div className="flex md:hidden border-b border-gray-200 bg-white flex-shrink-0">
+            {([
+              { key: 'images' as const, label: '图片', icon: ImageLucide },
+              { key: 'canvas' as const, label: '画布', icon: Palette },
+              { key: 'settings' as const, label: '设置', icon: Settings2 },
+            ]).map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setMobileTab(tab.key)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition ${mobileTab === tab.key ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50' : 'text-gray-500'}`}
+              >
+                <tab.icon className="w-3.5 h-3.5" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
           {/* 左侧工具栏 */}
-          <aside className="w-[300px] bg-white border-r border-gray-200 flex flex-col h-full md:h-auto max-md:w-full max-md:max-h-[30vh] max-md:border-r-0 max-md:border-b overflow-hidden">
+          <aside className={`w-[300px] bg-white border-r border-gray-200 flex flex-col h-full md:h-auto overflow-hidden ${mobileTab !== 'images' ? 'hidden md:flex' : 'flex max-md:flex-1 max-md:w-full max-md:border-r-0'}`}>
             <div className="p-2">
               <div className="flex gap-1 bg-gray-100 p-1 rounded-md">
                 {(['unsplash', 'pixabay', 'pexels', 'upload'] as const).map(src => (
@@ -798,7 +818,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
           </aside>
 
           {/* 中间画布 */}
-          <section className="flex-1 flex items-center justify-center p-4 md:p-8 min-h-[300px] md:min-h-0">
+          <section className={`flex-1 flex items-center justify-center p-4 md:p-8 md:min-h-0 ${mobileTab !== 'canvas' ? 'hidden md:flex' : 'flex flex-1 min-h-0'}`}>
             <div ref={canvasContainerRef} className="w-full aspect-video bg-gray-100 rounded-lg relative overflow-hidden max-w-full">
               {!imageLoaded ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
@@ -884,7 +904,7 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
           </section>
 
           {/* 右侧属性面板 */}
-          <aside className="w-[320px] bg-white border-l border-gray-200 p-4 md:p-6 flex flex-col gap-4 max-md:w-full max-md:max-h-[30vh] max-md:border-l-0 max-md:border-t max-md:overflow-y-auto">
+          <aside className={`w-[320px] bg-white border-l border-gray-200 p-4 md:p-6 flex flex-col gap-4 overflow-y-auto ${mobileTab !== 'settings' ? 'hidden md:flex' : 'flex max-md:flex-1 max-md:w-full max-md:border-l-0 max-md:border-t'}`}>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide text-gray-700 mb-2">
                 遮罩层浓度
@@ -1000,10 +1020,29 @@ export function CoverMakerDialog({ isOpen, onClose, onSave, title: initialTitle,
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wide text-gray-700 mb-2">头像</label>
-              <label className="inline-block px-4 py-1.5 bg-blue-500 text-white text-sm rounded-md cursor-pointer hover:bg-blue-600 transition">
-                选择图片
-                <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="inline-block px-4 py-1.5 bg-blue-500 text-white text-sm rounded-md cursor-pointer hover:bg-blue-600 transition">
+                  选择图片
+                  <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+                </label>
+                {textElements.avatar.src && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTextElements(prev => {
+                        if (prev.avatar.src && prev.avatar.src.startsWith('blob:')) {
+                          try { URL.revokeObjectURL(prev.avatar.src); } catch {}
+                        }
+                        return { ...prev, avatar: { ...prev.avatar, src: '' } };
+                      });
+                    }}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition"
+                  >
+                    <X className="w-3 h-3" />
+                    清除
+                  </button>
+                )}
+              </div>
             </div>
           </aside>
         </main>
