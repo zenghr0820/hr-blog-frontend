@@ -1183,6 +1183,7 @@ html.dark [data-slot="content"][role="tooltip"] {
   --hlexpand-bg: linear-gradient(180deg, rgb(246 248 250 / 60%), rgb(246 248 250 / 90%));
   --md-theme-code-block-color: #a9b7c6;
   --prose-custom-note-bg: #fff;
+  --blockquote-bg: #f5f7fa;
 
   /* AI摘要 */
   --post-ai-bg: conic-gradient(from 1.5708rad at 50% 50%, #d6b300 0%, #42a2ff 54%, #d6b300 100%);
@@ -1285,6 +1286,7 @@ html.dark [data-slot="content"][role="tooltip"] {
   --hltools-bg: var(--anzhiyu-secondbg);
   --hltools-color: #90a4ae;
   --hlnumber-color: #636d83;
+  --blockquote-bg: #232730;
 
   --prose-custom-note-bg: #2d2d2d;
 

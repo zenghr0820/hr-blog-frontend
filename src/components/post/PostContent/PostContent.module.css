@@ -554,15 +554,16 @@
 
 /* 引用样式 */
 .postContent :global(blockquote) {
-  background: var(--style-quote-border-bg);
-  border-radius: 12px;
-  border-left: 4px solid var(--style-quote-border);
+  background: var(--blockquote-bg);
+  border-radius: 6px;
   color: var(--style-quote-border-txt);
   font-size: 0.95rem;
   line-height: 1.7;
   position: relative;
-  margin: 1.5rem 0;
   padding: .75rem 1.25rem;
+  margin: 1.2rem 0;
+  border-left: 4px solid var(--anzhiyu-theme);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .postContent :global(blockquote p) {
