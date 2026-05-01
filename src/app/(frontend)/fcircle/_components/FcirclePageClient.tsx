@@ -2,9 +2,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { BannerCard } from "@/components/common/BannerCard";
-import { Spinner } from "@/components/ui";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
 import { fcircleApi } from "@/lib/api/fcircle";

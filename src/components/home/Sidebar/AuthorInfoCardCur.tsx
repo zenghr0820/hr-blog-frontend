@@ -154,11 +154,9 @@ export function AuthorInfoCardCur({ config }: AuthorInfoCardProps) {
       <Link 
         id="card-info-btn" 
         className={styles.cardInfoBtn}
-        target="_blank" 
         rel="noopener"  
-        href="https://github.com/zenghr0820"
+        href="/subscribe"
       >
-        <i className="fab fa-github"></i>
         <span>Follow Me 🛫</span>
       </Link>
 

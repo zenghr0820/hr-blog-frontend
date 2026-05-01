@@ -120,6 +120,7 @@ export const KEY_HITOKOTO_API = "page.one_image.hitokoto_api";
 export const KEY_TYPING_SPEED = "page.one_image.typing_speed";
 export const KEY_BACKGROUND_IMAGE = "page.background_image";
 export const KEY_BACKGROUND_IMAGE_DARK = "page.background_image_dark";
+export const KEY_BACKGROUND_IMAGE_ENABLE = "page.background_image_enable";
 export const KEY_AUTHOR_CARD_BG = "page.author_card_bg";
 
 // ==================== 文章配置 ====================

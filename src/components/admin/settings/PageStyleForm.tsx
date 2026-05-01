@@ -20,6 +20,7 @@ import {
   KEY_TYPING_SPEED,
   KEY_BACKGROUND_IMAGE,
   KEY_BACKGROUND_IMAGE_DARK,
+  KEY_BACKGROUND_IMAGE_ENABLE,
   KEY_AUTHOR_CARD_BG,
 } from "@/lib/settings/setting-keys";
 
@@ -78,6 +79,13 @@ export function PageStyleForm({ values, onChange, loading }: PageStyleFormProps)
 
       {/* 背景图片 */}
       <SettingsSection title="背景图片">
+        <FormSwitch
+          label="启用背景图片"
+          description="开启后，页面将显示配置的背景图片。关闭后背景图片不会加载，页面使用默认背景色。"
+          checked={values[KEY_BACKGROUND_IMAGE_ENABLE] !== "false"}
+          onCheckedChange={v => onChange(KEY_BACKGROUND_IMAGE_ENABLE, String(v))}
+        />
+
         <SettingsFieldGroup cols={2}>
           <FormImageUpload
             label="浅色模式背景"

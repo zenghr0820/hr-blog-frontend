@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import styles from "./BackgroundImageSync.module.css";
 
 const DEFAULT_BG = "/images/bg.webp";
 
 export function BackgroundImageSync() {
   const isLoaded = useSiteConfigStore(s => s.isLoaded);
-  const { backgroundImage, backgroundImageDark } = useSiteConfigStore(
+  const { backgroundImageEnable, backgroundImage, backgroundImageDark } = useSiteConfigStore(
     useShallow(s => ({
+      backgroundImageEnable: s.siteConfig.page?.background_image_enable,
       backgroundImage: s.siteConfig.page?.background_image,
       backgroundImageDark: s.siteConfig.page?.background_image_dark,
     }))
@@ -21,16 +23,20 @@ export function BackgroundImageSync() {
 
   const isAdmin = pathname.startsWith("/admin");
 
+  const [bgUrl, setBgUrl] = useState<string | null>(null);
+
   useEffect(() => {
     if (typeof window === "undefined" || !isLoaded) return;
     if (!resolvedTheme) return;
 
     if (isAdmin) {
-      document.body.style.backgroundImage = "";
-      document.body.style.backgroundSize = "";
-      document.body.style.backgroundPosition = "";
-      document.body.style.backgroundRepeat = "";
-      document.body.style.backgroundAttachment = "";
+      setBgUrl(null);
+      return;
+    }
+
+    const enabled = backgroundImageEnable !== false && backgroundImageEnable !== "false";
+    if (!enabled) {
+      setBgUrl(null);
       return;
     }
 
@@ -39,20 +45,17 @@ export function BackgroundImageSync() {
       ? backgroundImageDark || backgroundImage || DEFAULT_BG
       : backgroundImage || DEFAULT_BG;
 
-    document.body.style.backgroundImage = `url("${bg}")`;
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center center";
-    document.body.style.backgroundRepeat = "no-repeat";
-    document.body.style.backgroundAttachment = "fixed";
+    setBgUrl(bg);
+  }, [isLoaded, backgroundImageEnable, backgroundImage, backgroundImageDark, resolvedTheme, isAdmin]);
 
-    return () => {
-      document.body.style.backgroundImage = "";
-      document.body.style.backgroundSize = "";
-      document.body.style.backgroundPosition = "";
-      document.body.style.backgroundRepeat = "";
-      document.body.style.backgroundAttachment = "";
-    };
-  }, [isLoaded, backgroundImage, backgroundImageDark, resolvedTheme, isAdmin]);
+  if (!bgUrl) return null;
 
-  return null;
+  return (
+    <div
+      className={styles.bodyBgLayer}
+      data-body-bg
+      aria-hidden="true"
+      style={{ backgroundImage: `url("${bgUrl}")` }}
+    />
+  );
 }

@@ -356,6 +356,7 @@
 
   /* 背景色 */
   --background: #f7f9fe;
+  --body-bg-grid: linear-gradient(#e2e5eb 1px, transparent 1px), linear-gradient(90deg, #e2e5eb 1px, transparent 1px);
   --foreground: #363636;
   --card: #ffffff;
   --card-foreground: #363636;
@@ -407,6 +408,7 @@
 
   /* 背景色 */
   --background: #18171d;
+  --body-bg-grid: linear-gradient(#2c3038 1px, transparent 1px), linear-gradient(90deg, #2c3038 1px, transparent 1px);
   --foreground: #f7f7fa;
   --card: #1d1e22;
   --card-foreground: #f7f7fa;
@@ -1332,12 +1334,11 @@ html.dark [data-slot="content"][role="tooltip"] {
 /* ===================== One Image Background ===================== */
 .frontend-layout {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* 建立层叠上下文，避免 ::before（z-index: -1）落到 body 背景下方导致一图流图片不可见 */
   isolation: isolate;
-  /* padding-top: 60px; */
 }
 
 /* ===================== Blog 专用 Yozai 字体 ===================== */
@@ -1353,6 +1354,10 @@ html.dark [data-slot="content"][role="tooltip"] {
 
 :root:has(.frontend-layout) body {
   font-family: "Yozai Medium", "LXGW WenKai Lite", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  background-color: var(--background);
+  background-image: var(--body-bg-grid);
+  background-size: 45px 45px;
+  transition: background-color 0.3s, background-image 0.3s;
 }
 
 #frontend-main {
@@ -1709,6 +1714,10 @@ html.with-fancybox body.hide-scrollbar {
     color: #000 !important;
   }
 
+  [data-body-bg] {
+    display: none !important;
+  }
+
   @page {
     margin: 1.5cm 2cm;
     size: A4;
@@ -1795,6 +1804,10 @@ body.reading-mode #rightside {
 }
 
 body.reading-mode .frontend-layout::before {
+  display: none !important;
+}
+
+body.reading-mode [data-body-bg] {
   display: none !important;
 }
 

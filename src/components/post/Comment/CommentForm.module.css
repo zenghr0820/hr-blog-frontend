@@ -679,8 +679,10 @@
 .metaLabel {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   padding: 0 12px;
   font-weight: 600;
+  white-space: nowrap;
   color: var(--anzhiyu-fontcolor);
   background-color: var(--anzhiyu-secondbg);
   border: none;

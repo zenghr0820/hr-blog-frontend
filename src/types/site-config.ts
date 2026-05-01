@@ -97,6 +97,7 @@ export interface SiteConfigData {
   page?: {
     background_image?: string;
     background_image_dark?: string;
+    background_image_enable?: boolean | string;
     author_card_bg?: string;
     one_image?: {
       config?: {

@@ -16,11 +16,12 @@ export function RandomPostContent() {
 
         if (cancelled) return;
 
-        if (data.is_doc) {
-          router.replace(`/doc/${data.id}`);
-        } else {
-          router.replace(`/posts/${data.id}`);
-        }
+        // if (data.is_doc) {
+        //   router.replace(`/doc/${data.id}`);
+        // } else {
+        //   router.replace(`/posts/${data.id}`);
+        // }
+        router.replace(`/posts/${data.id}`);
       } catch {
         if (!cancelled) {
           router.replace("/");
