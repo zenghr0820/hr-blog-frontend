@@ -197,7 +197,7 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
               {article.post_tags.length > 0 && (
                 <div className={styles.tagShare}>
                   <div className={styles.postMetaTagList}>
-                    {article.post_tags.map(tag => (
+                    {(isMobile ? article.post_tags.slice(0, 2) : article.post_tags).map(tag => (
                       <Link
                         key={tag.id}
                         href={`/tags/${tag.slug || encodeURIComponent(tag.name)}`}
@@ -207,6 +207,9 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
                         <span className={styles.tagName}>{tag.name}</span>
                       </Link>
                     ))}
+                    {isMobile && article.post_tags.length > 2 && (
+                      <span className={styles.tagMoreBadge}>+{article.post_tags.length - 2}</span>
+                    )}
                   </div>
                 </div>
               )}
