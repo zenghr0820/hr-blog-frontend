@@ -599,6 +599,7 @@
 .metaInputs {
   display: grid;
   flex-grow: 1;
+  min-width: 0;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
@@ -655,6 +656,7 @@
   position: relative;
   display: flex;
   align-items: stretch;
+  min-width: 0;
   height: 32px;
   border: var(--style-border-always);
   border-radius: 8px;
@@ -692,6 +694,7 @@
 
 .metaField {
   flex: 1;
+  min-width: 0;
   padding: 0 0.75rem;
   color: var(--anzhiyu-fontcolor);
   background: var(--anzhiyu-card-bg);

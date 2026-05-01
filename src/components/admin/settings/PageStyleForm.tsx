@@ -82,7 +82,7 @@ export function PageStyleForm({ values, onChange, loading }: PageStyleFormProps)
         <FormSwitch
           label="启用背景图片"
           description="开启后，页面将显示配置的背景图片。关闭后背景图片不会加载，页面使用默认背景色。"
-          checked={values[KEY_BACKGROUND_IMAGE_ENABLE] !== "false"}
+          checked={values[KEY_BACKGROUND_IMAGE_ENABLE] === "true"}
           onCheckedChange={v => onChange(KEY_BACKGROUND_IMAGE_ENABLE, String(v))}
         />
 

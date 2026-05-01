@@ -550,6 +550,7 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_TYPING_SPEED, type: "number", defaultValue: "100" },
     { backendKey: K.KEY_BACKGROUND_IMAGE, type: "string" },
     { backendKey: K.KEY_BACKGROUND_IMAGE_DARK, type: "string" },
+    { backendKey: K.KEY_BACKGROUND_IMAGE_ENABLE, type: "boolean", defaultValue: "true" },
     { backendKey: K.KEY_AUTHOR_CARD_BG, type: "string" },
   ],
   "content-post": [
