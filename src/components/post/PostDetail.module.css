@@ -215,6 +215,7 @@
   .postDetailContent {
     z-index: 1;
     padding: 1rem;
+    overflow: hidden;
     border: none;
     border-radius: 12px 12px 0 0;
   }

@@ -96,7 +96,9 @@
 }
 
 .commentForm {
+  width: 100%;
   max-width: 100%;
+  overflow: hidden;
   border-radius: 8px;
 }
 
@@ -577,6 +579,8 @@
 .formMetaActions {
   display: flex;
   flex-wrap: wrap;
+  max-width: 100%;
+  min-width: 0;
   gap: 1rem;
   align-items: stretch;
 }
@@ -694,6 +698,7 @@
 
 .metaField {
   flex: 1;
+  width: 0;
   min-width: 0;
   padding: 0 0.75rem;
   color: var(--anzhiyu-fontcolor);

@@ -35,6 +35,8 @@
 }
 
 .replyFormWrapper {
+  max-width: 100%;
+  overflow: hidden;
   margin-top: 1rem;
   margin-left: 48px;
 }
