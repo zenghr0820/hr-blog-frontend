@@ -196,6 +196,7 @@ export const FoldingBlock = Node.create({
     return [
       {
         tag: "details.folding-tag",
+        contentElement: "div.content",
         getAttrs: (el: HTMLElement) => {
           const summary = el.querySelector("summary");
           const detailsStyle = el.getAttribute("style") || "";
