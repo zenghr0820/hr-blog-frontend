@@ -23,6 +23,7 @@ export interface SettingDescriptor {
 export type SettingCategoryId =
   | "site-basic"
   | "site-icon"
+  | "site-info"
   | "appearance-skin"
   | "appearance-banner"
   | "appearance-home"
@@ -459,6 +460,16 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_GRAVATAR_URL, type: "string" },
     { backendKey: K.KEY_DEFAULT_GRAVATAR_TYPE, type: "string", defaultValue: "mp" },
   ],
+  "site-info": [
+    { backendKey: K.KEY_IP_API, type: "string", defaultValue: "https://v1.nsuuu.com/api/ipip" },
+    { backendKey: K.KEY_IP_API_TOKEN, type: "password" },
+    { backendKey: K.KEY_IP_API_AUTH_TYPE, type: "string", defaultValue: "bearer" },
+    { backendKey: K.KEY_IP_API_IP_PARAM_NAME, type: "string", defaultValue: "ip" },
+    { backendKey: K.KEY_IP_API_RESPONSE_FORMAT, type: "json" },
+    { backendKey: K.KEY_SITE_OWNER_RECTANGLE, type: "string", defaultValue: "112.6534116,27.96920845" },
+    { backendKey: K.KEY_COMMENT_QQ_API_URL, type: "string" },
+    { backendKey: K.KEY_COMMENT_QQ_API_KEY, type: "password" },
+  ],
   "appearance-skin": [
     { backendKey: K.KEY_APPEARANCE_SKIN, type: "string", defaultValue: "brand_blue" },
     { backendKey: K.KEY_APPEARANCE_TOKENS, type: "json", defaultValue: "{}" },
@@ -526,6 +537,9 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_SIDEBAR_SERIES_POST_COUNT, type: "number", defaultValue: "5" },
     { backendKey: K.KEY_SIDEBAR_RECENT_POST_ENABLE, type: "boolean", defaultValue: "true" },
     { backendKey: K.KEY_SIDEBAR_RECENT_POST_COUNT, type: "number", defaultValue: "5" },
+    { backendKey: K.KEY_SIDEBAR_POEM_ENABLE, type: "boolean", defaultValue: "false" },
+    { backendKey: K.KEY_SIDEBAR_WELCOME_ENABLE, type: "boolean", defaultValue: "false" },
+    { backendKey: K.KEY_SIDEBAR_WELCOME_CONTENT, type: "string" },
     { backendKey: K.KEY_SIDEBAR_DOC_LINKS, type: "json" },
     { backendKey: K.KEY_CUSTOM_SIDEBAR, type: "json" },
     { backendKey: K.KEY_WEATHER_ENABLE, type: "boolean" },
@@ -535,7 +549,6 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_WEATHER_IP_API_KEY, type: "password" },
     { backendKey: K.KEY_WEATHER_LOADING, type: "string" },
     { backendKey: K.KEY_WEATHER_DEFAULT_RECT, type: "boolean" },
-    { backendKey: K.KEY_WEATHER_RECTANGLE, type: "string" },
   ],
   "appearance-page": [
     { backendKey: K.KEY_ENABLE_EXTERNAL_LINK_WARNING, type: "boolean" },
@@ -555,8 +568,6 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_AUTHOR_CARD_BG, type: "string" },
   ],
   "content-post": [
-    { backendKey: K.KEY_IP_API, type: "string" },
-    { backendKey: K.KEY_IP_API_TOKEN, type: "password" },
     { backendKey: K.KEY_POST_EXPIRATION_TIME, type: "number" },
     { backendKey: K.KEY_POST_DEFAULT_COVER, type: "string" },
     { backendKey: K.KEY_POST_DOUBLE_COLUMN, type: "boolean" },
@@ -673,8 +684,6 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_COMMENT_AI_DETECT_API_URL, type: "string" },
     { backendKey: K.KEY_COMMENT_AI_DETECT_ACTION, type: "string" },
     { backendKey: K.KEY_COMMENT_AI_DETECT_RISK_LEVEL, type: "string" },
-    { backendKey: K.KEY_COMMENT_QQ_API_URL, type: "string" },
-    { backendKey: K.KEY_COMMENT_QQ_API_KEY, type: "password" },
     { backendKey: K.KEY_COMMENT_NOTIFY_ADMIN, type: "boolean", defaultValue: "true" },
     { backendKey: K.KEY_COMMENT_NOTIFY_REPLY, type: "boolean", defaultValue: "true" },
     { backendKey: K.KEY_COMMENT_SMTP_SENDER_NAME, type: "string" },

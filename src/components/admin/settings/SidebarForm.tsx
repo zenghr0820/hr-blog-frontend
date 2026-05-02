@@ -35,6 +35,8 @@ import {
   KEY_SIDEBAR_RECENT_POST_ENABLE,
   KEY_SIDEBAR_RECENT_POST_COUNT,
   KEY_SIDEBAR_POEM_ENABLE,
+  KEY_SIDEBAR_WELCOME_ENABLE,
+  KEY_SIDEBAR_WELCOME_CONTENT,
   KEY_SIDEBAR_DOC_LINKS,
   KEY_CUSTOM_SIDEBAR,
   KEY_WEATHER_ENABLE,
@@ -44,7 +46,6 @@ import {
   KEY_WEATHER_IP_API_KEY,
   KEY_WEATHER_LOADING,
   KEY_WEATHER_DEFAULT_RECT,
-  KEY_WEATHER_RECTANGLE,
 } from "@/lib/settings/setting-keys";
 
 // 自定义侧边栏块字段定义
@@ -285,6 +286,28 @@ export function SidebarForm({ values, onChange, loading }: SidebarFormProps) {
         />
       </SettingsSection>
 
+      {/* 来访者欢迎卡片 */}
+      <SettingsSection title="来访者欢迎卡片">
+        <FormSwitch
+          label="启用来访者卡片"
+          description="在侧边栏显示来访者欢迎信息，根据访问者 IP 展示地理位置和个性化欢迎语"
+          checked={values[KEY_SIDEBAR_WELCOME_ENABLE] === "true"}
+          onCheckedChange={v => onChange(KEY_SIDEBAR_WELCOME_ENABLE, String(v))}
+        />
+
+        {values[KEY_SIDEBAR_WELCOME_ENABLE] === "true" && (
+          <FormMonacoEditor
+            label="自定义欢迎内容"
+            value={values[KEY_SIDEBAR_WELCOME_CONTENT]}
+            onValueChange={v => onChange(KEY_SIDEBAR_WELCOME_CONTENT, v)}
+            language="html"
+            height={180}
+            wordWrap
+            description="来访者卡片上方的自定义内容，支持 HTML。例如博主自我介绍、联系方式等。留空则只显示 IP 定位欢迎信息。"
+          />
+        )}
+      </SettingsSection>
+
       {/* 天气时钟 */}
       <SettingsSection title="天气时钟">
         <FormSwitch
@@ -371,19 +394,9 @@ export function SidebarForm({ values, onChange, loading }: SidebarFormProps) {
 
             <FormSwitch
               label="默认显示固定位置"
-              description="开启后将一直显示下方设置的固定位置天气，否则将获取访问者的地理位置与天气"
+              description="开启后将一直显示博主所在位置的天气，否则将获取访问者的地理位置与天气。博主位置在「站点服务」中配置"
               checked={values[KEY_WEATHER_DEFAULT_RECT] === "true"}
               onCheckedChange={v => onChange(KEY_WEATHER_DEFAULT_RECT, String(v))}
-            />
-
-            <FormInput
-              label="默认/后备位置坐标"
-              placeholder="格式: 经度,纬度 (例: 112.6534116,27.96920845)"
-              value={values[KEY_WEATHER_RECTANGLE]}
-              onValueChange={v => onChange(KEY_WEATHER_RECTANGLE, v)}
-              description={
-                "获取访问者位置失败时会显示该位置的天气；开启\u201c默认显示固定位置\u201d后，将始终显示此位置的天气"
-              }
             />
           </>
         )}

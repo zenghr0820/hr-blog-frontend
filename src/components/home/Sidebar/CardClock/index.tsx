@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, memo } from "react";
+import { useIPLocation } from "@/hooks/use-ip-location";
 import styles from "./CardClock.module.css";
 
 // ─── 类型定义 ─────────────────────────────────────────────────
@@ -216,6 +217,9 @@ export const CardClock = memo(function CardClock({ config }: CardClockProps) {
   const [weatherColor, setWeatherColor] = useState("#000");
   const [cityName, setCityName] = useState("定位中...");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const ipLocationFetchedRef = useRef(false);
+
+  const { data: ipLocationData } = useIPLocation();
 
   // 更新时间
   const updateTime = useCallback(() => {
@@ -265,62 +269,49 @@ export const CardClock = memo(function CardClock({ config }: CardClockProps) {
     [config.qweatherAPIHost, config.qweatherKey]
   );
 
-  // 获取 IP 定位并加载天气
-  const initWeather = useCallback(async () => {
+  // 使用共享 IP 定位数据加载天气
+  useEffect(() => {
     if (config.defaultRectangle) {
-      // 使用固定坐标
-      const location = config.rectangle;
-      const city = await fetchCityName(location);
-      setCityName(city);
-      await fetchWeather(location);
-    } else {
-      // 通过后端 API 获取 IP 定位
-      try {
-        const res = await fetch("/api/public/weather/ip-location");
-        const result = await res.json();
-
-        let location = config.rectangle;
-        let city = "未知";
-
-        if (result.code === 200 && result.data) {
-          // 优先 city，空时用 province/country（如局域网、境外）再兜底「未知」
-          city =
-            result.data.city ||
-            result.data.province ||
-            result.data.country ||
-            "未知";
-          if (result.data.longitude && result.data.latitude) {
-            location = `${result.data.longitude},${result.data.latitude}`;
-          } else if (result.default_rectangle) {
-            // 局域网或无经纬度时后端会带 default_rectangle，优先用其请求天气
-            location = result.default_rectangle;
-          }
-        } else {
-          city = await fetchCityName(location);
-        }
-
+      fetchCityName(config.rectangle).then(city => {
         setCityName(city);
-        await fetchWeather(location);
-      } catch {
-        // IP 定位失败，使用默认坐标
-        const location = config.rectangle;
-        const city = await fetchCityName(location);
-        setCityName(city);
-        await fetchWeather(location);
-      }
+        fetchWeather(config.rectangle);
+      });
+      return;
     }
-  }, [config.defaultRectangle, config.rectangle, fetchCityName, fetchWeather]);
 
-  // 初始化
+    if (!ipLocationData) return;
+    if (ipLocationFetchedRef.current) return;
+    ipLocationFetchedRef.current = true;
+
+    let location = config.rectangle;
+    let city = "未知";
+
+    if (ipLocationData.city || ipLocationData.province || ipLocationData.country) {
+      city = ipLocationData.city || ipLocationData.province || ipLocationData.country || "未知";
+      if (ipLocationData.longitude && ipLocationData.latitude) {
+        location = `${ipLocationData.longitude},${ipLocationData.latitude}`;
+      }
+    } else {
+      fetchCityName(location).then(c => {
+        city = c;
+        setCityName(city);
+        fetchWeather(location);
+      });
+      return;
+    }
+
+    setCityName(city);
+    fetchWeather(location);
+  }, [ipLocationData, config.defaultRectangle, config.rectangle, fetchCityName, fetchWeather]);
+
+  // 初始化时钟
   useEffect(() => {
     updateTime();
     timerRef.current = setInterval(updateTime, 1000);
-    initWeather();
-
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [updateTime, initWeather]);
+  }, [updateTime]);
 
   return (
     <div className={styles.cardClock}>

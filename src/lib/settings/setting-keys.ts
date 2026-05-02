@@ -94,6 +94,8 @@ export const KEY_SIDEBAR_SERIES_POST_COUNT = "sidebar.series.postCount";
 export const KEY_SIDEBAR_RECENT_POST_ENABLE = "sidebar.recentPost.enable";
 export const KEY_SIDEBAR_RECENT_POST_COUNT = "sidebar.recentPost.count";
 export const KEY_SIDEBAR_POEM_ENABLE = "sidebar.poem.enable";
+export const KEY_SIDEBAR_WELCOME_ENABLE = "sidebar.welcome.enable";
+export const KEY_SIDEBAR_WELCOME_CONTENT = "sidebar.welcome.content";
 export const KEY_SIDEBAR_DOC_LINKS = "sidebar.doc.links";
 export const KEY_CUSTOM_SIDEBAR = "CUSTOM_SIDEBAR";
 
@@ -105,7 +107,9 @@ export const KEY_WEATHER_QWEATHER_API_HOST = "sidebar.weather.qweather_api_host"
 export const KEY_WEATHER_IP_API_KEY = "sidebar.weather.ip_api_key";
 export const KEY_WEATHER_LOADING = "sidebar.weather.loading";
 export const KEY_WEATHER_DEFAULT_RECT = "sidebar.weather.default_rectangle";
-export const KEY_WEATHER_RECTANGLE = "sidebar.weather.rectangle";
+
+// ==================== 站点服务 ====================
+export const KEY_SITE_OWNER_RECTANGLE = "site.owner.rectangle";
 
 // ==================== 页面样式 ====================
 export const KEY_ENABLE_EXTERNAL_LINK_WARNING = "ENABLE_EXTERNAL_LINK_WARNING";
@@ -283,6 +287,9 @@ export const KEY_ACTIVATE_ACCOUNT_TEMPLATE = "DEFAULT_ACTIVATE_ACCOUNT_TEMPLATE"
 export const KEY_ENABLE_USER_ACTIVATION = "ENABLE_USER_ACTIVATION";
 export const KEY_IP_API = "IP_API";
 export const KEY_IP_API_TOKEN = "IP_API_TOKEN";
+export const KEY_IP_API_AUTH_TYPE = "IP_API_AUTH_TYPE";
+export const KEY_IP_API_IP_PARAM_NAME = "IP_API_IP_PARAM_NAME";
+export const KEY_IP_API_RESPONSE_FORMAT = "IP_API_RESPONSE_FORMAT";
 
 // ==================== 第三方登录 (PRO) ====================
 export const KEY_QQ_ENABLE = "oauth.qq.enable";

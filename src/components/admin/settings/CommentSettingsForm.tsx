@@ -30,8 +30,6 @@ import {
   KEY_COMMENT_AI_DETECT_API_URL,
   KEY_COMMENT_AI_DETECT_ACTION,
   KEY_COMMENT_AI_DETECT_RISK_LEVEL,
-  KEY_COMMENT_QQ_API_URL,
-  KEY_COMMENT_QQ_API_KEY,
   KEY_COMMENT_NOTIFY_ADMIN,
   KEY_COMMENT_NOTIFY_REPLY,
   KEY_COMMENT_SMTP_SENDER_NAME,
@@ -262,25 +260,6 @@ export function CommentSettingsForm({ values, onChange, loading }: CommentSettin
             </div>
           )
         )}
-      </SettingsSection>
-
-      {/* QQ 头像 */}
-      <SettingsSection title="QQ 头像">
-        <SettingsFieldGroup cols={2}>
-          <FormInput
-            label="QQ 头像 API 地址"
-            placeholder="https://api.example.com/qq"
-            value={values[KEY_COMMENT_QQ_API_URL]}
-            onValueChange={v => onChange(KEY_COMMENT_QQ_API_URL, v)}
-          />
-          <FormInput
-            label="QQ API Key"
-            type="password"
-            placeholder="请输入 API Key"
-            value={values[KEY_COMMENT_QQ_API_KEY]}
-            onValueChange={v => onChange(KEY_COMMENT_QQ_API_KEY, v)}
-          />
-        </SettingsFieldGroup>
       </SettingsSection>
 
       {/* 通知配置 */}

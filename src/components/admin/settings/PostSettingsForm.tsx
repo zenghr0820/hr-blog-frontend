@@ -11,8 +11,6 @@ import { SettingsHelpPanel } from "./SettingsHelpPanel";
 import { SettingsSection, SettingsFieldGroup } from "./SettingsSection";
 import { Spinner } from "@/components/ui/spinner";
 import {
-  KEY_IP_API,
-  KEY_IP_API_TOKEN,
   KEY_POST_EXPIRATION_TIME,
   KEY_POST_DEFAULT_COVER,
   KEY_POST_DOUBLE_COLUMN,
@@ -188,23 +186,6 @@ export function PostSettingsForm({ values, onChange, loading }: PostSettingsForm
           value={values[KEY_POST_404_IMAGE]}
           onValueChange={v => onChange(KEY_POST_404_IMAGE, v)}
         />
-
-        <SettingsFieldGroup cols={2}>
-          <FormInput
-            label="IP 查询 API"
-            placeholder="https://api.example.com/ip"
-            value={values[KEY_IP_API]}
-            onValueChange={v => onChange(KEY_IP_API, v)}
-          />
-          <FormInput
-            label="IP API Token"
-            placeholder="请输入 Token"
-            type="password"
-            value={values[KEY_IP_API_TOKEN]}
-            onValueChange={v => onChange(KEY_IP_API_TOKEN, v)}
-            autoComplete="new-password"
-          />
-        </SettingsFieldGroup>
       </SettingsSection>
 
       {/* 代码块 */}

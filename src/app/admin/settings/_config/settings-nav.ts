@@ -21,6 +21,7 @@ import {
   DatabaseBackup,
   Bot,
   LayoutDashboard,
+  Server,
 } from "lucide-react";
 import type { SettingCategoryId } from "@/lib/settings/setting-descriptors";
 
@@ -46,6 +47,7 @@ export const settingsCategories: CategorySection[] = [
     children: [
       { id: "site-basic", label: "基本信息", icon: Globe, keywords: ["站点名称", "描述", "URL", "备案", "公告"] },
       { id: "site-icon", label: "Logo 与图标", icon: ImageIcon, keywords: ["favicon", "logo", "图标", "PWA"] },
+      { id: "site-info", label: "站点服务", icon: Server, keywords: ["IP", "API", "定位", "服务接口"] },
     ],
   },
   {

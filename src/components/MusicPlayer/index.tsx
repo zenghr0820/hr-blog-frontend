@@ -304,9 +304,9 @@ function MusicPlayerInner() {
     setIsHovered(true);
   }, []);
 
-  const handleMouseLeave = useCallback((e: React.MouseEvent) => {
+  const handleMouseLeave = useCallback((e?: React.MouseEvent) => {
     // 检查鼠标是否移动到了播放列表上
-    const target = e.relatedTarget as HTMLElement;
+    const target = e?.relatedTarget as HTMLElement;
     const playlistContainer = document.querySelector("[data-playlist-container]");
     
     // 检查目标元素是否在播放列表内，或者目标元素是否是播放列表本身

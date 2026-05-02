@@ -1,0 +1,104 @@
+/* CardWelcome - 来访者欢迎卡片 */
+
+.cardWelcome {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  overflow: hidden;
+  background: var(--anzhiyu-card-bg);
+  border: var(--style-border);
+  border-radius: 12px;
+  box-shadow: var(--anzhiyu-shadow-card);
+  transition: box-shadow 0.3s ease;
+}
+
+.cardWelcome:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
+}
+
+.itemHeadline {
+  align-items: center;
+  gap: 6px;
+  margin: 0 16px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.itemHeadline i {
+  font-size: 1em;
+  color: var(--anzhiyu-main);
+}
+
+.itemContent {
+  margin: 0 16px 10px 16px;
+  color: var(--anzhiyu-fontcolor);
+  word-break: break-word;
+}
+
+.itemContent p {
+  margin: 0.3em 0;
+}
+
+.welcomeInfo {
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 8px;
+}
+
+.loadingState {
+  color: var(--anzhiyu-secondtext);
+  font-size: 0.85rem;
+  padding: 20px 0;
+}
+
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: 4px;
+  color: var(--anzhiyu-secondtext);
+  font-size: 0.9rem;
+}
+
+.errorEmoji {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.welcomeText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.6;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.highlight {
+  color: var(--anzhiyu-main);
+  font-size: 0.95em;
+}
+
+.ipAddress {
+  font-size: 15px;
+  filter: blur(5px);
+  transition: filter 0.5s;
+  cursor: pointer;
+  color: var(--anzhiyu-main);
+}
+
+.ipAddress:hover {
+  filter: none;
+}
+
+/* 响应式 - 992px 以下隐藏 */
+@media (max-width: 992px) {
+  .cardWelcome {
+    display: none;
+  }
+}

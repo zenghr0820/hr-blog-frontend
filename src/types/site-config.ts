@@ -297,6 +297,10 @@ export interface SiteConfigData {
     poem?: {
       enable?: boolean | string;
     };
+    welcome?: {
+      enable?: boolean | string;
+      content?: string;
+    };
     toc?: {
       collapseMode?: boolean | string;
     };
@@ -308,7 +312,6 @@ export interface SiteConfigData {
       ip_api_key?: string;
       loading?: string;
       default_rectangle?: boolean;
-      rectangle?: string;
     };
   };
 
@@ -451,6 +454,9 @@ export interface SiteConfigData {
   // 站点配置
   site?: {
     url?: string;
+    owner?: {
+      rectangle?: string;
+    };
   };
 
   // 任意其他配置

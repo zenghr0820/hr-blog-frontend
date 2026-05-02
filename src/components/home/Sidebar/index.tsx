@@ -14,6 +14,10 @@ const CardPoem = dynamic(() => import("./CardPoem").then(m => m.CardPoem), {
   ssr: false,
 });
 
+const CardWelcome = dynamic(() => import("./CardWelcome").then(m => m.CardWelcome), {
+  ssr: false,
+});
+
 const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
@@ -56,6 +60,8 @@ export function Sidebar() {
   }, [siteConfig]);
 
   // 天气时钟配置
+  const ownerRectangle = siteConfig?.site?.owner?.rectangle || "112.6534116,27.96920845";
+
   const clockConfig = useMemo(() => {
     const w = siteConfig?.sidebar?.weather;
     if (!w?.enable || !w.qweather_key) return null;
@@ -65,20 +71,31 @@ export function Sidebar() {
       ipAPIKey: w.ip_api_key || "",
       loading: w.loading || "",
       defaultRectangle: w.default_rectangle === true || (w.default_rectangle as unknown) === "true",
-      rectangle: w.rectangle || "112.6534116,27.96920845",
+      rectangle: ownerRectangle,
     };
-  }, [siteConfig]);
+  }, [siteConfig, ownerRectangle]);
 
   const poemEnabled = useMemo(() => {
     const val = siteConfig?.sidebar?.poem?.enable;
     return val === true || val === "true";
   }, [siteConfig]);
 
+  const welcomeConfig = useMemo(() => {
+    const val = siteConfig?.sidebar?.welcome?.enable;
+    if (val !== true && val !== "true") return null;
+    return {
+      content: siteConfig?.sidebar?.welcome?.content || "",
+      siteOwnerName: siteConfig?.frontDesk?.siteOwner?.name || "",
+      rectangle: ownerRectangle,
+    };
+  }, [siteConfig, ownerRectangle]);
+
   return (
     <aside className={styles.asideContent}>
       {authorInfoConfig && <AuthorInfoCardCur config={authorInfoConfig} />}
       {wechatConfig && <CardWechat config={wechatConfig} />}
       <CustomSidebarBlocks />
+      {welcomeConfig && <CardWelcome config={welcomeConfig} />}
       {poemEnabled && <CardPoem />}
       {clockConfig && <CardClock config={clockConfig} />}
       <StickyCards />

@@ -94,6 +94,8 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
   }, [siteConfig]);
 
   // 天气时钟配置 - enable_page 为 "all" 或 "post" 时在文章页显示
+  const ownerRectangle = siteConfig?.site?.owner?.rectangle || "112.6534116,27.96920845";
+
   const clockConfig = useMemo(() => {
     const w = siteConfig?.sidebar?.weather;
     if (!w?.enable || !w.qweather_key) return null;
@@ -105,9 +107,9 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
       ipAPIKey: w.ip_api_key || "",
       loading: w.loading || "",
       defaultRectangle: w.default_rectangle === true || (w.default_rectangle as unknown) === "true",
-      rectangle: w.rectangle || "112.6534116,27.96920845",
+      rectangle: ownerRectangle,
     };
-  }, [siteConfig]);
+  }, [siteConfig, ownerRectangle]);
 
   // 默认封面（与文章详情页一致：后台配置 + 同源压缩 + 内置占位）
   const defaultCover = useMemo(
