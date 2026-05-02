@@ -294,6 +294,9 @@ export interface SiteConfigData {
       enable?: boolean | string;
       count?: number | string;
     };
+    toc?: {
+      collapseMode?: boolean | string;
+    };
     weather?: {
       enable?: boolean;
       enable_page?: string;

@@ -119,6 +119,11 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
     return Math.min(20, Math.max(1, Math.trunc(parsed)));
   }, [siteConfig]);
 
+  const tocCollapseMode = useMemo(() => {
+    const val = siteConfig?.sidebar?.toc?.collapseMode;
+    return val === true || val === "true";
+  }, [siteConfig]);
+
   return (
     <aside id="post-sidebar" className={styles.postSidebar}>
       {/* 作者信息卡片 */}
@@ -146,7 +151,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
         )}
 
         {/* 文章目录 */}
-        {article.content_html && <CardToc contentHtml={article.content_html} />}
+        {article.content_html && <CardToc contentHtml={article.content_html} collapseMode={tocCollapseMode} />}
 
         {/* 最近发布 */}
         {siteConfig?.sidebar?.recentPost?.enable !== false &&

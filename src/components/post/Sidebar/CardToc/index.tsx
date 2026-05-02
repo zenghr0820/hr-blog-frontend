@@ -245,15 +245,37 @@ export function CardToc({ contentHtml, collapseMode = false }: CardTocProps) {
     const activeItem = tocItems[activeIndex];
     const minLevel = Math.min(...tocItems.map(item => item.level));
 
-    return tocItems.filter((item, index) => {
-      // 顶级标题始终显示
+    const ancestorIds = new Set<string>();
+    for (let i = activeIndex - 1; i >= 0; i--) {
+      if (tocItems[i].level < activeItem.level) {
+        ancestorIds.add(tocItems[i].uniqueId);
+        if (tocItems[i].level === minLevel) break;
+      }
+    }
+
+    const childIds = new Set<string>();
+    for (let i = activeIndex + 1; i < tocItems.length; i++) {
+      if (tocItems[i].level <= activeItem.level) break;
+      childIds.add(tocItems[i].uniqueId);
+    }
+
+    const siblingIds = new Set<string>();
+    let siblingStart = activeIndex;
+    for (let i = activeIndex - 1; i >= 0; i--) {
+      if (tocItems[i].level < activeItem.level) break;
+      if (tocItems[i].level === activeItem.level) siblingStart = i;
+    }
+    for (let i = siblingStart; i < tocItems.length; i++) {
+      if (tocItems[i].level < activeItem.level) break;
+      if (tocItems[i].level === activeItem.level) siblingIds.add(tocItems[i].uniqueId);
+    }
+
+    return tocItems.filter(item => {
       if (item.level === minLevel) return true;
-      // 激活项始终显示
       if (item.uniqueId === activeId) return true;
-      // 激活项的父级显示
-      if (index < activeIndex && item.level < activeItem.level) return true;
-      // 激活项的直接子项显示
-      if (index > activeIndex && index <= activeIndex + 3 && item.level > activeItem.level) return true;
+      if (ancestorIds.has(item.uniqueId)) return true;
+      if (childIds.has(item.uniqueId)) return true;
+      if (siblingIds.has(item.uniqueId)) return true;
       return false;
     });
   }, [tocItems, activeId, collapseMode]);
