@@ -79,7 +79,7 @@ const IP_API_PRESETS: Record<string, { url: string; authType: string; ipParamNam
 }`,
   },
   ipinfo: {
-    url: "https://ipinfo.io/{ip}?lang=zh-CN",
+    url: "https://ipinfo.io/{ip}",
     authType: "query_key",
     ipParamName: "ip",
     format: `{

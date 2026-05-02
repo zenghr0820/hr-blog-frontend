@@ -100,8 +100,12 @@ function fuzzyMatch<T>(map: Record<string, T>, name: string, suffixes: string[])
   return undefined;
 }
 
+function isChina(country: string): boolean {
+  return country === "中国" || country === "China" || country === "CN";
+}
+
 function getRegionGreeting(country: string, province: string, city: string): string {
-  if (country === "中国") {
+  if (isChina(country)) {
     const provEntry = fuzzyMatch(CHINA_PROVINCE_GREETINGS, province, PROVINCE_SUFFIXES);
     if (!provEntry) return "带我去你的城市逛逛吧！";
     if (typeof provEntry === "string") return provEntry;
@@ -147,7 +151,7 @@ export const CardWelcome = memo(function CardWelcome({ config }: { config: Welco
     if (!ipLocation) return null;
 
     const { country, province, city, ip, latitude, longitude } = ipLocation;
-    const pos = (country === "中国" || country === "China") ? `${province} ${city}`.trim() : country;
+    const pos = isChina(country) ? `${province} ${city}`.trim() : country;
     const greeting = getRegionGreeting(country, province, city);
     const timeGreeting = getTimeGreeting();
 
