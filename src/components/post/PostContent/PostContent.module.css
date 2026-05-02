@@ -53,12 +53,23 @@
 
 /* 链接样式 - 与 anheyu-app 保持一致 */
 .postContent :global(a) {
-  color: #2679cc;
-  font-size: 1rem;
+  padding: 0 0.2rem !important;
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: var(--anzhiyu-fontcolor, var(--foreground)) !important;
+  text-decoration: none !important;
+  border-bottom: dotted 2px var(--primary);
+  transition: all 0.2s ease 0s !important;
 }
 
 .postContent :global(a:hover:not(.btn-anzhiyu):not(.btn-item):not(.anzhiyu-tag-link)) {
-  text-decoration: underline;
+  color: var(--anzhiyu-white, #fff) !important;
+  text-decoration: none !important;
+  background: var(--primary);
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-bottom-color: transparent;
 }
 
 /* 图片样式 */
