@@ -59,7 +59,7 @@ export function GlobalSidebar() {
   }, [isReadingMode, toggleReadingMode]);
 
   const handleScrollToTop = useCallback(() => {
-    scrollTo(0, { duration: 500 });
+    scrollTo(0);
   }, []);
 
   const handleScrollToComment = useCallback(() => {
