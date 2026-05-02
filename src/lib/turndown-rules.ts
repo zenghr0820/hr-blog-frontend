@@ -6,6 +6,37 @@
 import type TurndownService from "turndown";
 
 export function registerCustomRules(td: TurndownService) {
+  // --- 图片（含 figcaption 时把图片描述写入 markdown title） ---
+  // 让 <figure><img>...<figcaption>X</figcaption></figure> 转为 ![alt](src "X")，
+  // 把可视化模式中的图片描述（caption）以标准 markdown title 的形式写入 Markdown，
+  // 防止其在 HTML→Markdown→HTML 多次切换中丢失或与图片脱离。
+  td.addRule("figureWithImage", {
+    filter: (node) => {
+      if (node.nodeName !== "FIGURE") return false;
+      return !!(node as HTMLElement).querySelector("img");
+    },
+    replacement: (_content, node) => {
+      const el = node as HTMLElement;
+      const img = el.querySelector("img");
+      if (!img) return _content;
+
+      const cleanAttr = (value: string | null | undefined): string =>
+        (value ?? "").replace(/(\n+\s*)+/g, " ").trim();
+
+      const alt = cleanAttr(img.getAttribute("alt"));
+      const src = img.getAttribute("data-src") || img.getAttribute("src") || "";
+      if (!src) return _content;
+
+      const figcap = el.querySelector("figcaption");
+      const captionText = cleanAttr(figcap?.textContent);
+      const imgTitle = cleanAttr(img.getAttribute("title"));
+      const finalTitle = captionText || imgTitle;
+      const titlePart = finalTitle ? ` "${finalTitle.replace(/"/g, '\\"')}"` : "";
+
+      return `![${alt}](${src}${titlePart})`;
+    },
+  });
+
   // --- Heading 特殊处理：防止 h 标签内的 a 被转换为链接格式 ---
   // 必须在其他规则之前注册，确保优先级最高
   td.addRule("headingAnchor", {

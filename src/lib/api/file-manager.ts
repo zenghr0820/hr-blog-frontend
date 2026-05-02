@@ -180,7 +180,7 @@ export const copyFilesApi = (sourceIDs: string[], destinationID: string): Promis
 
 export const createDirectLinksApi = (fileIds: string[]): Promise<CreateDirectLinksResponse> => {
   const requestData: CreateDirectLinksRequest = { file_ids: fileIds };
-  return apiClient.post<CreateDirectLinksResponse["data"]>(apiPath("pro/direct-links"), requestData);
+  return apiClient.post<CreateDirectLinksResponse["data"]>(apiPath("direct-links"), requestData);
 };
 
 export const getFilePreviewUrlsApi = (publicId: string): Promise<FilePreviewUrlsResponse> => {

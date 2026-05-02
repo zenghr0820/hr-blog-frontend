@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { addToast } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { FileItem, ShareLinkData } from "@/types/file-manager";
 import { FileType } from "@/types/file-manager";
@@ -42,6 +43,12 @@ export function ShareModal({ open, items, onClose, onSuccess, onCreateShare }: S
   const shareFileName = selectedCount === 1 ? items[0].name : "多个项目";
   const hasFolder = items.some(item => item.type === FileType.Dir);
   const isFolder = selectedCount === 1 && items[0].type === FileType.Dir;
+
+  useEffect(() => {
+    if (open) {
+      setResult(null);
+    }
+  }, [open, items]);
 
   const isFormValid = useMemo(() => {
     if (enablePassword && !password) return false;
@@ -89,6 +96,12 @@ export function ShareModal({ open, items, onClose, onSuccess, onCreateShare }: S
         setResult(res.data);
         onSuccess();
       }
+    } catch (error) {
+      addToast({
+        title: error instanceof Error ? error.message : "创建分享失败",
+        color: "danger",
+        timeout: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }

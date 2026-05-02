@@ -41,6 +41,7 @@ interface BreadcrumbDropdownRow {
   icon: React.ReactNode;
   divider?: boolean;
   danger?: boolean;
+  pro?: boolean;
 }
 
 interface FileBreadcrumbDropdownMenuProps {
@@ -105,7 +106,8 @@ function FileBreadcrumbDropdownMenu({ menuId, items, onItemSelect, onClose }: Fi
           onClick={() => onItemSelect(item.key)}
         >
           <span className={styles["dropdown-icon"]}>{item.icon}</span>
-          <span>{item.label}</span>
+          <span className={styles["dropdown-label"]}>{item.label}</span>
+          {item.pro ? <span className={styles["pro-badge"]}>PRO</span> : null}
         </motion.div>
       ))}
     </motion.div>
@@ -258,7 +260,7 @@ export function FileBreadcrumb({
     () => [
       { key: "enter", label: "进入", icon: <RiFolderOpenLine /> },
       { key: "download", label: "下载", icon: <RiDownload2Line /> },
-      { key: "share", label: "分享", icon: <RiShareLine /> },
+      { key: "share", label: "分享", icon: <RiShareLine />, pro: true },
       { key: "rename", label: "重命名", icon: <RiEdit2Line /> },
       { key: "copy", label: "复制", icon: <RiFileCopyLine /> },
       { key: "link", label: "获取直链", icon: <RiLinkM /> },

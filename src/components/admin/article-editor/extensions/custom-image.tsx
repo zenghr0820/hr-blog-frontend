@@ -779,7 +779,9 @@ export const CustomImage = Image.extend({
             src: img.getAttribute("data-src") || img.getAttribute("src"),
             alt: img.getAttribute("alt"),
             title: img.getAttribute("title"),
-            caption: figcaption?.textContent || null,
+            // caption 优先取 figcaption；缺省时回退到 img.title，
+            // 兼容由 markdown ![alt](src "X") 生成的 <a>...<img title="X">...</a> 结构
+            caption: figcaption?.textContent || img.getAttribute("title") || null,
             align,
             imageStyle,
             width: w ? parseInt(w) : null,
@@ -824,7 +826,9 @@ export const CustomImage = Image.extend({
             src: img.getAttribute("data-src") || img.getAttribute("src"),
             alt: img.getAttribute("alt"),
             title: img.getAttribute("title"),
-            caption: figcaption?.textContent || null,
+            // caption 优先取 figcaption；缺省时回退到 img.title，
+            // 兼容由 markdown ![alt](src "X") 生成的 <figure><img title="X"></figure> 结构
+            caption: figcaption?.textContent || img.getAttribute("title") || null,
             align,
             imageStyle,
             width: w ? parseInt(w) : null,
@@ -859,6 +863,9 @@ export const CustomImage = Image.extend({
             src: element.getAttribute("data-src") || element.getAttribute("src"),
             alt: element.getAttribute("alt"),
             title: element.getAttribute("title"),
+            // marked 解析 ![alt](src "X") 时输出 <img title="X">（无 figure 包裹），
+            // 此处把 title 兜底为图片描述，确保 markdown→可视化 切换不丢 caption
+            caption: element.getAttribute("title") || null,
             align,
             imageStyle,
             width: w ? parseInt(w) : null,
@@ -891,6 +898,12 @@ export const CustomImage = Image.extend({
     delete imgAttrs.uploading;
     delete imgAttrs.caption;
     delete imgAttrs.align;
+
+    // caption 通过 figcaption 承载，img 上不再保留 title 属性，
+    // 避免在同一 figure 内同时输出 figcaption 与 img.title 造成重复内容
+    if (caption) {
+      delete imgAttrs.title;
+    }
 
     // 构建 img 元素
     if (caption) {

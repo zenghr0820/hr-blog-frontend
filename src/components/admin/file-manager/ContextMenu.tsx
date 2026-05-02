@@ -30,6 +30,7 @@ interface MenuItem {
   action?: string;
   danger?: boolean;
   divider?: boolean;
+  pro?: boolean;
 }
 
 interface MenuContext {
@@ -121,7 +122,8 @@ function ContextMenuBody({ items, menuContext, onSelect, closeMenu }: ContextMen
             tabIndex={focusedDomIndex === index ? 0 : -1}
           >
             <span className={styles["menu-icon"]}>{item.icon}</span>
-            <span>{item.label}</span>
+            <span className={styles["menu-label"]}>{item.label}</span>
+            {item.pro ? <span className={styles["pro-badge"]}>PRO</span> : null}
           </motion.div>
         )
       )}
@@ -160,7 +162,7 @@ export function ContextMenu({ trigger, selectedFileIds, onSelect, onClosed }: Co
       { label: "重命名", action: "rename", icon: <RiEdit2Line /> },
       { label: "移动到", action: "move", icon: <RiFolderTransferLine /> },
       { label: "下载", action: "download", icon: <RiDownload2Line /> },
-      { label: "分享", action: "share", icon: <RiShareLine /> },
+      { label: "分享", action: "share", icon: <RiShareLine />, pro: true },
       { label: "获取直链", action: "get-link", icon: <RiLinkM /> },
       { label: "复制", action: "copy", icon: <RiFileCopyLine /> },
       { label: "详细信息", action: "info", icon: <RiInformationLine /> },

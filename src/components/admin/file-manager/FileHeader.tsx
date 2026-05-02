@@ -138,10 +138,17 @@ export function FileHeader({
                       </Button>
                     </motion.div>
                   </Tooltip>
-                  <Tooltip content="分享" placement="bottom" showArrow={false}>
-                    <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.9 }}>
-                      <Button isIconOnly className={styles["action-btn"]} variant="light" onPress={onShare}>
+                  <Tooltip content="分享（PRO 功能）" placement="bottom" showArrow={false}>
+                    <motion.div className={styles["pro-action"]} whileHover={{ y: -1 }} whileTap={{ scale: 0.9 }}>
+                      <Button
+                        isIconOnly
+                        aria-label="分享（PRO 功能）"
+                        className={styles["action-btn"]}
+                        variant="light"
+                        onPress={onShare}
+                      >
                         <RiShareLine />
+                        <span className={styles["pro-badge"]}>PRO</span>
                       </Button>
                     </motion.div>
                   </Tooltip>

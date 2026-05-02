@@ -473,11 +473,10 @@ export function useFileOperations({
     const selectedItems = getSelectedFileItems();
     if (selectedItems.length === 0) return toast("请至少选择一个要分享的项目。", "warning");
     setShareItems(selectedItems);
-    setShareModalVisible(true);
+    toast("创建分享是 PRO 功能，社区版请使用“获取直链”。", "warning");
   };
 
   const handleShareSuccess = () => {
-    setShareModalVisible(false);
     clearSelection();
   };
 
