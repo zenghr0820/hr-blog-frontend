@@ -14,25 +14,23 @@ export function CommentPageClient() {
   const isSidebarVisible = useUiStore(state => state.isSidebarVisible);
 
   const bannerConfig = extractBannerConfig(siteConfig, "comment");
-  const defaultConfig = {
-    tips: "留言板",
-    title: "Message",
-    description: "欢迎在这里留下你的足迹",
-  };
+  const hasBanner = bannerConfig && (bannerConfig.title || bannerConfig.tips || bannerConfig.description || bannerConfig.backgroundImage);
 
   return (
     <div className="content-inner">
       <div className="main-content">
         <div className={`cardWidget ${styles.commentPageContent}`}>
-          <BannerCard
-            tips={bannerConfig.tips || defaultConfig.tips}
-            title={bannerConfig.title || defaultConfig.title}
-            description={bannerConfig.description || defaultConfig.description}
-            backgroundImage={bannerConfig.backgroundImage}
-            height={300}
-            buttonText={bannerConfig.buttonText}
-            buttonLink={bannerConfig.buttonLink}
-          />
+          {hasBanner && (
+            <BannerCard
+              tips={bannerConfig.tips || "留言板"}
+              title={bannerConfig.title || "Message"}
+              description={bannerConfig.description || "欢迎在这里留下你的足迹"}
+              backgroundImage={bannerConfig.backgroundImage}
+              height={300}
+              buttonText={bannerConfig.buttonText}
+              buttonLink={bannerConfig.buttonLink}
+            />
+          )}
           
           <div>
             <div className={styles.poemWrap}>
