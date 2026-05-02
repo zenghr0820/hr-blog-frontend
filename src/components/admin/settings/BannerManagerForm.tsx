@@ -40,6 +40,7 @@ const PRESET_PAGES: Array<{ key: PresetBannerPageKey; label: string; icon: strin
   { key: 'fcircle', label: '朋友圈', icon: '🌐' },
   { key: 'recent_comments', label: '最近评论', icon: '💬' },
   { key: 'equipment', label: '装备页面', icon: '🛠️' },
+  { key: 'tools', label: '工具库页面', icon: '🔧' },
   { key: 'friend_link', label: '友链页面', icon: '🔗' },
   { key: 'home_top', label: '首页顶部', icon: '🏠' },
 ];

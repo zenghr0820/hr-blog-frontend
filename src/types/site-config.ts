@@ -424,6 +424,11 @@ export interface SiteConfigData {
     list?: string;
   };
 
+  // 工具库页面配置
+  tools?: {
+    list?: string;
+  };
+
   // 统一的 Banner 配置（新格式）
   banner?: BannerStorageConfig
 ;

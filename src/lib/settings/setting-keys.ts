@@ -409,6 +409,9 @@ export const KEY_EQUIPMENT_BANNER_DESC = "equipment.banner.description";
 export const KEY_EQUIPMENT_BANNER_TIP = "equipment.banner.tip";
 export const KEY_EQUIPMENT_LIST = "equipment.list";
 
+// ==================== 工具库页面配置 ====================
+export const KEY_TOOLS_LIST = "tools.list";
+
 // ==================== 最近评论页面配置（旧格式，向后兼容）====================
 export const KEY_RECENT_COMMENTS_BANNER_BG = "recent_comments.banner.background";
 export const KEY_RECENT_COMMENTS_BANNER_TITLE = "recent_comments.banner.title";

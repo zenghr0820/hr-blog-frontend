@@ -36,6 +36,7 @@ export type SettingCategoryId =
   | "pages-flink"
   | "pages-about"
   | "pages-equipment"
+  | "pages-tools"
   | "pages-comments"
   | "pages-album"
   | "pages-music"
@@ -793,6 +794,9 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_EQUIPMENT_BANNER_DESC, type: "string" },
     { backendKey: K.KEY_EQUIPMENT_BANNER_TIP, type: "string" },
     { backendKey: K.KEY_EQUIPMENT_LIST, type: "json" },
+  ],
+  "pages-tools": [
+    { backendKey: K.KEY_TOOLS_LIST, type: "json" },
   ],
   "pages-comments": [
     { backendKey: K.KEY_RECENT_COMMENTS_BANNER_BG, type: "string" },

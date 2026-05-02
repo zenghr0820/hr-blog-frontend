@@ -87,6 +87,11 @@ export function getDefaultBannerConfig(pageKey: PresetBannerPageKey): Partial<Un
       title: "Equipment",
       description: "展示我的工具",
     },
+    tools: {
+      tips: "工具库",
+      title: "Tools",
+      description: "收集实用工具与资源",
+    },
     friend_link: {
       tips: "友情链接",
       title: "Friends",
@@ -127,6 +132,7 @@ export function getBannerPageKeyFromPath(pathname: string): string | null {
     '/fcircle': 'fcircle',
     '/recentcomments': 'recent_comments',
     '/equipment': 'equipment',
+    '/tools': 'tools',
     '/links': 'friend_link',
     '/friend-links': 'friend_link',
   };

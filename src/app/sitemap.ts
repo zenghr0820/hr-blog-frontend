@@ -63,6 +63,7 @@ const STATIC_ROUTES: Array<{
   { path: "/recentcomments", changeFrequency: "daily", priority: 0.7 },
   { path: "/update", changeFrequency: "weekly", priority: 0.65 },
   { path: "/equipment", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/tools", changeFrequency: "weekly", priority: 0.65 },
 ];
 
 function toPositiveInt(value: unknown, fallback = 0): number {

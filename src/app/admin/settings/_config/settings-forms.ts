@@ -50,6 +50,9 @@ export const settingsFormRegistry: Record<SettingCategoryId, LazyForm> = {
   "pages-equipment": lazy(() =>
     import("@/components/admin/settings/EquipmentPageForm").then(m => ({ default: m.EquipmentPageForm }))
   ) as LazyForm,
+  "pages-tools": lazy(() =>
+    import("@/components/admin/settings/ToolsPageForm").then(m => ({ default: m.ToolsPageForm }))
+  ) as LazyForm,
   "pages-comments": lazy(() =>
     import("@/components/admin/settings/RecentCommentsPageForm").then(m => ({ default: m.RecentCommentsPageForm }))
   ) as LazyForm,

@@ -29,6 +29,7 @@ export type PresetBannerPageKey =
   | 'fcircle'
   | 'recent_comments'
   | 'equipment'
+  | 'tools'
   | 'friend_link'
   | 'home_top';
 

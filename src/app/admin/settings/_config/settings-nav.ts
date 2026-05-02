@@ -107,6 +107,7 @@ export const settingsCategories: CategorySection[] = [
       { id: "pages-flink", label: "友链管理", icon: Link2, keywords: ["友链", "申请", "审核"] },
       { id: "pages-about", label: "关于页面", icon: UserCircle, keywords: ["关于", "技能", "生涯"] },
       { id: "pages-equipment", label: "装备页面", icon: Monitor, keywords: ["装备", "好物"] },
+      { id: "pages-tools", label: "工具库页面", icon: Monitor, keywords: ["工具", "工具库", "资源"] },
       { id: "pages-comments", label: "评论页面", icon: MessageCircle, keywords: ["最近评论"] },
       { id: "pages-album", label: "相册页面", icon: Images, keywords: ["相册", "图片", "瀑布流", "画廊"] },
       { id: "pages-music", label: "音乐页面", icon: Music, keywords: ["音乐", "播放器", "歌单", "胶囊", "唱片"] },
