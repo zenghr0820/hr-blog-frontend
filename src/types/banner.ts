@@ -31,6 +31,7 @@ export type PresetBannerPageKey =
   | 'equipment'
   | 'tools'
   | 'friend_link'
+  | 'comment'
   | 'home_top';
 
 /**

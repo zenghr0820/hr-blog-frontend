@@ -97,6 +97,11 @@ export function getDefaultBannerConfig(pageKey: PresetBannerPageKey): Partial<Un
       title: "Friends",
       description: "结交志同道合的朋友",
     },
+    comment: {
+      tips: "留言板",
+      title: "Message",
+      description: "欢迎在这里留下你的足迹",
+    },
     home_top: {
       tips: "欢迎来到",
       title: "安和鱼",
@@ -135,6 +140,7 @@ export function getBannerPageKeyFromPath(pathname: string): string | null {
     '/tools': 'tools',
     '/links': 'friend_link',
     '/friend-links': 'friend_link',
+    '/comment': 'comment',
   };
 
   // 移除尾部斜杠

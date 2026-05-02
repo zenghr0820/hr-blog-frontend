@@ -1,0 +1,170 @@
+.commentPageContent {
+  padding: 1.3rem;
+  color: var(--anzhiyu-fontcolor);
+  line-height: 1.8;
+}
+
+.poemWrap {
+  position: relative;
+  width: 730px;
+  max-width: 80%;
+  border: 2px solid #797979;
+  border-top: 0;
+  text-align: center;
+  margin: 40px auto 40px;
+}
+
+.poemBorder {
+  position: absolute;
+  height: 2px;
+  width: 27%;
+  background-color: #797979;
+  top: 0;
+}
+
+.poemBorderLeft {
+  left: 0;
+}
+
+.poemBorderRight {
+  right: 0;
+}
+
+.poemTitle {
+  position: relative;
+  top: -15px;
+  display: inline-block;
+  letter-spacing: 4px;
+  color: #797979;
+  font-size: 1.2rem;
+  padding: 0 12px;
+}
+
+.poemText {
+  font-size: 1.25rem;
+  text-align: center;
+  margin: 0 auto;
+  color: #797979;
+  font-family: "Linux Biolinum", "Noto Serif SC", serif;
+  padding: 0 1rem 1rem;
+}
+
+.poemInfo {
+  font-size: 1rem;
+  margin: 15px auto;
+  color: #797979;
+  font-family: "Linux Biolinum", "Noto Serif SC", serif;
+}
+
+.welcomeText {
+  margin-bottom: 1rem;
+}
+
+.welcomeText strong {
+  color: var(--primary);
+}
+
+.welcomeText a {
+  color: var(--primary);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--primary);
+  transition: opacity 0.2s;
+}
+
+.welcomeText a:hover {
+  opacity: 0.8;
+}
+
+.rulesToggle {
+  margin: 1.5rem auto;
+  border: 1px dashed #e6e6e6;
+  border-radius: 10px;
+  background: var(--card-bg);
+  overflow: hidden;
+}
+
+.rulesToggle summary {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #f9f9f9;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  transition: background 0.2s;
+  background: var(--primary);
+}
+
+.rulesToggle summary::-webkit-details-marker {
+  display: none;
+}
+
+.rulesToggle summary::before {
+  content: "▸";
+  display: inline-block;
+  transition: transform 0.2s;
+  font-size: 0.8rem;
+}
+
+.rulesToggle[open] summary::before {
+  transform: rotate(90deg);
+}
+
+/* .rulesToggle summary:hover {
+  background: var(--anzhiyu-main);
+} */
+
+.rulesContent {
+  padding: 0 20px 20px;
+  font-size: 0.95rem;
+  line-height: 1.9;
+}
+
+.rulesContent h2 {
+  font-size: 1.05rem;
+  margin: 1em 0 0.5em;
+  font-weight: 600;
+}
+
+.rulesContent ul {
+  padding-left: 1.5em;
+  margin: 0.3em 0;
+}
+
+.rulesContent li {
+  margin: 0.2em 0;
+}
+
+.rulesNotice {
+  margin-top: 1em;
+  padding-top: 0.8em;
+  border-top: 1px dashed #e6e6e6;
+}
+
+.rulesNotice strong {
+  color: var(--primary);
+}
+
+.hr {
+  position: relative;
+    margin: 40px auto;
+    border: 2px dashed var(--primary);
+    width: calc(100% - 4px);
+}
+
+@media screen and (max-width: 768px) {
+  .commentPageContent {
+    padding: 1rem;
+  }
+
+  .poemWrap {
+    max-width: 95%;
+    margin: 30px auto 40px;
+  }
+
+  .poemText {
+    font-size: 1.1rem;
+  }
+}
