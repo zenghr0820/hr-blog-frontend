@@ -294,6 +294,9 @@ export interface SiteConfigData {
       enable?: boolean | string;
       count?: number | string;
     };
+    poem?: {
+      enable?: boolean | string;
+    };
     toc?: {
       collapseMode?: boolean | string;
     };

@@ -10,6 +10,10 @@ import { CustomSidebarBlocks } from "./CustomSidebarBlocks";
 import { StickyCards } from "./StickyCards";
 import styles from "./Sidebar.module.css";
 
+const CardPoem = dynamic(() => import("./CardPoem").then(m => m.CardPoem), {
+  ssr: false,
+});
+
 const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
@@ -65,11 +69,17 @@ export function Sidebar() {
     };
   }, [siteConfig]);
 
+  const poemEnabled = useMemo(() => {
+    const val = siteConfig?.sidebar?.poem?.enable;
+    return val === true || val === "true";
+  }, [siteConfig]);
+
   return (
     <aside className={styles.asideContent}>
       {authorInfoConfig && <AuthorInfoCardCur config={authorInfoConfig} />}
       {wechatConfig && <CardWechat config={wechatConfig} />}
       <CustomSidebarBlocks />
+      {poemEnabled && <CardPoem />}
       {clockConfig && <CardClock config={clockConfig} />}
       <StickyCards />
     </aside>

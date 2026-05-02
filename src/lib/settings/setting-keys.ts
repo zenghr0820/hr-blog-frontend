@@ -93,6 +93,7 @@ export const KEY_SIDEBAR_TOC_COLLAPSE_MODE = "sidebar.toc.collapseMode";
 export const KEY_SIDEBAR_SERIES_POST_COUNT = "sidebar.series.postCount";
 export const KEY_SIDEBAR_RECENT_POST_ENABLE = "sidebar.recentPost.enable";
 export const KEY_SIDEBAR_RECENT_POST_COUNT = "sidebar.recentPost.count";
+export const KEY_SIDEBAR_POEM_ENABLE = "sidebar.poem.enable";
 export const KEY_SIDEBAR_DOC_LINKS = "sidebar.doc.links";
 export const KEY_CUSTOM_SIDEBAR = "CUSTOM_SIDEBAR";
 

@@ -5,6 +5,7 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
+import dynamic from "next/dynamic";
 import { AuthorInfoCardCur } from "@/components/home/Sidebar/AuthorInfoCardCur";
 import { CardWechat } from "@/components/home/Sidebar/CardWechat";
 import { CardClock } from "@/components/home/Sidebar/CardClock";
@@ -17,6 +18,10 @@ import { useCategories, useTags } from "@/hooks/queries/use-articles";
 import { resolvePostDefaultCoverUrl } from "@/utils/same-origin-media-url";
 import type { Article, RecentArticle } from "@/types/article";
 import styles from "./PostSidebar.module.css";
+
+const CardPoem = dynamic(() => import("@/components/home/Sidebar/CardPoem").then(m => m.CardPoem), {
+  ssr: false,
+});
 
 interface PostSidebarProps {
   article: Article;
@@ -124,6 +129,11 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
     return val === true || val === "true";
   }, [siteConfig]);
 
+  const poemEnabled = useMemo(() => {
+    const val = siteConfig?.sidebar?.poem?.enable;
+    return val === true || val === "true";
+  }, [siteConfig]);
+
   return (
     <aside id="post-sidebar" className={styles.postSidebar}>
       {/* 作者信息卡片 */}
@@ -134,6 +144,9 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
 
       {/* 自定义侧边栏块 */}
       <CustomSidebarBlocks isPostPage />
+
+      {/* 今日诗词 */}
+      {poemEnabled && <CardPoem />}
 
       {/* 天气时钟 */}
       {clockConfig && <CardClock config={clockConfig} />}

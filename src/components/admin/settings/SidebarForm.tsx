@@ -34,6 +34,7 @@ import {
   KEY_SIDEBAR_SERIES_POST_COUNT,
   KEY_SIDEBAR_RECENT_POST_ENABLE,
   KEY_SIDEBAR_RECENT_POST_COUNT,
+  KEY_SIDEBAR_POEM_ENABLE,
   KEY_SIDEBAR_DOC_LINKS,
   KEY_CUSTOM_SIDEBAR,
   KEY_WEATHER_ENABLE,
@@ -271,6 +272,16 @@ export function SidebarForm({ values, onChange, loading }: SidebarFormProps) {
           itemLabel={item => (item.title as string) || "未命名块"}
           addButtonText="添加侧边栏块"
           maxItems={3}
+        />
+      </SettingsSection>
+
+      {/* 今日诗词 */}
+      <SettingsSection title="今日诗词">
+        <FormSwitch
+          label="启用今日诗词"
+          description="在侧边栏显示今日诗词卡片，每次加载随机展示一句古诗词"
+          checked={values[KEY_SIDEBAR_POEM_ENABLE] === "true"}
+          onCheckedChange={v => onChange(KEY_SIDEBAR_POEM_ENABLE, String(v))}
         />
       </SettingsSection>
 

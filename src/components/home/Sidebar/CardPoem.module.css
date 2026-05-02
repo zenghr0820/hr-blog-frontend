@@ -1,0 +1,62 @@
+/* CardPoem - 今日诗词卡片 */
+
+.cardPoem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem !important;
+  min-height: 130px;
+  overflow: hidden;
+  background: var(--anzhiyu-card-bg);
+  border: var(--style-border);
+  border-radius: 12px;
+  box-shadow: var(--anzhiyu-shadow-card);
+  transition: box-shadow 0.3s ease;
+}
+
+.cardPoem:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
+}
+
+.poemSentence {
+  text-align: center;
+  font-family: serif, cursive;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--anzhiyu-secondbg);
+  min-height: 62px;
+  font-size: 0.95rem;
+  color: var(--anzhiyu-fontcolor);
+  letter-spacing: 0.5px;
+}
+
+.poemInfo {
+  display: flex;
+  color: var(--anzhiyu-secondtext);
+  font-size: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.poemDynasty {
+  order: 0;
+  padding: 2px 4px 2px 6px;
+  background: var(--anzhiyu-card-btn-bg, var(--anzhiyu-secondbg));
+  color: var(--anzhiyu-fontcolor);
+  border-radius: 8px;
+}
+
+.poemAuthor {
+  order: 1;
+  padding: 2px;
+  margin-left: 8px;
+}
+
+/* 响应式 - 992px 以下隐藏 */
+@media (max-width: 992px) {
+  .cardPoem {
+    display: none;
+  }
+}
