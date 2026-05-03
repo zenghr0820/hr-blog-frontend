@@ -16,7 +16,8 @@
 "use client";
 
 import { useEffect, useRef, useMemo } from "react";
-import styles from "./PostContent.module.css";
+import styles from "./PostContent.module.scss";
+import "./content-blocks-frontend.scss";
 import "./code-highlight.css";
 import { useCopyCopyright } from "./hooks/use-copy-copyright";
 import { useTipEvents } from "./hooks/use-tip-events";
@@ -271,7 +272,7 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
   return (
     <article
       ref={contentRef}
-      className={styles.postContent}
+      className={`${styles.postContent} postContent`}
       data-post-content="true"
       dangerouslySetInnerHTML={innerHtml}
     />

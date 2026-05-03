@@ -1,0 +1,97 @@
+@mixin admonitionStyles() {
+  .admonition {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid;
+
+    &.note {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: #3b82f6;
+    }
+    &.info {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: rgba(99, 102, 241, 0.25);
+    }
+    &.tip {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: #10b981;
+    }
+    &.success {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: #22c55e;
+    }
+    &.warning {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: #f59e0b;
+    }
+    &.danger {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+    }
+  }
+
+  .admonition-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-weight: 600;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+  }
+
+  .admonition-title::before {
+    margin-right: 4px;
+  }
+
+  .admonition.note .admonition-title::before {
+    content: "\1F4DD";
+  }
+  .admonition.info .admonition-title::before {
+    content: "\2139\FE0F";
+  }
+  .admonition.tip .admonition-title::before {
+    content: "\1F4A1";
+  }
+  .admonition.success .admonition-title::before {
+    content: "\2705";
+  }
+  .admonition.warning .admonition-title::before {
+    content: "\26A0\FE0F";
+  }
+  .admonition.danger .admonition-title::before {
+    content: "\274C";
+  }
+
+  .admonition-body {
+    margin-top: 0.5rem;
+
+    > :first-child {
+      margin-top: 0;
+    }
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@mixin admonitionDarkStyles() {
+  .admonition.note {
+    background: rgba(59, 130, 246, 0.15);
+  }
+  .admonition.info {
+    background: rgba(99, 102, 241, 0.15);
+  }
+  .admonition.tip {
+    background: rgba(16, 185, 129, 0.15);
+  }
+  .admonition.success {
+    background: rgba(34, 197, 94, 0.15);
+  }
+  .admonition.warning {
+    background: rgba(245, 158, 11, 0.15);
+  }
+  .admonition.danger {
+    background: rgba(239, 68, 68, 0.15);
+  }
+}

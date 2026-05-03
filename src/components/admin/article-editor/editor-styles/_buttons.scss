@@ -1,8 +1,5 @@
-// ============================================
-// 按钮编辑面板 + 图标选择器 + 按钮样式
-// ============================================
+@use "../../../../styles/content-blocks/buttons-shared" as shared;
 
-// ---- 面板容器 ----
 .editor-btn-edit-panel {
   display: flex;
   flex-direction: column;
@@ -14,7 +11,6 @@
   animation: editorCalloutPanelIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-// ---- 头部 ----
 .editor-btn-header {
   display: flex;
   align-items: center;
@@ -56,7 +52,6 @@
   }
 }
 
-// 实时预览区
 .editor-btn-preview-area {
   display: flex;
   align-items: center;
@@ -70,7 +65,6 @@
   }
 }
 
-// 表单区
 .editor-btn-form {
   display: flex;
   flex-direction: column;
@@ -79,7 +73,6 @@
   border-radius: 0 0 12px 12px;
 }
 
-// 预览包裹器
 .editor-btn-preview-wrap {
   display: inline-block;
   cursor: pointer;
@@ -92,19 +85,16 @@
   }
 }
 
-// 按钮组预览需要占满宽度
 .button-block-wrapper[data-type="group"] .editor-btn-preview-wrap {
   display: block;
 }
 
-// 覆盖 ProseMirror 对按钮节点的选中样式
 .tiptap {
   .node-buttonBlock,
   .node-buttonBlock.ProseMirror-selectednode {
     outline: none !important;
   }
 
-  // 阻止选区高亮影响按钮
   .btn-anzhiyu:not(.btn-outline)::selection,
   .btn-anzhiyu:not(.btn-outline) *::selection {
     background: transparent;
@@ -120,16 +110,131 @@
     background: transparent;
     color: var(--anzhiyu-theme, #3b82f6);
   }
+
+  @include shared.buttonStyles;
+
+  .btn-anzhiyu,
+  .button-block-wrapper .btn-preview {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    padding: 8px 16px;
+    margin: 4px 8px 4px 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #fff !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    background: var(--anzhiyu-theme);
+    border: 2px solid var(--anzhiyu-theme);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: var(--anzhiyu-theme-op-deep, var(--anzhiyu-theme));
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .btns-container {
+    .btn-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px !important;
+      text-decoration: none;
+      cursor: pointer;
+      background: var(--anzhiyu-card-bg-grey, #f1f3f8);
+      border-radius: 12px;
+      border: 1px solid var(--anzhiyu-card-border, #e3e8f7);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: var(--anzhiyu-card-bg, #fff);
+        border-color: var(--anzhiyu-theme);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+        .btn-icon {
+          transform: scale(1.1);
+        }
+      }
+
+      .btn-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 12px;
+        background: var(--anzhiyu-card-bg, #fff);
+        border: 3px solid var(--anzhiyu-background, #f7f9fe);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        overflow: hidden;
+
+        i {
+          font-size: 32px;
+          color: var(--anzhiyu-fontcolor, var(--foreground));
+        }
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          margin: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+      }
+
+      .btn-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--anzhiyu-fontcolor, var(--foreground));
+        text-align: center;
+      }
+      .btn-desc {
+        font-size: 12px;
+        color: var(--anzhiyu-secondtext, #9ca3af);
+        text-align: center;
+        line-height: 1.4;
+        opacity: 0.8;
+      }
+
+      &.btn-color-blue {
+        --icon-color: #409eff;
+      }
+      &.btn-color-pink {
+        --icon-color: #ff69b4;
+      }
+      &.btn-color-red {
+        --icon-color: #f56c6c;
+      }
+      &.btn-color-purple {
+        --icon-color: #9d5cff;
+      }
+      &.btn-color-orange {
+        --icon-color: #ff9800;
+      }
+      &.btn-color-green {
+        --icon-color: #67c23a;
+      }
+
+      &[class*="btn-color-"] .btn-icon {
+        border-color: var(--icon-color);
+        background: color-mix(in srgb, var(--icon-color) 10%, transparent);
+      }
+    }
+  }
 }
 
-// 行：两列并排
 .editor-btn-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-// 字段
 .editor-btn-field {
   display: flex;
   flex-direction: column;
@@ -147,7 +252,6 @@
   color: var(--anzhiyu-secondtext, #9ca3af);
 }
 
-// 输入框
 .editor-btn-input {
   width: 100%;
   padding: 6px 10px;
@@ -183,7 +287,6 @@
   }
 }
 
-// 文本域
 .editor-btn-textarea {
   min-height: 80px;
   resize: vertical;
@@ -198,7 +301,6 @@
   color: var(--anzhiyu-secondtext, #9ca3af);
 }
 
-// ---- 按钮组逐项编辑 ----
 .editor-btngroup-items {
   display: flex;
   flex-direction: column;
@@ -282,7 +384,6 @@
   height: 20px;
 }
 
-// 添加按钮
 .editor-btngroup-add {
   display: flex;
   align-items: center;
@@ -307,7 +408,6 @@
   }
 }
 
-// 颜色选择列表
 .editor-btn-color-list {
   display: flex;
   gap: 6px;
@@ -334,7 +434,6 @@
   }
 }
 
-// 切换按钮组
 .editor-btn-toggle-group {
   display: flex;
   border-radius: 8px;
@@ -367,10 +466,6 @@
     background: var(--anzhiyu-theme, #3b82f6);
   }
 }
-
-// ============================================
-// 图标选择器
-// ============================================
 
 .editor-icon-trigger {
   width: 100%;
@@ -421,7 +516,6 @@
   transition: transform 0.2s;
 }
 
-// 下拉面板
 .editor-icon-dropdown {
   position: absolute;
   top: calc(100% + 4px);
@@ -442,7 +536,6 @@
   }
 }
 
-// 搜索栏
 .editor-icon-search-bar {
   display: flex;
   align-items: center;
@@ -476,7 +569,6 @@
   }
 }
 
-// 手动/网格 切换按钮
 .editor-icon-mode-btn {
   display: flex;
   align-items: center;
@@ -503,7 +595,6 @@
   }
 }
 
-// 分类标签
 .editor-icon-tabs {
   display: flex;
   gap: 2px;
@@ -541,7 +632,6 @@
   border-bottom: 1px solid var(--anzhiyu-card-border, #e3e8f7);
 }
 
-// 图标网格
 .editor-icon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
@@ -596,238 +686,4 @@
   font-size: 12px;
   color: var(--anzhiyu-secondtext, #9ca3af);
   text-align: center;
-}
-
-// ============================================
-// 按钮（与文章详情一致）
-// ============================================
-
-.tiptap {
-  .btn-anzhiyu,
-  .button-block-wrapper .btn-preview {
-    display: inline-flex;
-    gap: 6px;
-    align-items: center;
-    padding: 8px 16px;
-    margin: 4px 8px 4px 0;
-    font-size: 0.9rem;
-    font-weight: 500;
-    line-height: 1.5;
-    color: #fff !important;
-    text-decoration: none !important;
-    cursor: pointer;
-    background: var(--anzhiyu-theme);
-    border: 2px solid var(--anzhiyu-theme);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: var(--anzhiyu-theme-op-deep, var(--anzhiyu-theme));
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-  }
-
-  .btn-anzhiyu {
-    i,
-    .iconify {
-      font-size: 1em;
-      transition: transform 0.3s ease;
-    }
-
-    // 颜色变体
-    &.btn-blue {
-      --btn-color: #409eff;
-      --btn-hover: #66b1ff;
-    }
-    &.btn-pink {
-      --btn-color: #ff69b4;
-      --btn-hover: #ff85c0;
-    }
-    &.btn-red {
-      --btn-color: #f56c6c;
-      --btn-hover: #f78989;
-    }
-    &.btn-purple {
-      --btn-color: #9d5cff;
-      --btn-hover: #b07dff;
-    }
-    &.btn-orange {
-      --btn-color: #ff9800;
-      --btn-hover: #ffad33;
-    }
-    &.btn-green {
-      --btn-color: #67c23a;
-      --btn-hover: #85ce61;
-    }
-
-    // 旧版仅写 data-color、未带 btn-{color} 类名时的回退（与 .btn-* 变量一致）
-    &[data-color="blue"] {
-      --btn-color: #409eff;
-      --btn-hover: #66b1ff;
-    }
-    &[data-color="pink"] {
-      --btn-color: #ff69b4;
-      --btn-hover: #ff85c0;
-    }
-    &[data-color="red"] {
-      --btn-color: #f56c6c;
-      --btn-hover: #f78989;
-    }
-    &[data-color="purple"] {
-      --btn-color: #9d5cff;
-      --btn-hover: #b07dff;
-    }
-    &[data-color="orange"] {
-      --btn-color: #ff9800;
-      --btn-hover: #ffad33;
-    }
-    &[data-color="green"] {
-      --btn-color: #67c23a;
-      --btn-hover: #85ce61;
-    }
-
-    &[class*="btn-"]:not(.btn-outline):not(.btn-container):not(.btn-larger) {
-      background: var(--btn-color, var(--anzhiyu-theme));
-      border-color: var(--btn-color, var(--anzhiyu-theme));
-
-      &:hover {
-        background: var(--btn-hover, var(--anzhiyu-theme-op-deep, var(--anzhiyu-theme)));
-        border-color: var(--btn-hover, var(--anzhiyu-theme-op-deep, var(--anzhiyu-theme)));
-      }
-    }
-
-    // Outline 变体
-    &.btn-outline {
-      color: var(--btn-color, var(--anzhiyu-theme)) !important;
-      background: transparent;
-      border: 2px solid var(--btn-color, var(--anzhiyu-theme));
-
-      &:hover {
-        color: #fff !important;
-        background: var(--btn-color, var(--anzhiyu-theme));
-      }
-    }
-
-    &.btn-larger {
-      padding: 12px 24px !important;
-      font-size: 1.1rem;
-    }
-  }
-
-  .btn-container {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    margin: 8px 0;
-
-    &.btn-container-center {
-      justify-content: center;
-    }
-    &.btn-container-right {
-      justify-content: flex-end;
-    }
-  }
-
-  // 按钮组
-  .btns-container {
-    display: grid;
-    gap: 16px;
-    margin: 1.5rem 0;
-
-    @for $i from 1 through 6 {
-      &.btns-cols-#{$i} {
-        grid-template-columns: repeat($i, 1fr);
-      }
-    }
-
-    .btn-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px !important;
-      text-decoration: none;
-      cursor: pointer;
-      background: var(--anzhiyu-card-bg-grey, #f1f3f8);
-      border-radius: 12px;
-      border: 1px solid var(--anzhiyu-card-border, #e3e8f7);
-      transition: all 0.3s ease;
-
-      &:hover {
-        background: var(--anzhiyu-card-bg, #fff);
-        border-color: var(--anzhiyu-theme);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-
-        .btn-icon {
-          transform: scale(1.1);
-        }
-      }
-
-      .btn-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 64px;
-        height: 64px;
-        margin-bottom: 12px;
-        background: var(--anzhiyu-card-bg, #fff);
-        border: 3px solid var(--anzhiyu-background, #f7f9fe);
-        border-radius: 50%;
-        transition: all 0.3s ease;
-        overflow: hidden;
-
-        i {
-          font-size: 32px;
-          color: var(--anzhiyu-fontcolor, var(--foreground));
-        }
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          margin: 0;
-          border-radius: 0;
-          box-shadow: none;
-        }
-      }
-
-      .btn-title {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--anzhiyu-fontcolor, var(--foreground));
-        text-align: center;
-      }
-      .btn-desc {
-        font-size: 12px;
-        color: var(--anzhiyu-secondtext, #9ca3af);
-        text-align: center;
-        line-height: 1.4;
-        opacity: 0.8;
-      }
-
-      // 颜色主题
-      &.btn-color-blue {
-        --icon-color: #409eff;
-      }
-      &.btn-color-pink {
-        --icon-color: #ff69b4;
-      }
-      &.btn-color-red {
-        --icon-color: #f56c6c;
-      }
-      &.btn-color-purple {
-        --icon-color: #9d5cff;
-      }
-      &.btn-color-orange {
-        --icon-color: #ff9800;
-      }
-      &.btn-color-green {
-        --icon-color: #67c23a;
-      }
-
-      &[class*="btn-color-"] .btn-icon {
-        border-color: var(--icon-color);
-        background: color-mix(in srgb, var(--icon-color) 10%, transparent);
-      }
-    }
-  }
 }

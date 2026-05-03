@@ -1,0 +1,12 @@
+@use "../../../styles/content-blocks" as shared;
+
+.postContent {
+  @include shared.foldingStyles;
+  @include shared.hiddenBlockStyles;
+  @include shared.linkCardStyles;
+  @include shared.galleryStyles;
+  @include shared.buttonStyles;
+  @include shared.tabsStyles;
+  @include shared.inlineMarkStyles;
+  @include shared.musicPlayerStyles;
+}

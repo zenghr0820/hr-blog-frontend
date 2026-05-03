@@ -1,0 +1,217 @@
+@mixin galleryStyles() {
+  .gallery-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin: 1rem 0;
+
+    img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin: 0;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: #fff;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+      border-radius: 0 0 8px 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-caption,
+    .gallery-item:hover .gallery-item-title,
+    .gallery-item:hover .gallery-item-desc {
+      opacity: 1;
+    }
+
+    .gallery-title,
+    .gallery-item-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+
+    .gallery-item-title:last-child {
+      margin-bottom: 0;
+    }
+
+    .gallery-desc,
+    .gallery-item-desc {
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+
+    &.gallery-cols-1 {
+      grid-template-columns: repeat(1, 1fr);
+    }
+    &.gallery-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &.gallery-cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    &.gallery-cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    &.gallery-cols-5 {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    &.gallery-cols-6 {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  .video-gallery-container {
+    display: grid;
+    gap: 16px;
+    margin: 1rem 0;
+
+    &.video-gallery-cols-1,
+    &.video-cols-1 {
+      grid-template-columns: 1fr;
+    }
+    &.video-gallery-cols-2,
+    &.video-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &.video-gallery-cols-3,
+    &.video-cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    &.video-gallery-cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .video-gallery-item,
+    .video-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+
+      &:hover .video-gallery-play-overlay {
+        opacity: 1;
+      }
+
+      &:hover .video-gallery-play-overlay .play-icon {
+        transform: scale(1.1);
+      }
+
+      &:hover .video-gallery-caption {
+        opacity: 1;
+      }
+    }
+
+    .video-gallery-video-wrapper,
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #000;
+    }
+
+    .video-gallery-video,
+    .video-wrapper video,
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: none;
+    }
+
+    .video-gallery-play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-gallery-play-overlay .play-icon {
+      width: 48px;
+      height: 48px;
+      color: #fff;
+      transition: transform 0.3s ease;
+    }
+
+    .video-gallery-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 8px 12px;
+      color: #fff;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+      border-radius: 0 0 12px 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-gallery-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .video-gallery-desc {
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+
+    .video-caption {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      text-align: center;
+      color: var(--muted-foreground);
+    }
+
+    .video-gallery-video:not([paused]) ~ .video-gallery-play-overlay {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+}
