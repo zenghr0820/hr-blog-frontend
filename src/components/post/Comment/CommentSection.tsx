@@ -10,6 +10,7 @@ import hljs from "highlight.js";
 import { cn } from "@/lib/utils";
 import { Spinner, Tooltip } from "@/components/ui";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useShallow } from "zustand/shallow";
 import { useAuthStore } from "@/store/auth-store";
 import { scrollTo } from "@/store/scroll-store";
 import { useCommentsByPath, useLikeComment, useUnlikeComment, commentKeys } from "@/hooks/queries";
@@ -56,7 +57,7 @@ function mergeUniqueChildren(existing: Comment[], incoming: Comment[]) {
 
 export function CommentSection({ targetTitle, targetPath, className }: CommentSectionProps) {
   const pathname = usePathname();
-  const siteConfig = useSiteConfigStore(state => state.siteConfig);
+  const siteConfig = useSiteConfigStore(useShallow(state => state.siteConfig));
   const listRef = useRef<HTMLDivElement | null>(null);
   const commentContainerRef = useRef<HTMLDivElement | null>(null);
   const commentFormRef = useRef<CommentFormHandle | null>(null);

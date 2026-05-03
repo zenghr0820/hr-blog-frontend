@@ -399,21 +399,80 @@ export const MusicBlock = Node.create({
 
   renderHTML({ node, HTMLAttributes }) {
     const neteaseId = (node.attrs.neteaseId as string) || "";
-    const name = (node.attrs.name as string) || "";
-    const artist = (node.attrs.artist as string) || "";
-    const pic = (node.attrs.pic as string) || "";
+    const name = (node.attrs.name as string) || "未知歌曲";
+    const artist = (node.attrs.artist as string) || "未知艺术家";
+    const pic = (node.attrs.pic as string) || "/static/img/music-vinyl-background.png";
     const color = (node.attrs.color as string) || "";
 
     const musicData = JSON.stringify({ name, artist, pic, color });
 
-    return [
-      "div",
-      mergeAttributes(HTMLAttributes, {
-        class: "markdown-music-player",
-        "data-music-id": neteaseId,
-        "data-music-data": musicData,
-      }),
-    ];
+    const el = document.createElement("div");
+    const attrs = mergeAttributes(HTMLAttributes, {
+      class: "markdown-music-player",
+      "data-music-id": neteaseId,
+      "data-music-data": musicData,
+    });
+    Object.entries(attrs).forEach(([key, val]) => {
+      if (val !== undefined && val !== null) el.setAttribute(key, String(val));
+    });
+
+    const escapedName = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const escapedArtist = artist.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+    el.innerHTML = `
+      <div class="music-player-container">
+        <div class="music-error" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+          </svg>
+          <span>音乐加载失败</span>
+        </div>
+        <div class="music-artwork-container">
+          <div class="music-artwork-wrapper">
+            <img src="/static/img/music-vinyl-background.png" alt="唱片背景" class="vinyl-background">
+            <img src="/static/img/music-vinyl-outer.png" alt="唱片外圈" class="artwork-image-vinyl-background">
+            <img src="/static/img/music-vinyl-inner.png" alt="唱片内圈" class="artwork-image-vinyl-inner-background">
+            <img src="/static/img/music-vinyl-needle.png" alt="撞针" class="artwork-image-needle-background">
+            <img src="/static/img/music-vinyl-groove.png" alt="凹槽背景" class="artwork-image-groove-background">
+            <div class="artwork-transition-wrapper">
+              <img src="${pic}" alt="专辑封面" class="artwork-image">
+              <img src="${pic}" alt="模糊背景" class="artwork-image-blur">
+              <div class="artwork-border-ring"></div>
+            </div>
+            <div class="music-play-overlay">
+              <div class="music-play-button-overlay">
+                <svg class="music-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"></path>
+                </svg>
+                <svg class="music-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="music-info-container">
+          <div class="music-text-info">
+            <div class="music-name">${escapedName}</div>
+            <div class="music-artist">${escapedArtist}</div>
+          </div>
+          <span class="nmsingle-playtime">
+            <span class="current-time">00:00</span> / <span class="duration">00:00</span>
+          </span>
+        </div>
+        <div class="music-decoration-image">
+          <img src="${NETEASE_DECORATION_IMG}" alt="音乐装饰">
+        </div>
+        <div class="music-progress-bar">
+          <div class="music-progress-track">
+            <div class="music-progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+        <audio class="music-audio-element" preload="none"></audio>
+      </div>
+    `;
+
+    return el;
   },
 
   addNodeView() {

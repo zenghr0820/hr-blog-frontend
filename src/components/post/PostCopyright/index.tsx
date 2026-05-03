@@ -11,6 +11,7 @@ import Link from "next/link";
 import { Icon } from "@iconify/react";
 import type { Article } from "@/types/article";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useShallow } from "zustand/shallow";
 import { apiClient } from "@/lib/api/client";
 import { generatePoster, downloadPoster, getPosterCoverImageUrl } from "@/utils/poster-generator";
 import { getUserAvatarUrl } from "@/utils/avatar";
@@ -23,7 +24,7 @@ interface PostCopyrightProps {
 }
 
 export function PostCopyright({ article }: PostCopyrightProps) {
-  const siteConfig = useSiteConfigStore(state => state.siteConfig);
+  const siteConfig = useSiteConfigStore(useShallow(state => state.siteConfig));
 
   // 状态
   const [showRewardPanel, setShowRewardPanel] = useState(false);

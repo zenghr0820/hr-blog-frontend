@@ -73,6 +73,12 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
     commentConfig?.barrage_enable === undefined ||
     commentConfig?.barrage_enable === true ||
     commentConfig?.barrage_enable === "true";
+
+  const articleCopyInfo = useMemo(() => ({
+    isReprint: article.is_reprint,
+    copyrightAuthor: article.copyright_author,
+    copyrightUrl: article.copyright_url,
+  }), [article.is_reprint, article.copyright_author, article.copyright_url]);
   
   const isEnabledAiSummaryShow = useSiteConfigStore(state => state.siteConfig?.post?.default?.enable_ai_summary_show);
   const clearPageTitle = usePageStore(state => state.clearPageTitle);
@@ -306,11 +312,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
             <PostContent
               content={contentWithCustomJS}
               enableScripts={hasCustomJS}
-              articleInfo={{
-                isReprint: article.is_reprint,
-                copyrightAuthor: article.copyright_author,
-                copyrightUrl: article.copyright_url,
-              }}
+              articleInfo={articleCopyInfo}
             />
 
             {/* 版权信息 */}

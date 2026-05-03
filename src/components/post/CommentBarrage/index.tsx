@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useCallback, useMemo } fr
 import { usePathname } from "next/navigation";
 import { useCommentsByPath } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useShallow } from "zustand/shallow";
 import { useUiStore } from "@/store/ui-store";
 import { scrollTo } from "@/store/scroll-store";
 import { addToast } from "@heroui/react";
@@ -98,7 +99,7 @@ export function CommentBarrage({
   observeTargetId = "post-comment",
 }: CommentBarrageProps) {
   const pathname = usePathname();
-  const siteConfig = useSiteConfigStore(state => state.siteConfig);
+  const siteConfig = useSiteConfigStore(useShallow(state => state.siteConfig));
   const toggleCommentBarrage = useUiStore(state => state.toggleCommentBarrage);
   const commentConfig = siteConfig?.comment;
   const pageSize = Number(commentConfig?.page_size ?? 10) || 10;

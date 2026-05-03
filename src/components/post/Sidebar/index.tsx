@@ -6,6 +6,7 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
+import { useShallow } from "zustand/shallow";
 import { AuthorInfoCardCur } from "@/components/home/Sidebar/AuthorInfoCardCur";
 import { CardWechat } from "@/components/home/Sidebar/CardWechat";
 import { CardClock } from "@/components/home/Sidebar/CardClock";
@@ -29,7 +30,33 @@ interface PostSidebarProps {
 }
 
 export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) {
-  const siteConfig = useSiteConfigStore(state => state.siteConfig);
+  const {
+    sidebarAuthor,
+    frontDeskSiteOwner,
+    subTitle,
+    userAvatar,
+    sidebarWechat,
+    sidebarWeather,
+    siteOwnerRectangle,
+    postDefaultCover,
+    sidebarRecentPost,
+    sidebarToc,
+    sidebarPoem,
+  } = useSiteConfigStore(
+    useShallow(s => ({
+      sidebarAuthor: s.siteConfig?.sidebar?.author,
+      frontDeskSiteOwner: s.siteConfig?.frontDesk?.siteOwner,
+      subTitle: s.siteConfig?.SUB_TITLE,
+      userAvatar: s.siteConfig?.USER_AVATAR,
+      sidebarWechat: s.siteConfig?.sidebar?.wechat,
+      sidebarWeather: s.siteConfig?.sidebar?.weather,
+      siteOwnerRectangle: s.siteConfig?.site?.owner?.rectangle,
+      postDefaultCover: s.siteConfig?.post?.default?.default_cover,
+      sidebarRecentPost: s.siteConfig?.sidebar?.recentPost,
+      sidebarToc: s.siteConfig?.sidebar?.toc,
+      sidebarPoem: s.siteConfig?.sidebar?.poem,
+    }))
+  );
   const { data: categories } = useCategories();
   const { data: tags } = useTags();
   const mounted = useSyncExternalStore(
@@ -64,77 +91,73 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
 
   // 作者信息配置 - 从 sidebar.author 获取
   const authorInfoConfig = useMemo(() => {
-    const author = siteConfig?.sidebar?.author;
-    if (!author?.enable) return null;
-    const owner = siteConfig?.frontDesk?.siteOwner;
+    if (!sidebarAuthor?.enable) return null;
     return {
-      ownerName: owner?.name || "Zenghr",
-      subTitle: siteConfig?.SUB_TITLE || "",
-      description: author.description || "",
-      userAvatar: siteConfig?.USER_AVATAR || "",
-      statusImg: author.statusImg || "",
-      skills: author.skills || [],
-      social: author.social || {},
-      totalPostCount: siteConfig?.sidebar?.siteinfo?.totalPostCount || 0,
+      ownerName: frontDeskSiteOwner?.name || "Zenghr",
+      subTitle: subTitle || "",
+      description: sidebarAuthor.description || "",
+      userAvatar: userAvatar || "",
+      statusImg: sidebarAuthor.statusImg || "",
+      skills: sidebarAuthor.skills || [],
+      social: sidebarAuthor.social || {},
+      totalPostCount: 0,
       totalCategoryCount: mounted ? (categories?.length || 0) : 0,
       totalTagCount: mounted ? (tags?.length || 0) : 0,
     };
-  }, [siteConfig, categories, tags, mounted]);
+  }, [sidebarAuthor, frontDeskSiteOwner, subTitle, userAvatar, categories, tags, mounted]);
 
   // 微信配置 - 从 sidebar.wechat 获取
   const wechatConfig = useMemo(() => {
-    const wechat = siteConfig?.sidebar?.wechat;
-    if (!wechat?.enable) return null;
+    if (!sidebarWechat?.enable) return null;
     return {
-      face: wechat.face || "",
-      backFace: wechat.backFace || "",
-      blurBackground: wechat.blurBackground || "",
-      link: wechat.link,
+      face: sidebarWechat.face || "",
+      backFace: sidebarWechat.backFace || "",
+      blurBackground: sidebarWechat.blurBackground || "",
+      link: sidebarWechat.link,
     };
-  }, [siteConfig]);
+  }, [sidebarWechat]);
 
   // 天气时钟配置 - enable_page 为 "all" 或 "post" 时在文章页显示
-  const ownerRectangle = siteConfig?.site?.owner?.rectangle || "112.6534116,27.96920845";
+  const ownerRectangleValue = siteOwnerRectangle || "112.6534116,27.96920845";
 
   const clockConfig = useMemo(() => {
-    const w = siteConfig?.sidebar?.weather;
-    if (!w?.enable || !w.qweather_key) return null;
-    const page = w.enable_page || "all";
+    if (!sidebarWeather?.enable || !sidebarWeather.qweather_key) return null;
+    const page = sidebarWeather.enable_page || "all";
     if (page !== "all" && page !== "post") return null;
     return {
-      qweatherKey: w.qweather_key,
-      qweatherAPIHost: w.qweather_api_host || "devapi.qweather.com",
-      ipAPIKey: w.ip_api_key || "",
-      loading: w.loading || "",
-      defaultRectangle: w.default_rectangle === true || (w.default_rectangle as unknown) === "true",
-      rectangle: ownerRectangle,
+      qweatherKey: sidebarWeather.qweather_key,
+      qweatherAPIHost: sidebarWeather.qweather_api_host || "devapi.qweather.com",
+      ipAPIKey: sidebarWeather.ip_api_key || "",
+      loading: sidebarWeather.loading || "",
+      defaultRectangle: sidebarWeather.default_rectangle === true || (sidebarWeather.default_rectangle as unknown) === "true",
+      rectangle: ownerRectangleValue,
     };
-  }, [siteConfig, ownerRectangle]);
+  }, [sidebarWeather, ownerRectangleValue]);
 
   // 默认封面（与文章详情页一致：后台配置 + 同源压缩 + 内置占位）
   const defaultCover = useMemo(
-    () => resolvePostDefaultCoverUrl(siteConfig?.post?.default?.default_cover),
-    [siteConfig?.post?.default?.default_cover]
+    () => resolvePostDefaultCoverUrl(postDefaultCover),
+    [postDefaultCover]
   );
 
   const currentArticleId = article.id;
 
   const recentPostCount = useMemo(() => {
-    const raw = siteConfig?.sidebar?.recentPost?.count;
+    const raw = sidebarRecentPost?.count;
     const parsed = typeof raw === "number" ? raw : Number(raw);
     if (!Number.isFinite(parsed)) return 5;
     return Math.min(20, Math.max(1, Math.trunc(parsed)));
-  }, [siteConfig]);
+  }, [sidebarRecentPost]);
 
   const tocCollapseMode = useMemo(() => {
-    const val = siteConfig?.sidebar?.toc?.collapseMode;
+    const val = sidebarToc?.collapseMode;
     return val === true || val === "true";
-  }, [siteConfig]);
+  }, [sidebarToc]);
 
   const poemEnabled = useMemo(() => {
-    const val = siteConfig?.sidebar?.poem?.enable;
+    const val = sidebarPoem?.enable;
     return val === true || val === "true";
-  }, [siteConfig]);
+  }, [sidebarPoem]);
 
   return (
     <aside id="post-sidebar" className={styles.postSidebar}>
@@ -169,8 +192,8 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
         {article.content_html && <CardToc contentHtml={article.content_html} collapseMode={tocCollapseMode} />}
 
         {/* 最近发布 */}
-        {siteConfig?.sidebar?.recentPost?.enable !== false &&
-          siteConfig?.sidebar?.recentPost?.enable !== "false" &&
+        {sidebarRecentPost?.enable !== false &&
+          sidebarRecentPost?.enable !== "false" &&
           recentArticles.length > 0 && (
             <CardRecentPost
               articles={recentArticles}

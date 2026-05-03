@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useShallow } from "zustand/shallow";
 import { useArticleList, useCategories, useTags } from "@/hooks/queries";
 import styles from "./AuthorCard.module.css";
 
@@ -15,7 +16,7 @@ interface ContactItem {
 }
 
 export function AuthorCard() {
-  const siteConfig = useSiteConfigStore((state) => state.siteConfig);
+  const siteConfig = useSiteConfigStore(useShallow((state) => state.siteConfig));
 
   const { data: articleData } = useArticleList({ page: 1, pageSize: 1 });
   const { data: categories } = useCategories();
@@ -39,7 +40,7 @@ export function AuthorCard() {
 
   const authorCardBgUrl = useMemo(() => {
     const bg = (siteConfig as Record<string, unknown>)?.author_card_bg as string | undefined;
-    return bg || "/author_bg.webp";
+    return bg || "/images/author_bg.webp";
   }, [siteConfig]);
 
   const contacts = useMemo<ContactItem[]>(() => {

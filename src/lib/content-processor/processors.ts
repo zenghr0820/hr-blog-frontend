@@ -1,96 +1,20 @@
 /**
- * 内容处理器
- * 保存文章时对 HTML 进行后处理，确保输出与 anheyu-pro 后端兼容
- * 参考 anheyu-pro useContentProcessor.ts
+ * content-processor 各处理器函数
+ * 每个函数接收 Document 对象，对 HTML DOM 执行特定的规范化处理。
+ * 这些处理器通过 pipeline.ts 组合成保存管道和编辑器清理管道。
  */
 
-/**
- * 生成 slug（用于锚点链接）
- */
-function slugify(text: string): string {
-  return text
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\u4e00-\u9fff\-]/g, "");
-}
+import { addAnchorToHeading } from "./utils";
 
-/**
- * 为 heading 元素添加锚点链接
- * @param heading heading 元素 (h1-h6)
- * @param usedIds 已使用的 ID 集合（用于处理重复 ID）
- */
-function addAnchorToHeading(heading: HTMLElement, usedIds: Set<string>): void {
-  // 如果已经有 headerlink，跳过（避免重复处理）
-  if (heading.querySelector("a.headerlink")) return;
-
-  const text = heading.textContent?.trim() || "";
-  if (!text) return;
-
-  // 生成唯一的 ID
-  let baseId = heading.getAttribute("id") || slugify(text);
-  let id = baseId;
-  let counter = 1;
-  
-  // 处理 ID 重复
-  while (usedIds.has(id)) {
-    id = `${baseId}-${counter}`;
-    counter++;
-  }
-  usedIds.add(id);
-
-  // 设置 id 属性
-  heading.setAttribute("id", id);
-
-  // 创建锚点链接
-  const anchor = document.createElement("a");
-  anchor.href = `#${id}`;
-  anchor.className = "headerlink";
-  anchor.title = text;
-  anchor.innerHTML = ""; // 空链接，通过 CSS 显示图标
-
-  // 在 heading 开头插入锚点链接
-  heading.insertBefore(anchor, heading.firstChild);
-}
-
-/**
- * 清理加载的 HTML，移除 heading 中的锚点链接，恢复为纯文本
- * @param html 从后端获取的 HTML（可能包含带 a 标签的 heading）
- * @returns 清理后的 HTML（heading 只包含纯文本）
- */
-export function cleanHtmlForEditor(html: string): string {
-  if (!html || typeof window === "undefined") return html;
-
-  const doc = new DOMParser().parseFromString(html, "text/html");
-
-  // 移除 heading 中的 a.headerlink，恢复为纯文本
-  doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(heading => {
-    const anchor = heading.querySelector("a.headerlink");
-    if (anchor) {
-      anchor.remove();
-    }
-  });
-
-  return doc.body.innerHTML;
-}
-
-/**
- * 处理保存时的 HTML
- * @param html 编辑器输出的原始 HTML
- * @returns 处理后的 HTML
- */
-export function processHtmlForSave(html: string): string {
-  if (!html || typeof window === "undefined") return html;
-
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  const usedIds = new Set<string>();
-
-  // 0. Heading 处理：为 h1-h6 添加锚点链接
+/** 为所有 h1-h6 标题添加锚点链接，用于目录跳转 */
+export function processHeadings(doc: Document, usedIds: Set<string>): void {
   doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(heading => {
     addAnchorToHeading(heading as HTMLElement, usedIds);
   });
+}
 
-  // 1. 表格包裹 div.table-container
+/** 为 table 元素包裹 .table-container 容器，用于响应式横向滚动 */
+export function wrapTables(doc: Document): void {
   doc.querySelectorAll("table").forEach(table => {
     if (table.parentElement?.classList.contains("table-container")) return;
     const container = document.createElement("div");
@@ -100,8 +24,10 @@ export function processHtmlForSave(html: string): string {
       container.appendChild(table);
     }
   });
+}
 
-  // 1.1 统一表头结构：当首行为 th 且缺少 thead 时，自动提升为 thead
+/** 将缺少 thead 的表格中首行 th 提升为 thead，确保表格结构规范 */
+export function normalizeTableHead(doc: Document): void {
   doc.querySelectorAll("table").forEach(table => {
     if (table.querySelector("thead")) return;
 
@@ -126,36 +52,38 @@ export function processHtmlForSave(html: string): string {
       table.insertBefore(thead, table.firstChild);
     }
   });
+}
 
-  // 2. 图片懒加载：使用浏览器原生 loading="lazy"
-  //    不再将 src 替换为占位图（旧方案依赖 IntersectionObserver 存在 SSR 水合时序问题）
+/** 为非 data: 协议的 img 添加 loading="lazy" 属性，实现图片懒加载 */
+export function addLazyLoading(doc: Document): void {
   doc.querySelectorAll("img").forEach(img => {
     const src = img.getAttribute("src");
     if (src && !src.startsWith("data:")) {
       img.setAttribute("loading", "lazy");
     }
   });
+}
 
-  // 3. PreserveHTML 恢复：将 wrapper 还原为原始 HTML
+/** 还原 preserve-html-wrapper 占位元素为原始 HTML 内容，用于保留用户手写 HTML */
+export function restorePreserveHtml(doc: Document): void {
   doc.querySelectorAll("div.preserve-html-wrapper[data-html]").forEach(wrapper => {
     const originalHtml = wrapper.getAttribute("data-html");
     if (originalHtml) {
       const temp = document.createElement("div");
       temp.innerHTML = originalHtml;
-      // 用原始 HTML 替换 wrapper
       while (temp.firstChild) {
         wrapper.parentNode?.insertBefore(temp.firstChild, wrapper);
       }
       wrapper.remove();
     }
   });
+}
 
-  // 4. Mermaid 占位处理：保留源码
+/** 处理 mermaid 占位元素，确保内部包含 <pre><code> 结构以供前端渲染 */
+export function processMermaidPlaceholders(doc: Document): void {
   doc.querySelectorAll("div[data-mermaid-code]").forEach(div => {
     const code = div.getAttribute("data-mermaid-code") || "";
     if (code) {
-      // 保留 data-mermaid-code 属性以便重新渲染
-      // 同时保留 pre > code.language-mermaid 作为回退
       const pre = div.querySelector("pre");
       if (!pre) {
         const newPre = document.createElement("pre");
@@ -168,8 +96,10 @@ export function processHtmlForSave(html: string): string {
       }
     }
   });
+}
 
-  // 5. 代码块：将裸 <pre><code> 转换为 details.md-editor-code 结构
+/** 将裸 <pre><code> 规范化为 md-editor-code 折叠面板结构，支持语言标签和行号 */
+export function normalizeCodeBlocks(doc: Document): void {
   doc.querySelectorAll("pre").forEach(pre => {
     if (pre.closest(".md-editor-code")) return;
     if (pre.closest("[data-mermaid-code]") || pre.closest(".mermaid-block")) return;
@@ -219,8 +149,10 @@ export function processHtmlForSave(html: string): string {
 
     pre.replaceWith(details);
   });
+}
 
-  // 6. Tabs：确保 active 按钮对应的 tab-item-content 也有 active 类
+/** 规范化 tabs 组件，确保 active 状态在按钮和内容面板之间一致 */
+export function normalizeTabs(doc: Document): void {
   doc.querySelectorAll(".tabs").forEach(tabsEl => {
     const buttons = tabsEl.querySelectorAll(".nav-tabs .tab");
     const items = tabsEl.querySelectorAll(".tab-contents .tab-item-content");
@@ -236,11 +168,51 @@ export function processHtmlForSave(html: string): string {
       item.classList.toggle("active", i === activeIdx);
     });
   });
+}
 
-  // 7. KaTeX 公式：清理编辑器专用属性
+/** 清除 KaTeX 行内公式元素的 contenteditable 属性，避免编辑器误操作 */
+export function cleanKatexAttributes(doc: Document): void {
   doc.querySelectorAll("[data-type='math-inline']").forEach(el => {
     el.removeAttribute("contenteditable");
   });
+}
 
-  return doc.body.innerHTML;
+/** 修复任务列表属性：为含 checkbox 的 ul/li 补充 data-type="taskList"/"taskItem" 及相关样式 */
+export function fixTaskListAttributes(doc: Document): void {
+  doc.querySelectorAll("ul").forEach(ul => {
+    if (ul.getAttribute("data-type") === "taskList") return;
+
+    const taskItems = Array.from(ul.querySelectorAll(':scope > li')).filter(li => {
+      if (li.getAttribute("data-type") === "taskItem") return false;
+      const checkbox = li.querySelector(':scope > input[type="checkbox"]');
+      return !!checkbox;
+    });
+
+    if (taskItems.length === 0) return;
+
+    ul.setAttribute("data-type", "taskList");
+    if (!ul.classList.contains("not-prose")) ul.classList.add("not-prose");
+    if (!ul.classList.contains("pl-2")) ul.classList.add("pl-2");
+
+    taskItems.forEach(li => {
+      const checkbox = li.querySelector(':scope > input[type="checkbox"]') as HTMLInputElement | null;
+      if (!checkbox) return;
+
+      const checked = checkbox.checked || checkbox.hasAttribute("checked");
+      li.setAttribute("data-type", "taskItem");
+      li.setAttribute("data-checked", checked ? "true" : "false");
+
+      checkbox.remove();
+      const content = li.innerHTML.trim();
+      li.innerHTML = `<label><input type="checkbox"${checked ? " checked" : ""}><span></span></label><div>${content || "<p></p>"}</div>`;
+    });
+  });
+}
+
+/** 移除标题中的锚点链接（a.headerlink），用于编辑器加载时还原为干净标题 */
+export function removeHeadingAnchors(doc: Document): void {
+  doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(heading => {
+    const anchor = heading.querySelector("a.headerlink");
+    if (anchor) anchor.remove();
+  });
 }
