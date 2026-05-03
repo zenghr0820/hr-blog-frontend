@@ -335,8 +335,8 @@ export const GalleryBlock = Node.create({
             galleryItems.push({
               src: img?.getAttribute("data-src") || img?.getAttribute("src") || "",
               alt: img?.getAttribute("alt") || "",
-              title: itemEl.querySelector(".gallery-item-title")?.textContent || "",
-              desc: itemEl.querySelector(".gallery-item-desc")?.textContent || "",
+              title: itemEl.querySelector(".gallery-title")?.textContent || "",
+              desc: itemEl.querySelector(".gallery-desc")?.textContent || "",
             });
           });
 
@@ -376,10 +376,10 @@ export const GalleryBlock = Node.create({
       const itemChildren: (string | (string | Record<string, string>)[])[] = [["img", imgAttrs]];
 
       if (item.title) {
-        itemChildren.push(["span", { class: "gallery-item-title" }, item.title]);
+        itemChildren.push(["span", { class: "gallery-title" }, item.title]);
       }
       if (item.desc) {
-        itemChildren.push(["span", { class: "gallery-item-desc" }, item.desc]);
+        itemChildren.push(["span", { class: "gallery-desc" }, item.desc]);
       }
 
       return ["div", { class: "gallery-item" }, ...itemChildren];

@@ -67,11 +67,11 @@ function matchContainerBlock(src: string): { raw: string; tagName: string; param
   let inCode = false;
   let codeMark = "";
 
-  while (pos < src.length && depth > 0) {
-    const lineEnd = src.indexOf("\n", pos);
+  while (pos < normalized.length && depth > 0) {
+    const lineEnd = normalized.indexOf("\n", pos);
     const line = lineEnd === -1
-      ? src.slice(pos).trim()
-      : src.slice(pos, lineEnd).trim();
+      ? normalized.slice(pos).trim()
+      : normalized.slice(pos, lineEnd).trim();
 
     const cm = line.match(/^(`{3,}|~{3,})/);
     if (cm) {
@@ -90,7 +90,7 @@ function matchContainerBlock(src: string): { raw: string; tagName: string; param
     }
 
     if (lineEnd === -1) {
-      pos = src.length;
+      pos = normalized.length;
       break;
     }
     pos = lineEnd + 1;
@@ -98,9 +98,9 @@ function matchContainerBlock(src: string): { raw: string; tagName: string; param
 
   if (depth !== 0) return null;
 
-  const bodyEnd = src.lastIndexOf(":::", pos - 1);
-  const body = src.slice(openMatch[0].length, bodyEnd).replace(/\n$/, "");
-  return { raw: src.slice(0, pos), tagName, params, body };
+  const bodyEnd = normalized.lastIndexOf(":::", pos - 1);
+  const body = normalized.slice(openMatch[0].length, bodyEnd).replace(/\n$/, "");
+  return { raw: normalized.slice(0, pos), tagName, params, body };
 }
 
 /** Admonition 块支持的标签（与 turndown、编辑器一致；!!! 与类型之间可有空格） */
@@ -129,11 +129,11 @@ function matchAdmonitionBlock(src: string): { raw: string; tagName: string; para
   let inCode = false;
   let codeMark = "";
 
-  while (pos < src.length && depth > 0) {
-    const lineEnd = src.indexOf("\n", pos);
+  while (pos < normalized.length && depth > 0) {
+    const lineEnd = normalized.indexOf("\n", pos);
     const line = lineEnd === -1
-      ? src.slice(pos).trim()
-      : src.slice(pos, lineEnd).trim();
+      ? normalized.slice(pos).trim()
+      : normalized.slice(pos, lineEnd).trim();
 
     const cm = line.match(/^(`{3,}|~{3,})/);
     if (cm) {
@@ -152,7 +152,7 @@ function matchAdmonitionBlock(src: string): { raw: string; tagName: string; para
     }
 
     if (lineEnd === -1) {
-      pos = src.length;
+      pos = normalized.length;
       break;
     }
     pos = lineEnd + 1;
@@ -160,9 +160,9 @@ function matchAdmonitionBlock(src: string): { raw: string; tagName: string; para
 
   if (depth !== 0) return null;
 
-  const bodyEnd = src.lastIndexOf("!!!", pos - 1);
-  const body = src.slice(openMatch[0].length, bodyEnd).replace(/\n$/, "");
-  return { raw: src.slice(0, pos), tagName, params, body };
+  const bodyEnd = normalized.lastIndexOf("!!!", pos - 1);
+  const body = normalized.slice(openMatch[0].length, bodyEnd).replace(/\n$/, "");
+  return { raw: normalized.slice(0, pos), tagName, params, body };
 }
 
 // ---------- 块级渲染器 ----------
@@ -253,11 +253,17 @@ function renderLoginRequired(body: string, params: string, parse: (md: string) =
 function renderFolding(body: string, params: string, parse: (md: string) => string): string {
   const titleStr = extractAttr(params, "title") || params.replace(/^folding\s*/, "").replace(/\s*open\s*$/, "").trim() || "折叠内容";
   const isOpen = /\bopen\b/.test(params);
-  const colorMatch = params.match(/#[\da-fA-F]{3,8}/);
-  const style = colorMatch ? ` style="border-color: ${colorMatch[0]}"` : "";
+  const color = extractAttr(params, "color");
+  const detailsStyle = color ? ` style="border-color: ${color}"` : "";
+  const detailsClass = color ? " folding-tag custom-color" : " folding-tag";
   const inner = parse(body.trim());
 
-  return `<details class="folding-tag"${isOpen ? " open" : ""}${style}><summary>${escapeHtml(titleStr)}</summary><div class="content">${inner}</div></details>`;
+  let summaryAttrs = "";
+  if (color) {
+    summaryAttrs = ` style="background-color: ${color}; color: #fff; border-color: ${color};"`;
+  }
+
+  return `<details class="${detailsClass}"${isOpen ? " open" : ""}${detailsStyle}><summary${summaryAttrs}>${escapeHtml(titleStr)}</summary><div class="content">${inner}</div></details>`;
 }
 
 function renderHidden(body: string, params: string, parse: (md: string) => string): string {
@@ -276,6 +282,7 @@ function renderHidden(body: string, params: string, parse: (md: string) => strin
 
 function renderBtns(body: string, params: string): string {
   const cols = extractAttr(params, "cols") || "3";
+  const style = extractAttr(params, "style") || "default";
   const lines = body.trim().split("\n");
 
   let items = "";
@@ -297,7 +304,7 @@ function renderBtns(body: string, params: string): string {
     items += `<a class="btn-item${color ? ` btn-color-${color}` : ""}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${iconHtml}<span class="btn-title">${escapeHtml(title)}</span>${descHtml}</a>`;
   }
 
-  return `<div class="btns-container btns-cols-${cols}">${items}</div>`;
+  return `<div class="btns-container btns-cols-${cols}${style !== "default" ? ` btns-style-${style}` : ""}">${items}</div>`;
 }
 
 function renderGallery(body: string, params: string): string {

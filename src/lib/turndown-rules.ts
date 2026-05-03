@@ -300,8 +300,14 @@ export function registerCustomRules(td: TurndownService) {
       if (isOpen) params += " open";
 
       if (el.classList.contains("custom-color")) {
+        const summaryStyleAttr = summary ? (summary as HTMLElement).getAttribute("style") || "" : "";
+        const detailsStyleAttr = el.getAttribute("style") || "";
+        const hexMatch = summaryStyleAttr.match(/background-color:\s*(#[\da-fA-F]{3,8})/) ||
+          detailsStyleAttr.match(/border-color:\s*(#[\da-fA-F]{3,8})/);
+        const summaryBgColor = summary ? (summary as HTMLElement).style.backgroundColor : "";
         const borderColor = el.style.borderColor;
-        if (borderColor) params += ` ${borderColor}`;
+        const color = hexMatch?.[1] || summaryBgColor || borderColor;
+        if (color) params += ` color="${color}"`;
       }
 
       const inner = contentDiv ? contentDiv.innerHTML.trim() : "";
@@ -368,7 +374,11 @@ export function registerCustomRules(td: TurndownService) {
       const colsMatch = el.className.match(/btns-cols-(\d+)/);
       if (colsMatch) cols = parseInt(colsMatch[1], 10);
 
-      let md = `\n:::btns cols=${cols}\n`;
+      let groupStyle = "default";
+      const styleMatch = el.className.match(/btns-style-(card|simple|default)/);
+      if (styleMatch) groupStyle = styleMatch[1];
+
+      let md = `\n:::btns cols=${cols}${groupStyle !== "default" ? ` style=${groupStyle}` : ""}\n`;
 
       el.querySelectorAll(".btn-item").forEach((item) => {
         const link = item as HTMLElement;

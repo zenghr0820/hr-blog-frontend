@@ -380,8 +380,8 @@ export const VideoGalleryBlock = Node.create({
             videoItems.push({
               src: source?.getAttribute("src") || video?.getAttribute("src") || "",
               poster: video?.getAttribute("poster") || "",
-              title: itemEl.querySelector(".video-gallery-item-title")?.textContent || "",
-              desc: itemEl.querySelector(".video-gallery-item-desc")?.textContent || "",
+              title: itemEl.querySelector(".video-gallery-title")?.textContent || "",
+              desc: itemEl.querySelector(".video-gallery-desc")?.textContent || "",
               type: source?.getAttribute("type") || "video/mp4",
             });
           });
@@ -428,10 +428,10 @@ export const VideoGalleryBlock = Node.create({
       const itemChildren: any[] = [["video", videoAttrs, ["source", sourceAttrs]]];
 
       if (item.title) {
-        itemChildren.push(["span", { class: "video-gallery-item-title" }, item.title]);
+        itemChildren.push(["span", { class: "video-gallery-title" }, item.title]);
       }
       if (item.desc) {
-        itemChildren.push(["span", { class: "video-gallery-item-desc" }, item.desc]);
+        itemChildren.push(["span", { class: "video-gallery-desc" }, item.desc]);
       }
 
       return ["div", { class: "video-gallery-item" }, ...itemChildren];

@@ -2000,8 +2000,16 @@ body.reading-mode .exit-readmode:hover {
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 100%
+    height: 100%;
+    text-decoration: none !important;
+    border: none !important;
 }
+
+.postContentInner h1 a:hover,.postContentInner h2 a:hover,.postContentInner h3 a:hover,.postContentInner h4 a:hover,.postContentInner h5 a:hover,.postContentInner h6 a:hover {
+    background: none !important;
+    box-shadow: none !important;
+}
+
 /* 
 .postContentInner h1 {
     padding-left: 28px
