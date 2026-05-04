@@ -7,6 +7,7 @@ import { useScrollStore } from "@/store/scroll-store";
 
 const LENIS_LERP = 0.1;
 const SCROLL_DIRECTION_THRESHOLD = 60;
+const SCROLL_THROTTLE_MS = 16;
 
 function isAdminPath(pathname: string | null): boolean {
   return !!pathname && (pathname === "/admin" || pathname.startsWith("/admin/"));
@@ -16,9 +17,31 @@ export function LenisScroll() {
   const lenisRef = useRef<Lenis | null>(null);
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
+  const footerOffsetTopRef = useRef<number | null>(null);
+  const lastThrottledUpdateRef = useRef(0);
+  const pendingRafRef = useRef<number | null>(null);
 
   const handleScroll = useCallback((lenis: Lenis) => {
     const scrollY = Math.max(0, lenis.scroll);
+    const now = performance.now();
+
+    if (now - lastThrottledUpdateRef.current < SCROLL_THROTTLE_MS) {
+      if (!pendingRafRef.current) {
+        pendingRafRef.current = requestAnimationFrame(() => {
+          pendingRafRef.current = null;
+          lastThrottledUpdateRef.current = performance.now();
+
+          const state = useScrollStore.getState();
+          if (state.scrollY !== scrollY) {
+            useScrollStore.setState({ scrollY, _lastScrollY: scrollY });
+          }
+        });
+      }
+      return;
+    }
+
+    lastThrottledUpdateRef.current = now;
+
     const scrollHeight = document.documentElement.scrollHeight;
     const clientHeight = document.documentElement.clientHeight;
     const scrollableHeight = scrollHeight - clientHeight;
@@ -41,9 +64,14 @@ export function LenisScroll() {
     }
 
     let isFooterVisible = false;
-    const footerEl = document.getElementById("footer-container");
-    if (footerEl) {
-      isFooterVisible = scrollY + clientHeight >= footerEl.offsetTop;
+    if (footerOffsetTopRef.current !== null) {
+      isFooterVisible = scrollY + clientHeight >= footerOffsetTopRef.current;
+    } else {
+      const footerEl = document.getElementById("footer-container");
+      if (footerEl) {
+        footerOffsetTopRef.current = footerEl.offsetTop;
+        isFooterVisible = scrollY + clientHeight >= footerOffsetTopRef.current;
+      }
     }
 
     useScrollStore.setState({
@@ -81,16 +109,29 @@ export function LenisScroll() {
     lenisRef.current = lenis;
     useScrollStore.setState({ _lenis: lenis });
 
+    const invalidateFooterCache = () => {
+      footerOffsetTopRef.current = null;
+    };
+
+    const resizeObserver = new ResizeObserver(invalidateFooterCache);
+    resizeObserver.observe(document.documentElement);
+
     return () => {
       lenis.destroy();
       lenisRef.current = null;
       useScrollStore.setState({ _lenis: null });
+      resizeObserver.disconnect();
+      if (pendingRafRef.current) {
+        cancelAnimationFrame(pendingRafRef.current);
+        pendingRafRef.current = null;
+      }
     };
   }, [pathname, handleScroll]);
 
   useEffect(() => {
     if (pathname !== prevPathnameRef.current) {
       prevPathnameRef.current = pathname;
+      footerOffsetTopRef.current = null;
       if (!isAdminPath(pathname)) {
         lenisRef.current?.scrollTo(0, { immediate: true });
       }

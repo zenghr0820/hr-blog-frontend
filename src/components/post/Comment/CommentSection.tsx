@@ -270,7 +270,7 @@ export function CommentSection({ targetTitle, targetPath, className }: CommentSe
 
   useEffect(() => {
     if (!isCommentEnabled) return;
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };

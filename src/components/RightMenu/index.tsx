@@ -242,7 +242,7 @@ export function RightMenu() {
 
     window.addEventListener("contextmenu", handleContextMenu);
     window.addEventListener("click", handleClick);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("keydown", handleKeydown);
     window.addEventListener("music-player-play-status-response", handlePlayStatus);
     window.addEventListener("music-player-song-name-response", handleSongNameResponse);

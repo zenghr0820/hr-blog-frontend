@@ -105,13 +105,12 @@ function getHeadingElement(item: TocItem, headings: HTMLElement[]): HTMLElement 
  * 计算当前激活的标题 ID
  * 基于滚动位置和标题元素位置
  */
-function computeActiveId(tocItems: TocItem[]): string {
+function computeActiveId(tocItems: TocItem[], headings: HTMLElement[]): string {
   if (tocItems.length === 0) return "";
 
   const headerOffset = 80;
   // 使用 window.scrollY 与 top 计算保持一致，避免 store 节流导致 scrollY 滞后时误激活下方标题
   const currentScrollY = window.scrollY;
-  const headings = getPostContentHeadings();
   let currentId = "";
 
   for (const item of tocItems) {
@@ -133,6 +132,7 @@ export function CardToc({ contentHtml, collapseMode = false }: CardTocProps) {
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
   const tocContainerRef = useRef<HTMLDivElement>(null);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cachedHeadingsRef = useRef<HTMLElement[]>([]);
 
   // 使用全局滚动状态
   const scrollY = useScrollY();
@@ -142,6 +142,7 @@ export function CardToc({ contentHtml, collapseMode = false }: CardTocProps) {
     const updateTocItems = () => {
       const items = parseTocItems(contentHtml);
       setTocItems(items);
+      cachedHeadingsRef.current = getPostContentHeadings();
     };
 
     updateTocItems();
@@ -156,11 +157,8 @@ export function CardToc({ contentHtml, collapseMode = false }: CardTocProps) {
   useEffect(() => {
     if (tocItems.length === 0 || isScrolling) return;
 
-    const newActiveId = computeActiveId(tocItems);
-    if (newActiveId && newActiveId !== activeId) {
-      setActiveId(newActiveId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- 响应外部状态 scrollY 变化是合理的
+    const newActiveId = computeActiveId(tocItems, cachedHeadingsRef.current);
+    setActiveId(prev => (newActiveId && newActiveId !== prev ? newActiveId : prev));
   }, [tocItems, scrollY, isScrolling]);
 
   // 指示器 ref
