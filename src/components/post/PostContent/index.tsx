@@ -25,6 +25,7 @@ import { useHiddenEvents } from "./hooks/use-hidden-events";
 import { useTabsEvents } from "./hooks/use-tabs-events";
 import { useInlinePasswordEvents } from "./hooks/use-inline-password-events";
 import { useLinkCardNormalize } from "./hooks/use-link-card-normalize";
+import { useIconifyNormalize } from "./hooks/use-iconify-normalize";
 import { usePaidContentEvents } from "./hooks/use-paid-content-events";
 import { usePasswordContentEvents } from "./hooks/use-password-content-events";
 import { useLoginRequiredEvents } from "./hooks/use-login-required-events";
@@ -75,7 +76,7 @@ declare global {
 export function PostContent({ content, articleInfo, enableScripts = false }: PostContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const mermaidCleanupRef = useRef<MermaidCleanupFn>(null);
-  const codeCopyCleanupRef = useRef<(() => void) | null>(null);
+  const eventCleanupRef = useRef<(() => void) | null>(null);
   const imageObserverRef = useRef<IntersectionObserver | null>(null);
 
   const innerHtml = useMemo(
@@ -96,6 +97,7 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
   const { initTabsEvents } = useTabsEvents();
   const { initInlinePasswordEvents } = useInlinePasswordEvents();
   const { normalizeLinkCardStructure } = useLinkCardNormalize();
+  const { normalizeIconifyIcons } = useIconifyNormalize();
   const { initPaidContentEvents } = usePaidContentEvents();
   const { initPasswordContentEvents } = usePasswordContentEvents();
   const { initLoginRequiredContentEvents } = useLoginRequiredEvents();
@@ -115,6 +117,7 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
     });
 
     normalizeLinkCardStructure(currentContent);
+    normalizeIconifyIcons(currentContent);
 
     const loadImage = (img: HTMLImageElement) => {
       const dataSrc = img.getAttribute("data-src");
@@ -162,19 +165,37 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
     }
 
     initTipEvents(currentContent);
-    initHiddenEvents(currentContent);
-    initTabsEvents(currentContent);
-    initInlinePasswordEvents(currentContent);
-    initPaidContentEvents(currentContent);
-    initPasswordContentEvents(currentContent);
-    initLoginRequiredContentEvents(currentContent);
+
+    if (eventCleanupRef.current) {
+      eventCleanupRef.current();
+    }
+    const cleanups: (() => void)[] = [];
+
+    const hiddenCleanup = initHiddenEvents(currentContent);
+    if (hiddenCleanup) cleanups.push(hiddenCleanup);
+
+    const tabsCleanup = initTabsEvents(currentContent);
+    if (tabsCleanup) cleanups.push(tabsCleanup);
+
+    const inlinePasswordCleanup = initInlinePasswordEvents(currentContent);
+    if (inlinePasswordCleanup) cleanups.push(inlinePasswordCleanup);
+
+    const paidContentCleanup = initPaidContentEvents(currentContent);
+    if (paidContentCleanup) cleanups.push(paidContentCleanup);
+
+    const passwordContentCleanup = initPasswordContentEvents(currentContent);
+    if (passwordContentCleanup) cleanups.push(passwordContentCleanup);
+
+    const loginRequiredCleanup = initLoginRequiredContentEvents(currentContent);
+    if (loginRequiredCleanup) cleanups.push(loginRequiredCleanup);
+
     normalizeCodeBlocks(currentContent);
     initCodeBlockIcons(currentContent);
 
-    if (codeCopyCleanupRef.current) {
-      codeCopyCleanupRef.current();
-    }
-    codeCopyCleanupRef.current = initCodeCopyEvents(currentContent) ?? null;
+    const codeCopyCleanup = initCodeCopyEvents(currentContent);
+    if (codeCopyCleanup) cleanups.push(codeCopyCleanup);
+
+    eventCleanupRef.current = () => cleanups.forEach(fn => fn());
 
     initCodeHighlight(currentContent);
     initKatex(currentContent);
@@ -205,9 +226,9 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
 
     return () => {
       cancelled = true;
-      if (codeCopyCleanupRef.current) {
-        codeCopyCleanupRef.current();
-        codeCopyCleanupRef.current = null;
+      if (eventCleanupRef.current) {
+        eventCleanupRef.current();
+        eventCleanupRef.current = null;
       }
       if (mermaidCleanupRef.current) {
         mermaidCleanupRef.current();
@@ -228,6 +249,7 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
   }, [
     content,
     normalizeLinkCardStructure,
+    normalizeIconifyIcons,
     normalizeCodeBlocks,
     initTipEvents,
     initHiddenEvents,

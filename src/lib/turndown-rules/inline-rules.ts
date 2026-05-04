@@ -8,6 +8,24 @@
 
 import type TurndownService from "turndown";
 
+function faClassToIconify(className: string): string {
+  if (!className) return "";
+  const parts = className.trim().split(/\s+/);
+  if (parts.length < 2 || !parts[0].startsWith("fa-")) return className;
+  const prefix = parts[0].replace(/^fa-/, "fa6-");
+  const name = parts.slice(1).map(p => p.replace(/^fa-/, "")).join(":");
+  return `${prefix}:${name}`;
+}
+
+function extractIconFromEl(iconEl: HTMLElement): string {
+  const dataIcon = iconEl.getAttribute("data-icon");
+  if (dataIcon) return dataIcon;
+  const cls = iconEl.className || "";
+  if (cls.includes("anzhiyu-icon") || cls.includes("anzhiyufont")) return cls;
+  if (cls.startsWith("fa-")) return faClassToIconify(cls);
+  return cls;
+}
+
 /** 注册行内元素相关的 Turndown 转换规则 */
 export function registerInlineRules(td: TurndownService) {
   td.addRule("hiddenInline", {
@@ -40,8 +58,12 @@ export function registerInlineRules(td: TurndownService) {
       const url = el.getAttribute("href") || "#";
       const textEl = el.querySelector("span") || el.querySelector(".btn-text");
       const text = textEl?.textContent?.trim() || el.textContent?.trim() || "按钮";
-      const iconEl = el.querySelector("i");
-      const icon = iconEl?.className || "anzhiyu-icon-circle-arrow-right";
+      const iconEl = el.querySelector("i, .iconify[data-icon], svg[data-icon]");
+      let icon = "";
+      if (iconEl) {
+        icon = extractIconFromEl(iconEl as HTMLElement);
+      }
+      if (!icon) icon = "anzhiyu-icon-circle-arrow-right";
 
       let params = `url=${url} text=${text} icon=${icon}`;
       if (el.classList.contains("btn-outline")) params += " style=outline";
@@ -73,7 +95,16 @@ export function registerInlineRules(td: TurndownService) {
       const tips = el.querySelector(".tag-link-tips")?.textContent?.trim() || "引用站外地址";
 
       const iconImg = el.querySelector(".tag-link-left img") as HTMLImageElement | null;
-      const icon = iconImg?.getAttribute("data-iconify") || "rivet-icons:link";
+      let icon = "rivet-icons:link";
+      if (iconImg) {
+        const dataIconify = iconImg.getAttribute("data-iconify");
+        const imgSrc = iconImg.getAttribute("src") || "";
+        if (dataIconify) {
+          icon = dataIconify;
+        } else if (imgSrc && (imgSrc.startsWith("http://") || imgSrc.startsWith("https://") || imgSrc.startsWith("/"))) {
+          icon = imgSrc;
+        }
+      }
 
       let params = `url="${url}"`;
       if (title) params += ` title="${title}"`;
@@ -99,7 +130,7 @@ export function registerInlineRules(td: TurndownService) {
 
       const isBottom = contentEl.classList.contains("tip-bottom");
       const isLight = contentEl.classList.contains("tip-light");
-      const isClick = el.classList.contains("tip-click");
+      const isClick = el.classList.contains("tip-click") || el.getAttribute("data-trigger") === "click";
 
       let params = `text="${text}" content="${content}"`;
       if (isBottom) params += " position=bottom";
@@ -140,8 +171,11 @@ export function registerInlineRules(td: TurndownService) {
     filter: (node) =>
       node.nodeName === "SPAN" && (node as HTMLElement).classList.contains("inline-underline"),
     replacement: (_content, node) => {
-      const text = (node as HTMLElement).textContent?.trim() || "";
-      return `{u}${text}{/u}`;
+      const el = node as HTMLElement;
+      const text = el.textContent?.trim() || "";
+      const color = el.style.textDecorationColor || el.style.color || "";
+      const colorPart = color ? ` color="${color}"` : "";
+      return `{u${colorPart}}${text}{/u}`;
     },
   });
 
@@ -149,8 +183,11 @@ export function registerInlineRules(td: TurndownService) {
     filter: (node) =>
       node.nodeName === "SPAN" && (node as HTMLElement).classList.contains("inline-emphasis-mark"),
     replacement: (_content, node) => {
-      const text = (node as HTMLElement).textContent?.trim() || "";
-      return `{emp}${text}{/emp}`;
+      const el = node as HTMLElement;
+      const text = el.textContent?.trim() || "";
+      const color = el.style.textEmphasisColor || el.style.color || "";
+      const colorPart = color ? ` color="${color}"` : "";
+      return `{emp${colorPart}}${text}{/emp}`;
     },
   });
 
@@ -158,8 +195,11 @@ export function registerInlineRules(td: TurndownService) {
     filter: (node) =>
       node.nodeName === "SPAN" && (node as HTMLElement).classList.contains("inline-wavy"),
     replacement: (_content, node) => {
-      const text = (node as HTMLElement).textContent?.trim() || "";
-      return `{wavy}${text}{/wavy}`;
+      const el = node as HTMLElement;
+      const text = el.textContent?.trim() || "";
+      const color = el.style.textDecorationColor || el.style.color || "";
+      const colorPart = color ? ` color="${color}"` : "";
+      return `{wavy${colorPart}}${text}{/wavy}`;
     },
   });
 
@@ -167,8 +207,11 @@ export function registerInlineRules(td: TurndownService) {
     filter: (node) =>
       node.nodeName === "SPAN" && (node as HTMLElement).classList.contains("inline-delete"),
     replacement: (_content, node) => {
-      const text = (node as HTMLElement).textContent?.trim() || "";
-      return `{del}${text}{/del}`;
+      const el = node as HTMLElement;
+      const text = el.textContent?.trim() || "";
+      const color = el.style.textDecorationColor || el.style.color || "";
+      const colorPart = color ? ` color="${color}"` : "";
+      return `{del${colorPart}}${text}{/del}`;
     },
   });
 
@@ -176,8 +219,11 @@ export function registerInlineRules(td: TurndownService) {
     filter: (node) =>
       node.nodeName === "SPAN" && (node as HTMLElement).classList.contains("inline-kbd"),
     replacement: (_content, node) => {
-      const text = (node as HTMLElement).textContent?.trim() || "";
-      return `{kbd}${text}{/kbd}`;
+      const el = node as HTMLElement;
+      const text = el.textContent?.trim() || "";
+      const color = el.style.color || "";
+      const colorPart = color ? ` color="${color}"` : "";
+      return `{kbd${colorPart}}${text}{/kbd}`;
     },
   });
 
@@ -185,8 +231,11 @@ export function registerInlineRules(td: TurndownService) {
     filter: (node) =>
       node.nodeName === "SPAN" && (node as HTMLElement).classList.contains("inline-password"),
     replacement: (_content, node) => {
-      const text = (node as HTMLElement).textContent?.trim() || "";
-      return `{psw}${text}{/psw}`;
+      const el = node as HTMLElement;
+      const text = el.textContent?.trim() || "";
+      const color = el.style.backgroundColor || el.style.color || "";
+      const colorPart = color ? ` color="${color}"` : "";
+      return `{psw${colorPart}}${text}{/psw}`;
     },
   });
 
@@ -236,10 +285,12 @@ export function registerInlineRules(td: TurndownService) {
 
   td.addRule("mermaidBlock", {
     filter: (node) =>
-      node.nodeName === "DIV" && (node as HTMLElement).classList.contains("mermaid-placeholder"),
+      node.nodeName === "DIV" &&
+      ((node as HTMLElement).classList.contains("mermaid-placeholder") ||
+        (node as HTMLElement).classList.contains("mermaid-block")),
     replacement: (_content, node) => {
       const el = node as HTMLElement;
-      const code = el.getAttribute("data-mermaid") || "";
+      const code = el.getAttribute("data-mermaid") || el.getAttribute("data-mermaid-code") || "";
       return `\n\`\`\`mermaid\n${code}\n\`\`\`\n`;
     },
   });

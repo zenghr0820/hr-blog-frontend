@@ -469,7 +469,7 @@
   right: 14px;
   margin: 0;
   padding: 0;
-  font: inherit;
+  font-style: normal;
   color: inherit;
   cursor: pointer;
   appearance: none;
@@ -1144,6 +1144,13 @@
 .postContent :global(.btns-container .btn-item .btn-icon i) {
   font-size: 32px;
   color: var(--foreground);
+}
+
+.postContent :global(.btns-container .btn-item .btn-icon svg) {
+  width: 32px;
+  height: 32px;
+  color: var(--foreground);
+  fill: currentColor;
 }
 
 .postContent :global(.btns-container .btn-item .btn-icon img) {

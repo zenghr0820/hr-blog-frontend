@@ -326,7 +326,7 @@ export const GalleryBlock = Node.create({
         getAttrs: (el: HTMLElement) => {
           const classList = el.className || "";
           const colsMatch = classList.match(/gallery-cols-(\d)/);
-          const gapStyle = el.style.gap || "10px";
+          const gapStyle = el.style.gap || el.style.getPropertyValue("--gallery-gap") || "10px";
           const ratioStyle = el.style.getPropertyValue("--gallery-ratio") || "";
 
           const galleryItems: GalleryItem[] = [];
@@ -364,7 +364,7 @@ export const GalleryBlock = Node.create({
     }
 
     const containerClass = `gallery-container gallery-cols-${cols}`;
-    const containerStyle = [`gap: ${gap}`, ratio ? `--gallery-ratio: ${ratio}` : ""].filter(Boolean).join("; ");
+    const containerStyle = [`--gallery-gap: ${gap}`, ratio ? `--gallery-ratio: ${ratio}` : ""].filter(Boolean).join("; ");
 
     const children = items.map(item => {
       const imgAttrs: Record<string, string> = {
@@ -372,17 +372,22 @@ export const GalleryBlock = Node.create({
         alt: item.alt || "",
         loading: "lazy",
       };
+      if (item.title) imgAttrs.title = item.title;
 
-      const itemChildren: (string | (string | Record<string, string>)[])[] = [["img", imgAttrs]];
-
+      const captionChildren: (string | (string | Record<string, string>)[])[] = [];
       if (item.title) {
-        itemChildren.push(["span", { class: "gallery-title" }, item.title]);
+        captionChildren.push(["div", { class: "gallery-title" }, item.title]);
       }
       if (item.desc) {
-        itemChildren.push(["span", { class: "gallery-desc" }, item.desc]);
+        captionChildren.push(["div", { class: "gallery-desc" }, item.desc]);
       }
 
-      return ["div", { class: "gallery-item" }, ...itemChildren];
+      const itemChildren: unknown[] = [["img", imgAttrs]];
+      if (captionChildren.length > 0) {
+        itemChildren.push(["div", { class: "gallery-caption" }, ...captionChildren]);
+      }
+
+      return ["div", { class: "gallery-item" }, ...itemChildren] as unknown as readonly [string, ...unknown[]];
     });
 
     return [

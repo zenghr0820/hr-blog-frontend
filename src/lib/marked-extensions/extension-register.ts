@@ -125,12 +125,12 @@ export function registerMarkedExtensions(marked: typeof Marked) {
         name: "inlineCustomTag",
         level: "inline" as const,
         start(src: string) {
-          return src.match(/\{(?:linkcard|btn|tip|music|hide|u|emp|wavy|del|kbd|psw)\s/)?.index;
+          return src.match(/\{(?:linkcard|btn|tip|music|hide|u|emp|wavy|del|kbd|psw)[\s}]/)?.index;
         },
         tokenizer(src: string) {
-          const m = src.match(/^\{(\w+)\s([^}]*)\}([\s\S]*?)\{\/\1\}/);
+          const m = src.match(/^\{(\w+)(?:\s([^}]*)?)?\}([\s\S]*?)\{\/\1\}/);
           if (m) {
-            const [raw, tag, params, content] = m;
+            const [raw, tag, params = "", content] = m;
             return { type: "inlineCustomTag", raw, tag, params, content };
           }
           return undefined;
@@ -141,7 +141,7 @@ export function registerMarkedExtensions(marked: typeof Marked) {
             params: string;
             content: string;
           };
-          if (inlineSimpleTags[tag]) return inlineSimpleTags[tag](content);
+          if (inlineSimpleTags[tag]) return inlineSimpleTags[tag](content, params);
           if (tag === "hide") return renderInlineHide(params, content);
           if (inlineComplexTags[tag]) return inlineComplexTags[tag](params);
           return `{${tag} ${params}}${content}{/${tag}}`;

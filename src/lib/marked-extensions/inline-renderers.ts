@@ -39,7 +39,19 @@ function renderInlineBtn(params: string): string {
   if (size === "larger") cls += " btn-larger";
   if (color) cls += ` btn-${color}`;
 
-  return `<a class="${cls}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"><i class="${escapeHtml(icon)}"></i><span>${escapeHtml(text)}</span></a>`;
+  let iconHtml = "";
+  if (icon) {
+    if (icon.startsWith("fa-") || icon.startsWith("fa6-")) {
+      const faClass = icon.replace(/^fa6-/, "fa-").replace(":", " fa-");
+      iconHtml = `<i class="${escapeHtml(faClass)}"></i>`;
+    } else if (icon.includes("anzhiyu-icon") || icon.includes("anzhiyufont")) {
+      iconHtml = `<i class="${escapeHtml(icon)}"></i>`;
+    } else {
+      iconHtml = `<span class="iconify" data-icon="${escapeHtml(icon)}"></span>`;
+    }
+  }
+
+  return `<a class="${cls}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${iconHtml}<span>${escapeHtml(text)}</span></a>`;
 }
 
 /** 渲染提示气泡，鼠标悬停或点击时显示提示内容，支持位置、主题和触发方式配置 */
@@ -81,14 +93,38 @@ function renderInlineMusic(params: string): string {
   return `<div class="markdown-music-player" data-music-id="${escapeHtml(neteaseId)}" data-music-data="${escapeHtml(JSON.stringify(dataObj))}"><div class="music-player-container"><div class="music-error" style="display: none;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg><span>音乐加载失败</span></div><div class="music-artwork-container"><div class="music-artwork-wrapper"><img src="/static/img/music-vinyl-background.png" alt="唱片背景" class="vinyl-background"><img src="/static/img/music-vinyl-outer.png" alt="唱片外圈" class="artwork-image-vinyl-background"><img src="/static/img/music-vinyl-inner.png" alt="唱片内圈" class="artwork-image-vinyl-inner-background"><img src="/static/img/music-vinyl-needle.png" alt="撞针" class="artwork-image-needle-background"><img src="/static/img/music-vinyl-groove.png" alt="凹槽背景" class="artwork-image-groove-background"><div class="artwork-transition-wrapper"><img src="${escapeHtml(pic)}" alt="专辑封面" class="artwork-image"><img src="${escapeHtml(pic)}" alt="模糊背景" class="artwork-image-blur"><div class="artwork-border-ring"></div></div><div class="music-play-overlay"><div class="music-play-button-overlay"><svg class="music-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg><svg class="music-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"></path></svg></div></div></div></div><div class="music-info-container"><div class="music-text-info"><div class="music-name">${escapedName}</div><div class="music-artist">${escapedArtist}</div></div><span class="nmsingle-playtime"><span class="current-time">00:00</span> / <span class="duration">00:00</span></span></div><div class="music-decoration-image"><img src="${NETEASE_DECORATION_IMG}" alt="音乐装饰"></div><div class="music-progress-bar"><div class="music-progress-track"><div class="music-progress-fill" style="width: 0%"></div></div></div><audio class="music-audio-element" preload="none"></audio></div></div>`;
 }
 
-/** 简单行内标签渲染器：仅包裹内容，无需解析参数（u/emp/wavy/del/kbd/psw） */
-export const inlineSimpleTags: Record<string, (content: string) => string> = {
-  u: (c) => `<span class="inline-underline">${c}</span>`,
-  emp: (c) => `<span class="inline-emphasis-mark">${c}</span>`,
-  wavy: (c) => `<span class="inline-wavy">${c}</span>`,
-  del: (c) => `<span class="inline-delete">${c}</span>`,
-  kbd: (c) => `<span class="inline-kbd">${c}</span>`,
-  psw: (c) => `<span class="inline-password">${c}</span>`,
+/** 简单行内标签渲染器：包裹内容，支持可选 color 参数（u/emp/wavy/del/kbd/psw） */
+export const inlineSimpleTags: Record<string, (content: string, params?: string) => string> = {
+  u: (c, params) => {
+    const color = extractAttr(params || "", "color");
+    const styleAttr = color ? ` style="text-decoration-color: ${escapeHtml(color)}"` : "";
+    return `<span class="inline-underline"${styleAttr}>${c}</span>`;
+  },
+  emp: (c, params) => {
+    const color = extractAttr(params || "", "color");
+    const styleAttr = color ? ` style="text-emphasis-color: ${escapeHtml(color)}"` : "";
+    return `<span class="inline-emphasis-mark"${styleAttr}>${c}</span>`;
+  },
+  wavy: (c, params) => {
+    const color = extractAttr(params || "", "color");
+    const styleAttr = color ? ` style="text-decoration-color: ${escapeHtml(color)}"` : "";
+    return `<span class="inline-wavy"${styleAttr}>${c}</span>`;
+  },
+  del: (c, params) => {
+    const color = extractAttr(params || "", "color");
+    const styleAttr = color ? ` style="text-decoration-color: ${escapeHtml(color)}"` : "";
+    return `<span class="inline-delete"${styleAttr}>${c}</span>`;
+  },
+  kbd: (c, params) => {
+    const color = extractAttr(params || "", "color");
+    const styleAttr = color ? ` style="color: ${escapeHtml(color)}"` : "";
+    return `<span class="inline-kbd"${styleAttr}>${c}</span>`;
+  },
+  psw: (c, params) => {
+    const color = extractAttr(params || "", "color");
+    const styleAttr = color ? ` style="background-color: ${escapeHtml(color)}"` : "";
+    return `<span class="inline-password"${styleAttr}>${c}</span>`;
+  },
 };
 
 /** 渲染行内隐藏内容，点击按钮后显示/隐藏，支持自定义按钮样式 */

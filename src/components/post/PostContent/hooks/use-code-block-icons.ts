@@ -43,20 +43,22 @@ export function useCodeBlockIcons(config: CodeBlockConfig) {
       const savedCollapsed = codeBlock.getAttribute("data-collapsed");
       const needsCollapse = savedCollapsed === "true" || (savedCollapsed === null && codeMaxLines !== -1 && lineCount > codeMaxLines);
 
+      const existingActions = codeBlock.querySelector(".md-editor-code-actions");
+      if (existingActions) existingActions.remove();
+
       let copyBtn = codeHead.querySelector(".copy-button");
       if (!copyBtn) {
-        const btn = document.createElement("button");
-        btn.type = "button";
+        const btn = document.createElement("i");
         btn.className = "copy-button";
         btn.innerHTML = copyIcon;
         btn.setAttribute("data-copy-icon", copyIcon);
         btn.setAttribute("data-check-icon", checkIcon);
         btn.setAttribute("title", "复制代码");
+        btn.addEventListener("mousedown", (e: Event) => e.stopPropagation());
         codeHead.appendChild(btn);
         copyBtn = btn;
-      } else if (copyBtn.tagName !== "BUTTON") {
-        const btn = document.createElement("button");
-        btn.type = "button";
+      } else if (copyBtn.tagName === "BUTTON") {
+        const btn = document.createElement("i");
         btn.className = copyBtn.className;
         const t = copyBtn.getAttribute("title");
         if (t) btn.setAttribute("title", t);
@@ -65,10 +67,10 @@ export function useCodeBlockIcons(config: CodeBlockConfig) {
         if (dc) btn.setAttribute("data-copy-icon", dc);
         if (dch) btn.setAttribute("data-check-icon", dch);
         btn.innerHTML = copyBtn.innerHTML;
+        btn.addEventListener("mousedown", (e: Event) => e.stopPropagation());
         copyBtn.replaceWith(btn);
         copyBtn = btn;
       } else {
-        (copyBtn as HTMLButtonElement).type = "button";
         if (!copyBtn.querySelector("svg")) {
           copyBtn.innerHTML = copyIcon;
           copyBtn.setAttribute("data-copy-icon", copyIcon);
@@ -80,14 +82,19 @@ export function useCodeBlockIcons(config: CodeBlockConfig) {
       if (!expandBtn) {
         expandBtn = document.createElement("span");
         expandBtn.className = "expand";
+        expandBtn.setAttribute("aria-hidden", "true");
         expandBtn.innerHTML = expandIcon;
-        expandBtn.setAttribute(
-          "onclick",
-          `event.preventDefault(); event.stopPropagation(); const details = this.closest('details'); if(details) { details.open = !details.open; }`
-        );
         codeHead.insertBefore(expandBtn, codeHead.firstChild);
-      } else if (!expandBtn.querySelector("svg")) {
-        expandBtn.innerHTML = expandIcon;
+      } else {
+        if (expandBtn.hasAttribute("onclick")) {
+          expandBtn.removeAttribute("onclick");
+        }
+        if (!expandBtn.hasAttribute("aria-hidden")) {
+          expandBtn.setAttribute("aria-hidden", "true");
+        }
+        if (!expandBtn.querySelector("svg")) {
+          expandBtn.innerHTML = expandIcon;
+        }
       }
 
       const existingDots = codeHead.querySelector(".mac-dots");
@@ -121,18 +128,59 @@ export function useCodeBlockIcons(config: CodeBlockConfig) {
         if (!expandMoreBtn) {
           expandMoreBtn = document.createElement("div");
           expandMoreBtn.className = "code-expand-btn";
+          expandMoreBtn.setAttribute("role", "button");
+          expandMoreBtn.setAttribute("tabindex", "0");
+          expandMoreBtn.setAttribute("aria-label", "展开更多代码");
           expandMoreBtn.innerHTML = `<i>${expandMoreIcon}</i>`;
-          expandMoreBtn.setAttribute(
-            "onclick",
-            `const container = this.closest('details.md-editor-code'); const pre = container.querySelector('pre'); const icon = this.querySelector('i'); if(container.classList.contains('is-collapsed')) { container.classList.remove('is-collapsed'); if(pre) { pre.style.height = ''; pre.style.overflow = ''; } if(icon) { icon.style.transform = 'rotate(180deg)'; } this.classList.add('is-expanded'); } else { container.classList.add('is-collapsed'); if(pre) { pre.style.height = '${collapsedHeight}px'; pre.style.overflow = 'hidden'; } if(icon) { icon.style.transform = 'rotate(0deg)'; } this.classList.remove('is-expanded'); }`
-          );
+          const height = collapsedHeight;
+          const toggleCollapse = () => {
+            const container = expandMoreBtn!.closest("details.md-editor-code");
+            if (!container) return;
+            const pre = container.querySelector("pre");
+            const icon = expandMoreBtn!.querySelector("i");
+            if (container.classList.contains("is-collapsed")) {
+              container.classList.remove("is-collapsed");
+              if (pre) {
+                (pre as HTMLElement).style.height = "";
+                (pre as HTMLElement).style.overflow = "";
+              }
+              if (icon) icon.style.transform = "rotate(180deg)";
+              expandMoreBtn!.classList.add("is-expanded");
+              expandMoreBtn!.setAttribute("aria-label", "收起代码");
+            } else {
+              container.classList.add("is-collapsed");
+              if (pre) {
+                (pre as HTMLElement).style.height = `${height}px`;
+                (pre as HTMLElement).style.overflow = "hidden";
+              }
+              if (icon) icon.style.transform = "rotate(0deg)";
+              expandMoreBtn!.classList.remove("is-expanded");
+              expandMoreBtn!.setAttribute("aria-label", "展开更多代码");
+            }
+          };
+          expandMoreBtn.addEventListener("click", toggleCollapse);
+          expandMoreBtn.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggleCollapse();
+            }
+          });
           codeBlock.appendChild(expandMoreBtn);
-        } else if (!expandMoreBtn.querySelector("svg")) {
-          const iconWrapper = expandMoreBtn.querySelector("i");
-          if (iconWrapper) {
-            iconWrapper.innerHTML = expandMoreIcon;
-          } else {
-            expandMoreBtn.innerHTML = `<i>${expandMoreIcon}</i>`;
+        } else {
+          if (expandMoreBtn.hasAttribute("onclick")) {
+            expandMoreBtn.removeAttribute("onclick");
+          }
+          if (!expandMoreBtn.hasAttribute("role")) {
+            expandMoreBtn.setAttribute("role", "button");
+            expandMoreBtn.setAttribute("tabindex", "0");
+          }
+          if (!expandMoreBtn.querySelector("svg")) {
+            const iconWrapper = expandMoreBtn.querySelector("i");
+            if (iconWrapper) {
+              iconWrapper.innerHTML = expandMoreIcon;
+            } else {
+              expandMoreBtn.innerHTML = `<i>${expandMoreIcon}</i>`;
+            }
           }
         }
       } else {

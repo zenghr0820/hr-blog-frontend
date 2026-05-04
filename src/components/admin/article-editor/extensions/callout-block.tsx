@@ -264,6 +264,7 @@ export const CalloutBlock = Node.create({
             content: tipContent?.textContent || "",
             theme,
             position,
+            trigger: element.classList.contains("tip-click") || element.getAttribute("data-trigger") === "click" ? "click" : "hover",
           };
         },
       },

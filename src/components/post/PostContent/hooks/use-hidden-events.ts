@@ -2,12 +2,15 @@
  * 隐藏内容事件 Hook
  * 为 .hide-block/.hide-inline 中的 .hide-button 绑定点击事件，
  * 点击后切换隐藏内容的显示/隐藏状态，并更新按钮文本。
+ * 返回清理函数用于卸载事件监听器。
  */
 
 import { useCallback } from "react";
 
 export function useHiddenEvents() {
-  const initHiddenEvents = useCallback((container: HTMLElement) => {
+  const initHiddenEvents = useCallback((container: HTMLElement): (() => void) | undefined => {
+    const cleanups: (() => void)[] = [];
+
     const hideButtons = container.querySelectorAll(".hide-button");
 
     hideButtons.forEach(button => {
@@ -33,12 +36,15 @@ export function useHiddenEvents() {
       }
 
       button.addEventListener("click", handleClick);
+      cleanups.push(() => button.removeEventListener("click", handleClick));
     });
 
     const hideContents = container.querySelectorAll(".hide-content") as NodeListOf<HTMLElement>;
     hideContents.forEach(content => {
       content.style.display = "none";
     });
+
+    return () => cleanups.forEach(fn => fn());
   }, []);
 
   return { initHiddenEvents };

@@ -218,7 +218,7 @@ export function useMusicPlayer() {
               <img src="${pic}" alt="模糊背景" class="artwork-image-blur">
               <div class="artwork-border-ring"></div>
             </div>
-            <div class="music-play-overlay">
+            <div class="music-play-overlay" onclick="window.__musicPlayerToggle?.('${playerId}')">
               <div class="music-play-button-overlay">
                 <svg class="music-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z"></path>
@@ -311,6 +311,24 @@ export function useMusicPlayer() {
           if (artworkWrapper) artworkWrapper.classList.remove("is-playing");
           if (needleEl) needleEl.classList.remove("needle-playing");
         });
+
+        const playerId = player.id || `music-player-${Math.random().toString(36).slice(2, 12)}`;
+        player.id = playerId;
+
+        const playOverlay = player.querySelector(".music-play-overlay") as HTMLElement;
+        if (playOverlay) {
+          playOverlay.addEventListener("click", (e: Event) => {
+            e.stopPropagation();
+            window.__musicPlayerToggle?.(playerId);
+          });
+        }
+
+        const progressBar = player.querySelector(".music-progress-bar") as HTMLElement;
+        if (progressBar && !progressBar.getAttribute("onclick")) {
+          progressBar.addEventListener("click", (e: Event) => {
+            window.__musicPlayerSeek?.(playerId, e as MouseEvent);
+          });
+        }
 
         const preloadAudioMetadata = async () => {
           try {

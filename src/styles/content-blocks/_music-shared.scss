@@ -44,6 +44,11 @@
       &.is-playing {
         transform: scale(1.02);
 
+        .music-play-overlay {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
         .artwork-image-vinyl-background {
           animation-play-state: running;
         }
@@ -68,6 +73,7 @@
       &:hover {
         .music-play-overlay {
           opacity: 1;
+          pointer-events: auto;
         }
         .music-play-button-overlay {
           transform: scale(1.1);
@@ -82,6 +88,7 @@
 
       &.is-playing:hover .music-play-overlay {
         opacity: 1;
+        pointer-events: auto;
       }
     }
 

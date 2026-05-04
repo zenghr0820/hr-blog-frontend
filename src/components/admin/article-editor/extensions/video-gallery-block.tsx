@@ -370,7 +370,7 @@ export const VideoGalleryBlock = Node.create({
         getAttrs: (el: HTMLElement) => {
           const classList = el.className || "";
           const colsMatch = classList.match(/video-gallery-cols-(\d)/);
-          const gapStyle = el.style.gap || "10px";
+          const gapStyle = el.style.gap || el.style.getPropertyValue("--video-gallery-gap") || "10px";
           const ratioStyle = el.style.getPropertyValue("--video-gallery-ratio") || "";
 
           const videoItems: VideoGalleryItem[] = [];
@@ -410,12 +410,14 @@ export const VideoGalleryBlock = Node.create({
     }
 
     const containerClass = `video-gallery-container video-gallery-cols-${cols}`;
-    const containerStyle = [`gap: ${gap}`, ratio ? `--video-gallery-ratio: ${ratio}` : ""].filter(Boolean).join("; ");
+    const containerStyle = [`--video-gallery-gap: ${gap}`, ratio ? `--video-gallery-ratio: ${ratio}` : ""].filter(Boolean).join("; ");
 
     const children = items.map(item => {
       const videoAttrs: Record<string, string> = {
-        controls: "true",
+        class: "video-gallery-video",
+        controls: "",
         preload: "metadata",
+        playsinline: "",
       };
       if (item.poster) videoAttrs.poster = item.poster;
 
@@ -424,17 +426,22 @@ export const VideoGalleryBlock = Node.create({
         type: item.type || "video/mp4",
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const itemChildren: any[] = [["video", videoAttrs, ["source", sourceAttrs]]];
-
+      const captionChildren: (string | (string | Record<string, string>)[])[] = [];
       if (item.title) {
-        itemChildren.push(["span", { class: "video-gallery-title" }, item.title]);
+        captionChildren.push(["div", { class: "video-gallery-title" }, item.title]);
       }
       if (item.desc) {
-        itemChildren.push(["span", { class: "video-gallery-desc" }, item.desc]);
+        captionChildren.push(["div", { class: "video-gallery-desc" }, item.desc]);
       }
 
-      return ["div", { class: "video-gallery-item" }, ...itemChildren];
+      const itemChildren: unknown[] = [
+        ["div", { class: "video-gallery-video-wrapper" }, ["video", videoAttrs, ["source", sourceAttrs]]],
+      ];
+      if (captionChildren.length > 0) {
+        itemChildren.push(["div", { class: "video-gallery-caption" }, ...captionChildren]);
+      }
+
+      return ["div", { class: "video-gallery-item" }, ...itemChildren] as unknown as readonly [string, ...unknown[]];
     });
 
     return [

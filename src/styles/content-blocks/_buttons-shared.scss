@@ -22,9 +22,18 @@
     }
 
     i,
-    .iconify {
+    .iconify,
+    .iconify-inline {
       font-size: 1em;
       transition: transform 0.3s ease;
+    }
+
+    .iconify-inline {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      vertical-align: -0.125em;
+      fill: currentColor;
     }
 
     &.btn-blue {

@@ -48,11 +48,23 @@ function btnColorFromAnchorClass(a: HTMLAnchorElement): string {
   return m ? m[1] : "";
 }
 
-/** 从 <i> 读取图标：主题字体类名原样保留，FA 类转为 Iconify */
+/** 从 <i> 读取图标：优先 data-icon 属性，其次 class（主题字体类名原样保留，FA 类转为 Iconify） */
 function iconFromButtonInnerI(i: Element | null | undefined): string {
   if (!i) return "";
+  const dataIcon = (i as HTMLElement).getAttribute?.("data-icon") || "";
+  if (dataIcon) return dataIcon;
   const cls = (i as HTMLElement).className?.toString?.() || "";
   return cls.trim() ? faClassToIconify(cls.trim()) : "";
+}
+
+/** 从按钮内解析图标：优先 <span class="iconify" data-icon>，其次 <i> */
+function iconFromButton(anchor: Element): string {
+  const iconifySpan = anchor.querySelector(".iconify[data-icon]");
+  if (iconifySpan) {
+    const dataIcon = (iconifySpan as HTMLElement).getAttribute?.("data-icon") || "";
+    if (dataIcon) return dataIcon;
+  }
+  return iconFromButtonInnerI(anchor.querySelector("i"));
 }
 
 /** Iconify → FA class：`fa6-solid:plus` → `fa-solid fa-plus` */
@@ -571,7 +583,7 @@ export const ButtonBlock = Node.create({
             const descEl = anchor.querySelector(".btn-desc");
             const colorFromItemClass = (anchor.className.match(/\bbtn-color-(blue|pink|red|purple|orange|green)\b/) || [])[1] || "";
             groupItems.push({
-              icon: iconFromButtonInnerI(anchor.querySelector("i")),
+              icon: iconFromButton(anchor),
               title: titleEl?.textContent?.trim() || anchor.textContent?.trim() || "",
               url: anchor.getAttribute("href") || "",
               desc: descEl?.textContent?.trim() || anchor.getAttribute("data-desc") || "",
@@ -599,7 +611,7 @@ export const ButtonBlock = Node.create({
             type: "single",
             url: a.getAttribute("href") || "",
             text: a.textContent?.trim() || "",
-            icon: iconFromButtonInnerI(a.querySelector("i")),
+            icon: iconFromButton(a),
             color: a.getAttribute("data-color") || btnColorFromAnchorClass(a) || "",
             style: a.classList.contains("btn-outline") ? "outline" : "default",
             size: a.classList.contains("btn-larger") ? "larger" : "default",
@@ -615,7 +627,7 @@ export const ButtonBlock = Node.create({
             type: "single",
             url: a.getAttribute("href") || "",
             text: a.textContent?.trim() || "",
-            icon: iconFromButtonInnerI(a.querySelector("i")),
+            icon: iconFromButton(a),
             color: a.getAttribute("data-color") || btnColorFromAnchorClass(a) || "",
             style: a.classList.contains("btn-outline") ? "outline" : "default",
             size: a.classList.contains("btn-larger") ? "larger" : "default",
@@ -637,20 +649,31 @@ export const ButtonBlock = Node.create({
       } catch {
         items = [];
       }
-      const containerClass = ["btns-container", `btns-cols-${cols}`, gStyle !== "default" ? `btns-style-${gStyle}` : ""]
+      const hasDesc = items.some(item => !!item.desc);
+      const containerClass = ["btns-container", `btns-cols-${cols}`, gStyle !== "default" ? `btns-style-${gStyle}` : "", hasDesc ? "btns-has-desc" : ""]
         .filter(Boolean)
         .join(" ");
       const children = items.map(item => {
-        const linkClasses = ["btn-anzhiyu"];
-        if (item.color) linkClasses.push(`btn-${item.color}`);
-        const la: Record<string, string> = { class: linkClasses.join(" "), href: item.url || "#" };
+        const linkClasses = ["btn-item"];
+        if (item.color) linkClasses.push(`btn-color-${item.color}`);
+        if (item.desc) linkClasses.push("has-desc");
+        const la: Record<string, string> = { class: linkClasses.join(" "), href: item.url || "#", target: "_blank", rel: "noopener noreferrer" };
         if (item.color) la["data-color"] = item.color;
         if (item.desc) la["data-desc"] = item.desc;
-        if (item.icon) {
-          const faClass = isFaIcon(item.icon) ? iconifyToFaClass(item.icon) : item.icon;
-          return ["a", la, ["i", { class: faClass }], ` ${item.title}`];
+        const itemIcon = item.icon || "";
+        let iconHtml: unknown[] = [];
+        if (itemIcon) {
+          if (isFaIcon(itemIcon)) {
+            iconHtml = [["span", { class: "btn-icon" }, ["i", { class: iconifyToFaClass(itemIcon) }]]];
+          } else if (itemIcon.includes("anzhiyu-icon") || itemIcon.includes("anzhiyufont")) {
+            iconHtml = [["span", { class: "btn-icon" }, ["i", { class: itemIcon }]]];
+          } else {
+            iconHtml = [["span", { class: "btn-icon" }, ["span", { class: "iconify", "data-icon": itemIcon }]]];
+          }
         }
-        return ["a", la, item.title || "按钮"];
+        const titleHtml = [["span", { class: "btn-title" }, item.title || "按钮"]];
+        const descHtml = item.desc ? [["span", { class: "btn-desc" }, item.desc]] : [];
+        return ["a", la, ...iconHtml, ...titleHtml, ...descHtml];
       });
       return ["div", mergeAttributes(HTMLAttributes, { class: containerClass }), ...children];
     }
@@ -674,8 +697,13 @@ export const ButtonBlock = Node.create({
     if (colorVal) la["data-color"] = colorVal;
 
     if (iconVal) {
-      const faClass = isFaIcon(iconVal) ? iconifyToFaClass(iconVal) : iconVal;
-      return ["div", mergeAttributes(HTMLAttributes, { class: "btn-container" }), ["a", la, ["i", { class: faClass }], ` ${textVal}`]];
+      if (isFaIcon(iconVal)) {
+        return ["div", mergeAttributes(HTMLAttributes, { class: "btn-container" }), ["a", la, ["i", { class: iconifyToFaClass(iconVal) }], ` ${textVal}`]];
+      }
+      if (iconVal.includes("anzhiyu-icon") || iconVal.includes("anzhiyufont")) {
+        return ["div", mergeAttributes(HTMLAttributes, { class: "btn-container" }), ["a", la, ["i", { class: iconVal }], ` ${textVal}`]];
+      }
+      return ["div", mergeAttributes(HTMLAttributes, { class: "btn-container" }), ["a", la, ["span", { class: "iconify", "data-icon": iconVal }], ` ${textVal}`]];
     }
     return ["div", mergeAttributes(HTMLAttributes, { class: "btn-container" }), ["a", la, textVal]];
   },

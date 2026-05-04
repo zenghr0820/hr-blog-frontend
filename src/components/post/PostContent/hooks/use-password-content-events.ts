@@ -4,6 +4,7 @@
  * - 点击标题栏折叠/展开内容
  * - 输入密码验证后解锁内容，将预览区替换为真实 HTML
  * - 验证成功后将 access_token 存入 localStorage 以便后续自动解锁
+ * 返回清理函数用于卸载事件监听器。
  */
 
 import { useCallback } from "react";
@@ -11,24 +12,26 @@ import { addToast } from "@heroui/react";
 import { apiClient } from "@/lib/api/client";
 
 export function usePasswordContentEvents() {
-  const initPasswordContentEvents = useCallback((container: HTMLElement) => {
+  const initPasswordContentEvents = useCallback((container: HTMLElement): (() => void) | undefined => {
+    const cleanups: (() => void)[] = [];
+
     const containers = container.querySelectorAll(".password-content-editor-preview");
     containers.forEach(cont => {
       const header = cont.querySelector(".password-content-header") as HTMLElement | null;
-      if (header && header.dataset.collapseBound !== "true") {
-        header.dataset.collapseBound = "true";
-        header.addEventListener("click", (e: Event) => {
+      if (header) {
+        const handleHeaderClick = (e: Event) => {
           const target = e.target as HTMLElement;
           if (target.closest(".password-input") || target.closest(".password-verify-btn")) return;
           cont.classList.toggle("password-collapsed");
-        });
+        };
+
+        header.addEventListener("click", handleHeaderClick);
+        cleanups.push(() => header.removeEventListener("click", handleHeaderClick));
       }
 
       const btn = cont.querySelector(".password-verify-btn") as HTMLElement | null;
       const input = cont.querySelector(".password-input") as HTMLInputElement | null;
       if (!btn || !input) return;
-      if (btn.dataset.eventBound === "true") return;
-      btn.dataset.eventBound = "true";
 
       const handleVerify = async () => {
         const password = input.value.trim();
@@ -80,14 +83,20 @@ export function usePasswordContentEvents() {
       };
 
       btn.addEventListener("click", handleVerify);
+      cleanups.push(() => btn.removeEventListener("click", handleVerify));
 
-      input.addEventListener("keydown", (e: KeyboardEvent) => {
+      const handleKeydown = (e: KeyboardEvent) => {
         if (e.key === "Enter") {
           e.preventDefault();
           handleVerify();
         }
-      });
+      };
+
+      input.addEventListener("keydown", handleKeydown);
+      cleanups.push(() => input.removeEventListener("keydown", handleKeydown));
     });
+
+    return () => cleanups.forEach(fn => fn());
   }, []);
 
   return { initPasswordContentEvents };

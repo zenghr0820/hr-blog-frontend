@@ -144,7 +144,16 @@ function renderBtns(body: string, params: string): string {
     const color = extractAttr(itemStr, "color");
 
     let iconHtml = "";
-    if (icon) iconHtml = `<span class="btn-icon"><i class="${escapeHtml(icon)}"></i></span>`;
+    if (icon) {
+      if (icon.startsWith("fa-") || icon.startsWith("fa6-")) {
+        const faClass = icon.replace(/^fa6-/, "fa-").replace(":", " fa-");
+        iconHtml = `<span class="btn-icon"><i class="${escapeHtml(faClass)}"></i></span>`;
+      } else if (icon.includes("anzhiyu-icon") || icon.includes("anzhiyufont")) {
+        iconHtml = `<span class="btn-icon"><i class="${escapeHtml(icon)}"></i></span>`;
+      } else {
+        iconHtml = `<span class="btn-icon"><span class="iconify" data-icon="${escapeHtml(icon)}"></span></span>`;
+      }
+    }
     let descHtml = "";
     if (desc) descHtml = `<span class="btn-desc">${escapeHtml(desc)}</span>`;
 
@@ -162,18 +171,21 @@ function renderGallery(body: string, params: string): string {
   const lines = body.trim().split("\n");
 
   let style = "";
-  if (gap) style += `gap:${gap};`;
+  if (gap) style += `--gallery-gap:${gap};`;
   if (ratio) style += `--gallery-ratio:${ratio};`;
   const styleAttr = style ? ` style="${style}"` : "";
 
   let items = "";
   for (const line of lines) {
-    const m = line.trim().match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/);
+    const m = line.trim().match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\s+desc="([^"]*)")?/);
     if (!m) continue;
-    const [, alt, src, title] = m;
+    const [, alt, src, title, desc] = m;
     let titleHtml = "";
     if (title) titleHtml = `<span class="gallery-title">${escapeHtml(title)}</span>`;
-    items += `<div class="gallery-item"><img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" />${titleHtml}</div>`;
+    let descHtml = "";
+    if (desc) descHtml = `<span class="gallery-desc">${escapeHtml(desc)}</span>`;
+    const captionHtml = titleHtml || descHtml ? `<div class="gallery-caption">${titleHtml}${descHtml}</div>` : "";
+    items += `<div class="gallery-item"><img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" />${captionHtml}</div>`;
   }
 
   return `<div class="gallery-container gallery-cols-${cols}"${styleAttr}>${items}</div>`;
@@ -187,7 +199,7 @@ function renderVideoGallery(body: string, params: string): string {
   const lines = body.trim().split("\n");
 
   let style = "";
-  if (gap) style += `gap:${gap};`;
+  if (gap) style += `--video-gallery-gap:${gap};`;
   if (ratio) style += `--video-gallery-ratio:${ratio};`;
   const styleAttr = style ? ` style="${style}"` : "";
 

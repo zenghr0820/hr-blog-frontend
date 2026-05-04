@@ -6,6 +6,24 @@
 
 import type TurndownService from "turndown";
 
+function faClassToIconify(className: string): string {
+  if (!className) return "";
+  const parts = className.trim().split(/\s+/);
+  if (parts.length < 2 || !parts[0].startsWith("fa-")) return className;
+  const prefix = parts[0].replace(/^fa-/, "fa6-");
+  const name = parts.slice(1).map(p => p.replace(/^fa-/, "")).join(":");
+  return `${prefix}:${name}`;
+}
+
+function extractIconFromEl(iconEl: HTMLElement): string {
+  const dataIcon = iconEl.getAttribute("data-icon");
+  if (dataIcon) return dataIcon;
+  const cls = iconEl.className || "";
+  if (cls.includes("anzhiyu-icon") || cls.includes("anzhiyufont")) return cls;
+  if (cls.startsWith("fa-")) return faClassToIconify(cls);
+  return cls;
+}
+
 /** 注册块级容器相关的 Turndown 转换规则 */
 export function registerBlockContainerRules(td: TurndownService) {
   td.addRule("paidContent", {
@@ -203,13 +221,13 @@ export function registerBlockContainerRules(td: TurndownService) {
         const url = link.getAttribute("href") || "#";
         const titleEl = link.querySelector(".btn-title");
         const descEl = link.querySelector(".btn-desc");
-        const iconEl = link.querySelector(".btn-icon i, .btn-icon .iconify-img");
+        const iconEl = link.querySelector(".btn-icon i, .btn-icon .iconify-img, .btn-icon .iconify[data-icon], .btn-icon svg[data-icon]");
         const title = titleEl?.textContent?.trim() || "";
         const desc = descEl?.textContent?.trim() || "";
 
         let icon = "";
         if (iconEl) {
-          icon = (iconEl as HTMLElement).getAttribute("data-icon") || iconEl.className || "";
+          icon = extractIconFromEl(iconEl as HTMLElement);
         }
 
         let itemLine = `- title=${title} url=${url}`;
@@ -237,7 +255,7 @@ export function registerBlockContainerRules(td: TurndownService) {
       const colsMatch = el.className.match(/gallery-cols-(\d+)/);
       if (colsMatch) cols = parseInt(colsMatch[1], 10);
 
-      const gap = el.style.gap || "";
+      const gap = el.style.gap || el.style.getPropertyValue("--gallery-gap") || "";
       const ratio = el.style.getPropertyValue("--gallery-ratio") || "";
 
       let params = `gallery cols=${cols}`;
@@ -252,7 +270,8 @@ export function registerBlockContainerRules(td: TurndownService) {
         const url = img.getAttribute("src") || "";
         const alt = img.getAttribute("alt") || "";
         const title = item.querySelector(".gallery-title")?.textContent?.trim() || "";
-        md += `![${alt}](${url}${title ? ` "${title}"` : ""})\n`;
+        const desc = item.querySelector(".gallery-desc")?.textContent?.trim() || "";
+        md += `![${alt}](${url}${title ? ` "${title}"` : ""})${desc ? ` desc="${desc}"` : ""}\n`;
       });
 
       md += ":::\n\n";
@@ -270,7 +289,7 @@ export function registerBlockContainerRules(td: TurndownService) {
       const colsMatch = el.className.match(/video-gallery-cols-(\d+)/);
       if (colsMatch) cols = parseInt(colsMatch[1], 10);
 
-      const gap = el.style.gap || "";
+      const gap = el.style.gap || el.style.getPropertyValue("--video-gallery-gap") || "";
       const ratio = el.style.getPropertyValue("--video-gallery-ratio") || "";
 
       let params = `video-gallery cols=${cols}`;
