@@ -233,15 +233,12 @@ export function PostCopyright({ article }: PostCopyrightProps) {
     return rewardVisible || showShareButton || showSubscribeButton;
   }, [showRewardButton, showShareButton, showSubscribeButton, siteConfig.post?.reward?.enable, hasAnyRewardMethod]);
 
-  const isArticleEncrypted = article.access_rule?.type === "password" || article.has_encrypted_blocks;
-
   const getShareUrl = useCallback(() => {
     if (typeof window === "undefined") return "";
 
     const base = window.location.origin + window.location.pathname;
 
-    if (!isArticleEncrypted) return base;
-
+    // 优先从 URL 参数中获取 token（用户通过分享链接进入的场景）
     const searchParams = new URLSearchParams(window.location.search);
     if (searchParams.has("token")) {
       let url = base + "?token=" + searchParams.get("token");
@@ -251,6 +248,9 @@ export function PostCopyright({ article }: PostCopyrightProps) {
       return url;
     }
 
+    // 从 localStorage 获取已保存的 token
+    // 注意：不依赖 isArticleEncrypted 门控，因为后端在用户已解锁内容块后
+    // 会将 has_encrypted_blocks 置为 false，导致门控失效、token 丢失
     try {
       const stored = JSON.parse(localStorage.getItem("article_access_tokens") || "{}");
       const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
@@ -260,7 +260,9 @@ export function PostCopyright({ article }: PostCopyrightProps) {
       const tokens: string[] = [];
       const blockIDs: string[] = [];
 
+      // 文章级 token（全文加密时存在）
       if (tokenData.article) tokens.push(tokenData.article);
+      // 内容块 token（部分内容块加密时存在）
       if (Array.isArray(tokenData.blocks)) {
         tokenData.blocks.forEach((b: { contentId: string; token: string }) => {
           if (b.token) tokens.push(b.token);
@@ -268,6 +270,7 @@ export function PostCopyright({ article }: PostCopyrightProps) {
         });
       }
 
+      // 没有任何可用 token 时返回基础 URL
       if (tokens.length === 0) return base;
 
       let url = base + "?token=" + tokens.map(t => encodeURIComponent(t)).join(",");
@@ -278,7 +281,7 @@ export function PostCopyright({ article }: PostCopyrightProps) {
     } catch {}
 
     return base;
-  }, [isArticleEncrypted]);
+  }, []);
 
   const articleUrl = getShareUrl();
 
