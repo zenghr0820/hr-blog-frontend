@@ -30,6 +30,7 @@ export function useTabsEvents() {
         cleanups.push(() => tab.removeEventListener("click", handleClick));
       });
 
+      // 确保导航和内容的 active 状态同步
       const activeBtn = tabContainer.querySelector(".nav-tabs .tab.active");
       if (tabs.length > 0) {
         if (!activeBtn) {

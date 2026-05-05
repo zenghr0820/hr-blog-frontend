@@ -9,7 +9,7 @@
 
 import { useCallback } from "react";
 import { addToast } from "@heroui/react";
-import { apiClient } from "@/lib/api/client";
+import { articleApi } from "@/lib/api/article";
 
 export function usePasswordContentEvents() {
   const initPasswordContentEvents = useCallback((container: HTMLElement): (() => void) | undefined => {
@@ -17,8 +17,10 @@ export function usePasswordContentEvents() {
 
     const containers = container.querySelectorAll(".password-content-editor-preview");
     containers.forEach(cont => {
+      // 点击标题栏折叠/展开
       const header = cont.querySelector(".password-content-header") as HTMLElement | null;
-      if (header) {
+      if (header && header.dataset.collapseBound !== "true") {
+        header.dataset.collapseBound = "true";
         const handleHeaderClick = (e: Event) => {
           const target = e.target as HTMLElement;
           if (target.closest(".password-input") || target.closest(".password-verify-btn")) return;
@@ -32,25 +34,30 @@ export function usePasswordContentEvents() {
       const btn = cont.querySelector(".password-verify-btn") as HTMLElement | null;
       const input = cont.querySelector(".password-input") as HTMLInputElement | null;
       if (!btn || !input) return;
+      // 防止重复绑定事件
+      if (btn.dataset.eventBound === "true") return;
+      btn.dataset.eventBound = "true";
+
+      // 优先从按钮获取 contentId，其次从容器获取
+      const contentId = btn.getAttribute("data-content-id") || cont.getAttribute("data-content-id") || "";
 
       const handleVerify = async () => {
-        const password = input.value.trim();
-        if (!password) {
-          addToast({ title: "请输入密码", color: "warning" });
+        if (!input.value.trim()) {
+          addToast({ title: "提示", description: "请输入密码", color: "warning" });
           return;
         }
 
-        const contentId = cont.getAttribute("data-content-id") || "";
         try {
-          const result = await apiClient.post<{ success: boolean; content_html?: string; access_token?: string }>(
-            "/api/public/content/verify-password",
-            { content_id: contentId, password }
-          );
+          // 从 URL 中提取文章 slug
+          const pathParts = window.location.pathname.split("/").filter(Boolean);
+          const slug = pathParts[pathParts.length - 1] || "";
 
-          if (result.data?.success && result.data.content_html) {
+          const result = await articleApi.verifyArticlePassword(slug, input.value.trim(), "block", contentId);
+
+          if (result.success && result.content_html) {
             const preview = cont.querySelector(".password-content-preview");
             if (preview) {
-              preview.innerHTML = result.data.content_html;
+              preview.innerHTML = result.content_html;
             }
 
             cont.removeAttribute("data-locked");
@@ -61,7 +68,7 @@ export function usePasswordContentEvents() {
               badge.textContent = "已解锁";
             }
 
-            if (result.data.access_token) {
+            if (result.access_token) {
               try {
                 const stored = JSON.parse(localStorage.getItem("article_access_tokens") || "{}");
                 const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
@@ -69,7 +76,7 @@ export function usePasswordContentEvents() {
                 if (!Array.isArray(stored[slug].blocks)) stored[slug].blocks = [];
                 const exists = stored[slug].blocks.some((b: { contentId: string }) => b.contentId === contentId);
                 if (!exists) {
-                  stored[slug].blocks.push({ contentId, token: result.data.access_token });
+                  stored[slug].blocks.push({ contentId, token: result.access_token });
                 }
                 localStorage.setItem("article_access_tokens", JSON.stringify(stored));
               } catch {}
@@ -85,6 +92,7 @@ export function usePasswordContentEvents() {
       btn.addEventListener("click", handleVerify);
       cleanups.push(() => btn.removeEventListener("click", handleVerify));
 
+      // 回车键触发验证
       const handleKeydown = (e: KeyboardEvent) => {
         if (e.key === "Enter") {
           e.preventDefault();

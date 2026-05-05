@@ -21,16 +21,19 @@ export function useHiddenEvents() {
         const content = parent.querySelector(".hide-content") as HTMLElement;
         if (!content) return;
 
+        // 切换显示状态
         if (content.style.display === "none" || !content.style.display) {
           content.style.display = parent.classList.contains("hide-inline") ? "inline" : "block";
           button.textContent = "收起";
         } else {
           content.style.display = "none";
+          // 恢复原始按钮文字
           const originalText = button.getAttribute("data-display") || "查看";
           button.textContent = originalText;
         }
       };
 
+      // 保存原始文字
       if (!button.getAttribute("data-display")) {
         button.setAttribute("data-display", button.textContent || "查看");
       }
@@ -39,6 +42,7 @@ export function useHiddenEvents() {
       cleanups.push(() => button.removeEventListener("click", handleClick));
     });
 
+    // 初始隐藏所有隐藏内容
     const hideContents = container.querySelectorAll(".hide-content") as NodeListOf<HTMLElement>;
     hideContents.forEach(content => {
       content.style.display = "none";
