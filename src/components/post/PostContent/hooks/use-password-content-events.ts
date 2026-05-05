@@ -11,7 +11,7 @@ import { useCallback } from "react";
 import { addToast } from "@heroui/react";
 import { articleApi } from "@/lib/api/article";
 
-export function usePasswordContentEvents() {
+export function usePasswordContentEvents(articleId: string) {
   const initPasswordContentEvents = useCallback((container: HTMLElement): (() => void) | undefined => {
     const cleanups: (() => void)[] = [];
 
@@ -48,11 +48,8 @@ export function usePasswordContentEvents() {
         }
 
         try {
-          // 从 URL 中提取文章 slug
-          const pathParts = window.location.pathname.split("/").filter(Boolean);
-          const slug = pathParts[pathParts.length - 1] || "";
-
-          const result = await articleApi.verifyArticlePassword(slug, input.value.trim(), "block", contentId);
+          // 使用 articleId（公共 ID）调用 API，避免 abbrlink 导致后端解析失败
+          const result = await articleApi.verifyArticlePassword(articleId, input.value.trim(), "block", contentId);
 
           if (result.success && result.content_html) {
             const preview = cont.querySelector(".password-content-preview");
@@ -70,13 +67,13 @@ export function usePasswordContentEvents() {
 
             if (result.access_token) {
               try {
+                // 使用 articleId 作为 localStorage key，与后端 Cookie 命名保持一致
                 const stored = JSON.parse(localStorage.getItem("article_access_tokens") || "{}");
-                const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
-                if (!stored[slug]) stored[slug] = { article: "", blocks: [] };
-                if (!Array.isArray(stored[slug].blocks)) stored[slug].blocks = [];
-                const exists = stored[slug].blocks.some((b: { contentId: string }) => b.contentId === contentId);
+                if (!stored[articleId]) stored[articleId] = { article: "", blocks: [] };
+                if (!Array.isArray(stored[articleId].blocks)) stored[articleId].blocks = [];
+                const exists = stored[articleId].blocks.some((b: { contentId: string }) => b.contentId === contentId);
                 if (!exists) {
-                  stored[slug].blocks.push({ contentId, token: result.access_token });
+                  stored[articleId].blocks.push({ contentId, token: result.access_token });
                 }
                 localStorage.setItem("article_access_tokens", JSON.stringify(stored));
               } catch {}
@@ -105,7 +102,7 @@ export function usePasswordContentEvents() {
     });
 
     return () => cleanups.forEach(fn => fn());
-  }, []);
+  }, [articleId]);
 
   return { initPasswordContentEvents };
 }

@@ -48,6 +48,7 @@ interface PostContentProps {
   content: string;
   articleInfo?: ArticleCopyInfo;
   enableScripts?: boolean;
+  articleId?: string;
 }
 
 /** 还原懒加载图片：将 SVG 占位 src 替换为真实 data-src，并添加 loading="lazy" */
@@ -73,7 +74,7 @@ declare global {
   }
 }
 
-export function PostContent({ content, articleInfo, enableScripts = false }: PostContentProps) {
+export function PostContent({ content, articleInfo, enableScripts = false, articleId = "" }: PostContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const mermaidCleanupRef = useRef<MermaidCleanupFn>(null);
   const eventCleanupRef = useRef<(() => void) | null>(null);
@@ -99,7 +100,7 @@ export function PostContent({ content, articleInfo, enableScripts = false }: Pos
   const { normalizeLinkCardStructure } = useLinkCardNormalize();
   const { normalizeIconifyIcons } = useIconifyNormalize();
   const { initPaidContentEvents } = usePaidContentEvents();
-  const { initPasswordContentEvents } = usePasswordContentEvents();
+  const { initPasswordContentEvents } = usePasswordContentEvents(articleId);
   const { initLoginRequiredContentEvents } = useLoginRequiredEvents();
   const { initMusicPlayers, handleMusicPlayerToggle, handleMusicPlayerSeek } = useMusicPlayer();
   const { renderMermaidBlocks, initMermaidZoom } = useMermaid();

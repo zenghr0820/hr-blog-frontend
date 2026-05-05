@@ -253,8 +253,8 @@ export function PostCopyright({ article }: PostCopyrightProps) {
     // 会将 has_encrypted_blocks 置为 false，导致门控失效、token 丢失
     try {
       const stored = JSON.parse(localStorage.getItem("article_access_tokens") || "{}");
-      const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
-      const tokenData = stored[slug];
+      // 使用 article.id（公共 ID）作为 key，与后端 Cookie 命名保持一致
+      const tokenData = stored[article.id];
       if (!tokenData) return base;
 
       const tokens: string[] = [];
@@ -281,7 +281,7 @@ export function PostCopyright({ article }: PostCopyrightProps) {
     } catch {}
 
     return base;
-  }, []);
+  }, [article.id]);
 
   const articleUrl = getShareUrl();
 

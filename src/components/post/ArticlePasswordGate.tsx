@@ -48,9 +48,8 @@ export function ArticlePasswordGate({ articleId, hint, onVerified }: ArticlePass
             setShareToken(result.access_token);
             try {
               const stored = JSON.parse(localStorage.getItem("article_access_tokens") || "{}");
-              const slug = window.location.pathname.split("/").filter(Boolean).pop() || "";
-              if (!stored[slug]) stored[slug] = { article: "", blocks: [] };
-              stored[slug].article = result.access_token;
+              if (!stored[articleId]) stored[articleId] = { article: "", blocks: [] };
+              stored[articleId].article = result.access_token;
               localStorage.setItem("article_access_tokens", JSON.stringify(stored));
             } catch {}
           }

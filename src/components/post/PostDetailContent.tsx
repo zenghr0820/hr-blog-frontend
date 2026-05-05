@@ -313,6 +313,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
               content={contentWithCustomJS}
               enableScripts={hasCustomJS}
               articleInfo={articleCopyInfo}
+              articleId={article.id}
             />
 
             {/* 版权信息 */}
