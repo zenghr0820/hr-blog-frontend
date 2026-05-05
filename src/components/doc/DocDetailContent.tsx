@@ -29,7 +29,7 @@ export function DocDetailContent({ article }: DocDetailContentProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const originalPrimaryRef = useRef<string>("");
 
-  const currentDocId = article.id;
+  const currentDocId = article.url;
 
   const activeDocSeries =
     docSeries && article.doc_series_id && String(docSeries.id) === String(article.doc_series_id) ? docSeries : null;
@@ -90,20 +90,20 @@ export function DocDetailContent({ article }: DocDetailContentProps) {
   // 上一篇/下一篇
   const prevDoc = useMemo<DocArticleItem | null>(() => {
     if (!activeDocSeries?.articles?.length) return null;
-    const idx = activeDocSeries.articles.findIndex(doc => doc.id === currentDocId);
+    const idx = activeDocSeries.articles.findIndex(doc => doc.url === currentDocId);
     return idx > 0 ? activeDocSeries.articles[idx - 1] : null;
   }, [activeDocSeries, currentDocId]);
 
   const nextDoc = useMemo<DocArticleItem | null>(() => {
     if (!activeDocSeries?.articles?.length) return null;
-    const idx = activeDocSeries.articles.findIndex(doc => doc.id === currentDocId);
+    const idx = activeDocSeries.articles.findIndex(doc => doc.url === currentDocId);
     return idx >= 0 && idx < activeDocSeries.articles.length - 1 ? activeDocSeries.articles[idx + 1] : null;
   }, [activeDocSeries, currentDocId]);
 
   const handleNavigateDoc = useCallback(
-    (docId: string) => {
+    (url: string) => {
       setIsSidebarOpen(false);
-      router.push(`/doc/${docId}`);
+      router.push(url);
       scrollTo(0);
     },
     [router]

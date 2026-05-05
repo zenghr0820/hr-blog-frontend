@@ -23,7 +23,7 @@ interface ArticleCardProps {
 export function ArticleCard({ article }: ArticleCardProps) {
   return (
     <PerspectiveCard className="h-full">
-      <Link href={`/posts/${article.slug}`} className="block h-full group">
+      <Link href={article.url || `/posts/${article.slug}`} className="block h-full group">
         <div className="h-full bg-card border border-border rounded-2xl overflow-hidden transition-all duration-500 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5">
           {/* 封面图 */}
           {article.cover && (

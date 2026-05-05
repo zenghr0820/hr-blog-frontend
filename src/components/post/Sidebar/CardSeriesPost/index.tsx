@@ -14,6 +14,7 @@ import styles from "./CardSeriesPost.module.css";
 
 interface SeriesArticle {
   id: number | string;
+  url?: string;
   title: string;
   abbrlink: string;
   cover_url?: string;
@@ -123,7 +124,7 @@ export function CardSeriesPost({
       <div className={`${styles.listContainer} ${isOverflow ? styles.overflow : ""}`}>
         <div ref={listRef} className={styles.articleList}>
           {filteredArticles.map(article => (
-            <Link key={article.id} href={`/doc/${article.id}`} className={styles.articleItem}>
+            <Link key={article.id} href={article.url || `/posts/${article.abbrlink || article.id}`} className={styles.articleItem}>
               <div className={styles.cover}>
                 <SeriesPostCoverImage coverUrl={article.cover_url} defaultCover={defaultCover} alt={article.title} />
               </div>

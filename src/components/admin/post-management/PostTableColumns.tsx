@@ -62,7 +62,7 @@ export function usePostRenderCell({ defaultCover, gravatarBaseUrl, onAction }: U
         }
         case "article": {
           const coverSrc = article.cover_url || defaultCover;
-          const previewUrl = `/posts/${article.abbrlink || article.id}`;
+          const previewUrl = article.url || `/posts/${article.abbrlink || article.id}`;
           const cat = article.post_categories?.[0];
           const tag = article.post_tags?.[0];
           return (

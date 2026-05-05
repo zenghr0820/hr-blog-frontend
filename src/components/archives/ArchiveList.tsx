@@ -86,7 +86,7 @@ export function ArchiveList({ year, month, page = 1 }: ArchiveListProps) {
       //   router.push(`/doc/${article.id}`);
       //   return;
       // }
-      router.push(`/posts/${article.id}`);
+      router.push(article.url || `/posts/${article.id}`);
     },
     [router]
   );

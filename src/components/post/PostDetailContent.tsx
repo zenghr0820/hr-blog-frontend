@@ -84,7 +84,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const clearPageTitle = usePageStore(state => state.clearPageTitle);
 
   const isDoc = !!article.is_doc;
-  const currentDocId = article.id;
+  const currentDocId = article.url;
 
   const [docSeries, setDocSeries] = useState<DocSeriesWithArticles | null>(null);
   const [isDocSidebarOpen, setIsDocSidebarOpen] = useState(false);
@@ -151,10 +151,9 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   }, [isDoc, article.doc_series_id]);
 
   const handleNavigateDoc = useCallback(
-    (docId: string) => {
+    (url: string) => {
       setIsDocSidebarOpen(false);
-      router.push(`/posts/${docId}`);
-      // router.push(`/doc/${docId}`);
+      router.push(url);
       scrollTo(0);
     },
     [router]

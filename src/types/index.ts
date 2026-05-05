@@ -13,6 +13,7 @@ export interface User {
 // 文章类型
 export interface Article {
   id: string;
+  url?: string;
   title: string;
   slug: string;
   content: string;

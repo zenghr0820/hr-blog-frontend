@@ -71,7 +71,7 @@ export const FeedArticleCardNew = memo(function FeedArticleCardNew({
   const articleUrl = useMemo(() => {
     if (article.item_type === "product") return `/products/${article.id}`;
     // if (article.is_doc) return `/doc/${article.id}`;
-    return `/posts/${article.id}`;
+    return article.url || `/posts/${article.id}`;
   }, [article]);
 
   const handleClick = useCallback(() => {

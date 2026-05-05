@@ -49,6 +49,7 @@ export interface DocSeriesListParams {
 /** 文档系列中的单篇文章条目 */
 export interface DocArticleItem {
   id: string;
+  url: string;
   title: string;
   abbrlink: string;
   doc_sort: number;

@@ -135,7 +135,7 @@ export function usePostManagementPage() {
     (article: AdminArticle, key: string) => {
       switch (key) {
         case "preview":
-          window.open(`/posts/${article.abbrlink || article.id}`, "_blank");
+          window.open(article.url || `/posts/${article.abbrlink || article.id}`, "_blank");
           break;
         case "edit":
           router.push(`/admin/post-management/${article.id}/edit`);

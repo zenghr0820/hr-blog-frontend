@@ -69,7 +69,7 @@ export default function NotFound() {
       // } else {
       //   router.push(`/posts/${article.id}`);
       // }
-      router.push(`/posts/${article.id}`);
+      router.push(article.url || `/posts/${article.id}`);
     },
     [router]
   );

@@ -128,7 +128,7 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     });
   }
 
-  const articlePath = `/posts/${encodeURIComponent(String(article.abbrlink || id))}`;
+  const articlePath = article.url || `/posts/${encodeURIComponent(String(article.abbrlink || id))}`;
   return buildPageMetadata({
     title: article.title,
     absoluteTitle: true,
@@ -164,7 +164,7 @@ export default async function PostDetailPage({ params, searchParams }: { params:
   }
 
   const site = resolveSeoSiteInfo(siteConfig);
-  const articlePath = `/posts/${encodeURIComponent(String(article.abbrlink || id))}`;
+  const articlePath = article.url || `/posts/${encodeURIComponent(String(article.abbrlink || id))}`;
   const siteUrl = site.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || "";
   const jsonLd = buildArticleJsonLd(
     {

@@ -168,8 +168,8 @@ export const articleApi = {
   /**
    * 获取归档列表
    */
-  async getRandomArticle(): Promise<{ id: number; is_doc?: boolean; doc_series_id?: number }> {
-    const response = await apiClient.get<{ id: number; is_doc?: boolean; doc_series_id?: number }>(
+  async getRandomArticle(): Promise<{ id: number; url?: string; is_doc?: boolean; doc_series_id?: number }> {
+    const response = await apiClient.get<{ id: number; url?: string; is_doc?: boolean; doc_series_id?: number }>(
       `/api/public/articles/random`
     );
 

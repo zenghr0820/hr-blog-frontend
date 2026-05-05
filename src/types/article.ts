@@ -40,6 +40,7 @@ export interface PostCategory {
  */
 export interface FeedItem {
   id: string;
+  url?: string;
   item_type: "article" | "product";
   title: string;
   cover_url: string;
@@ -126,6 +127,7 @@ export interface Archive {
  */
 export interface ArticleLink {
   id: string;
+  url: string;
   title: string;
   cover_url?: string;
   abbrlink: string;
@@ -140,6 +142,7 @@ export interface ArticleLink {
  */
 export interface RecentArticle {
   id: number | string;
+  url?: string;
   title: string;
   abbrlink?: string;
   cover_url?: string;
@@ -178,6 +181,7 @@ export interface AccessRule {
 
 export interface Article {
   id: string;
+  url: string;
   created_at: string;
   updated_at: string;
   title: string;

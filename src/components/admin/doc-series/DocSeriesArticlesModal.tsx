@@ -66,7 +66,7 @@ function DocSeriesArticlesList({ series }: { series: DocSeries }) {
     <div className="flex flex-col gap-1">
       {articles.map((article, index) => {
         const created = formatDateTimeParts(article.created_at);
-        const href = `/doc/${article.abbrlink || article.id}`;
+        const href = article.url || `/posts/${article.abbrlink || article.id}`;
         return (
           <div
             key={article.id}

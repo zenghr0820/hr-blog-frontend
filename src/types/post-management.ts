@@ -15,6 +15,7 @@ import type { PostTag, PostCategory, ArticleExtraConfig } from "./article";
  */
 export interface AdminArticle {
   id: string;
+  url?: string;
   created_at: string;
   updated_at: string;
   title: string;

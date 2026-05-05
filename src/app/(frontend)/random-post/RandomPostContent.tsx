@@ -21,7 +21,7 @@ export function RandomPostContent() {
         // } else {
         //   router.replace(`/posts/${data.id}`);
         // }
-        router.replace(`/posts/${data.id}`);
+        router.replace(data.url || `/posts/${data.id}`);
       } catch {
         if (!cancelled) {
           router.replace("/");

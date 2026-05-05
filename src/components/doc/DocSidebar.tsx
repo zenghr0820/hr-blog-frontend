@@ -34,7 +34,7 @@ export function DocSidebar({ series, currentDocId, onNavigate, onCollapse }: Doc
   const siteConfig = useSiteConfigStore(useShallow(state => state.siteConfig));
 
   const ownerAvatar = siteConfig?.USER_AVATAR || siteConfig?.LOGO_URL_192x192 || "/logo.svg";
-  const ownerName = siteConfig?.frontDesk?.siteOwner?.name || siteConfig?.APP_NAME || "AnHeYu";
+  const ownerName = siteConfig?.frontDesk?.siteOwner?.name || siteConfig?.APP_NAME || "Zenghr";
 
   const docSidebarLinks = useMemo<DocSidebarLinkItem[]>(() => {
     const links = (siteConfig as Record<string, unknown>)?.sidebar as
@@ -113,9 +113,9 @@ export function DocSidebar({ series, currentDocId, onNavigate, onCollapse }: Doc
           {(series?.articles || []).map(doc => (
             <li
               key={doc.id}
-              className={cn(styles.docItem, doc.id === currentDocId && styles.docItemActive)}
+              className={cn(styles.docItem, doc.url === currentDocId && styles.docItemActive)}
               onClick={() => {
-                if (doc.id !== currentDocId) onNavigate(doc.id);
+                if (doc.url !== currentDocId) onNavigate(doc.url);
               }}
             >
               <span className={styles.docTitle}>{doc.title}</span>

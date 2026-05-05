@@ -10,6 +10,7 @@ import {
 
 interface PublicArticleItem {
   id: string | number;
+  url?: string;
   abbrlink?: string;
   created_at?: string;
   updated_at?: string;
@@ -336,9 +337,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   articlesData.list.forEach(article => {
-    const slug = String(article.abbrlink || article.id || "").trim();
-    if (!slug) return;
-    pushEntry(`/posts/${encodeURIComponent(slug)}`, parseDate(article.updated_at || article.created_at), "weekly", 0.8);
+    const path = article.url || `/posts/${encodeURIComponent(String(article.abbrlink || article.id || "").trim())}`;
+    if (!path) return;
+    pushEntry(path, parseDate(article.updated_at || article.created_at), "weekly", 0.8);
   });
 
   categories.forEach(category => {

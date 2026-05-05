@@ -146,7 +146,7 @@ export const ArticleSwiper = memo(function ArticleSwiper({
       onMouseLeave={() => setIsPaused(false)}
     >
       <div className={styles.slide}>
-        <Link href={`/posts/${currentArticle.id}`} className={styles.imageArea}>
+        <Link href={currentArticle.url || `/posts/${currentArticle.id}`} className={styles.imageArea}>
           {layerASrc && (
             <img
               src={layerASrc}
@@ -188,7 +188,7 @@ export const ArticleSwiper = memo(function ArticleSwiper({
                 animate={{ opacity: 1, [isMobile ? "x" : "y"]: 0 }}
                 transition={{ delay: 0.05, duration: 0.25, ease: "easeOut" }}
               >
-                <Link href={`/posts/${currentArticle.id}`} className={styles.title} title={currentArticle.title}>
+                <Link href={currentArticle.url || `/posts/${currentArticle.id}`} className={styles.title} title={currentArticle.title}>
                   {currentArticle.title}
                 </Link>
               </motion.div>
@@ -215,7 +215,7 @@ export const ArticleSwiper = memo(function ArticleSwiper({
                 animate={{ opacity: 1, [isMobile ? "x" : "y"]: 0 }}
                 transition={{ delay: 0.2, duration: 0.25, ease: "easeOut" }}
               >
-                <Link href={`/posts/${currentArticle.id}`} className={styles.button}>
+                <Link href={currentArticle.url || `/posts/${currentArticle.id}`} className={styles.button}>
                   查看更多
                 </Link>
               </motion.div>

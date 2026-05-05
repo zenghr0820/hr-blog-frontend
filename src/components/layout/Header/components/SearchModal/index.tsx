@@ -20,6 +20,7 @@ const loadGsap = async () => {
 
 interface SearchResult {
   id: string;
+  url?: string;
   title: string;
   snippet: string;
   author: string;
@@ -265,7 +266,7 @@ export function SearchModal({ isOpen, onClose, initialKeyword = "" }: SearchModa
       //   router.push(`/posts/${targetId}`);
       // }
       const targetId = result.abbrlink || result.id;
-      router.push(`/posts/${targetId}`);
+      router.push(result.url || `/posts/${targetId}`);
       onClose();
     },
     [router, onClose]

@@ -15,6 +15,7 @@ export interface TagStatItem {
 
 export interface TopViewedPostItem {
   id: string;
+  url?: string;
   title: string;
   views: number;
   cover_url: string;

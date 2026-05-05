@@ -162,7 +162,7 @@ export const FeedArticleCard = memo(function FeedArticleCard({
     //   router.push(`/doc/${id}`);
     // } 
     else {
-      router.push(`/posts/${id}`);
+      router.push(article.url || `/posts/${id}`);
     }
   };
 

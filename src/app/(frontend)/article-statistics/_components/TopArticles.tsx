@@ -37,7 +37,7 @@ export function TopArticles({ articles }: TopArticlesProps) {
         ) : (
           <div className={styles.articleList}>
             {safeArticles.map((article, index) => (
-              <Link key={article.id} href={`/posts/${article.id}`} className={styles.articleItem}>
+              <Link key={article.id} href={article.url || `/posts/${article.id}`} className={styles.articleItem}>
                 <span className={`${styles.rank} ${getRankClass(index)}`}>{index + 1}</span>
                 <div className={styles.articleInfo}>
                   <span className={styles.articleTitle} title={article.title}>

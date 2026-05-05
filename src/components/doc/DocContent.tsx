@@ -12,7 +12,7 @@ interface DocContentProps {
   article: Article;
   prevDoc: DocArticleItem | null;
   nextDoc: DocArticleItem | null;
-  onNavigate: (docId: string) => void;
+  onNavigate: (url: string) => void;
 }
 
 function formatDate(dateStr: string) {
@@ -60,7 +60,7 @@ export function DocContent({ article, prevDoc, nextDoc, onNavigate }: DocContent
       {(prevDoc || nextDoc) && (
         <nav className={styles.docNavFooter}>
           {prevDoc ? (
-            <div className={cn(styles.navItem, styles.navPrev)} onClick={() => onNavigate(prevDoc.id)}>
+            <div className={cn(styles.navItem, styles.navPrev)} onClick={() => onNavigate(prevDoc.url)}>
               <span className={styles.navLabel}>
                 <ChevronLeft className="w-3 h-3" />
                 上一篇
@@ -72,7 +72,7 @@ export function DocContent({ article, prevDoc, nextDoc, onNavigate }: DocContent
           )}
 
           {nextDoc ? (
-            <div className={cn(styles.navItem, styles.navNext)} onClick={() => onNavigate(nextDoc.id)}>
+            <div className={cn(styles.navItem, styles.navNext)} onClick={() => onNavigate(nextDoc.url)}>
               <span className={styles.navLabel}>
                 下一篇
                 <ChevronRight className="w-3 h-3" />
