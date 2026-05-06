@@ -130,20 +130,20 @@ export const FeedArticleCardNew = memo(function FeedArticleCardNew({
   const renderMeta = (className: string) => (
     <div className={className}>
       <span className={styles.articleDate}>
-        <Icon className={styles.metaIcon} icon="fa:calendar" />
+        <Icon className={styles.metaIcon} icon="ri:calendar-schedule-fill" width={16} height={16} />
         <span className={styles.articleMetaLabel}>发表于</span>
         <span>{formatDate(article.created_at)}</span>
       </span>
 
       <span className={styles.articleMeta}>
-        <Icon className={styles.metaIcon} icon="fa:history" />
+        <Icon className={styles.metaIcon} icon="ri:time-fill" width={16} height={16} />
         <span className={styles.articleMetaLabel}>修改于</span>
         <span>{formatDate(article.updated_at)}</span>
       </span>
 
       {firstCategory && (
         <span className={styles.articleMeta}>
-          <Icon className={styles.metaIcon} icon="fa:inbox" />
+          <Icon className={styles.metaIcon} icon="ri:discount-percent-fill" width={16} height={16} />
           <a
             href={`/categories/${firstCategory.slug || encodeURIComponent(firstCategory.name)}/`}
             className={styles.articleMetaCategories}

@@ -37,13 +37,17 @@
    ============================================ */
 .articleDate,
 .articleMeta {
+  display: inline;
   color: #858585;
   font-size: 0.9em;
+  vertical-align: middle;
 }
 
 .metaIcon {
-  display: inline-block;
+  display: inline;
   margin-right: 4px;
+  font-size: 1em;
+  vertical-align: middle;
 }
 
 .articleMetaLabel {
@@ -189,6 +193,7 @@
 
 .articleMetaWrap {
   margin: 6px 0;
+  line-height: 1rem;
 }
 
 .articleMetaWrap a:hover {
