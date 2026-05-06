@@ -13,6 +13,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
   return (
     <>
       <link rel="stylesheet" href="https://cdn.jsdmirror.com/gh/zenghr0820/Sharding-fonts/Yozai-Medium/result.css" />
+      {/* <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css" media="all" /> */}
       <div id="frontend-layout" className="frontend-layout">
         <ScrollInitializer />
         <ConsolePrinter />

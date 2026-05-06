@@ -579,6 +579,8 @@ body {
   /* 字体设置 - 与 anheyu-app 保持一致 */
   /* font-family: "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", Helvetica, "Microsoft YaHei", "微软雅黑", Arial, */
   font-family:
+    'LXGW WenKai Screen',
+    'Yozai Medium',
     'LXGW WenKai Lite',
     -apple-system,
     BlinkMacSystemFont,
@@ -1345,17 +1347,16 @@ html.dark [data-slot="content"][role="tooltip"] {
 
 /* ===================== Blog 专用 Yozai 字体 ===================== */
 /* 为 blog 布局设置 Tailwind 的 font-sans 变量 */
-#frontend-layout,
+/* #frontend-layout,
 .frontend-layout {
   --font-sans: "Yozai Medium", "LXGW WenKai Lite", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 :root:has(.frontend-layout) {
   --font-sans: "Yozai Medium", "LXGW WenKai Lite", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
+} */
 
 :root:has(.frontend-layout) body {
-  font-family: "Yozai Medium", "LXGW WenKai Lite", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   background-color: var(--background);
   background-image: var(--body-bg-grid);
   background-size: 45px 45px;
