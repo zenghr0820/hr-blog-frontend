@@ -62,12 +62,12 @@ function renderInlineTip(params: string): string {
   const theme = extractAttr(params, "theme") || "dark";
   const trigger = extractAttr(params, "trigger") || "hover";
 
-  const posClass = position === "bottom" ? " tip-bottom" : "";
+  const posClass = position === "bottom" ? " tip-bottom" : " tip-top";
   const themeClass = theme === "light" ? " tip-light" : "";
   const triggerAttr = trigger === "click" ? ' data-trigger="click"' : "";
   const triggerClass = trigger === "click" ? " tip-click" : "";
 
-  return `<span class="anzhiyu-tip-wrapper${triggerClass}"${triggerAttr}><span class="anzhiyu-tip-text">${escapeHtml(text)}</span><span class="anzhiyu-tip${posClass}${themeClass}">${escapeHtml(content)}</span></span>`;
+  return `<span class="anzhiyu-tip-wrapper${triggerClass}"><span class="anzhiyu-tip-text">${escapeHtml(text)}</span><span class="anzhiyu-tip${posClass}${themeClass}"${triggerAttr}>${escapeHtml(content)}</span></span>`;
 }
 
 const NETEASE_DECORATION_IMG =

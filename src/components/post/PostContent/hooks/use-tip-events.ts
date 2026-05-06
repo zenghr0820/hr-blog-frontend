@@ -23,7 +23,7 @@ export function useTipEvents() {
 
       if (!tipText || !tip) return;
 
-      const trigger = tip.getAttribute("data-trigger") || "hover";
+      const trigger = wrapperEl.getAttribute("data-trigger") || tip.getAttribute("data-trigger") || (wrapperEl.classList.contains("tip-click") ? "click" : "hover");
       const delay = parseInt(tip.getAttribute("data-delay") || "0", 10);
 
       const showTip = () => {
@@ -85,12 +85,12 @@ export function useTipEvents() {
           hideTimer = setTimeout(hideTip, 100);
         };
 
-        tipText.addEventListener("mouseenter", handleMouseEnter);
-        tipText.addEventListener("mouseleave", handleMouseLeave);
+        wrapperEl.addEventListener("mouseenter", handleMouseEnter);
+        wrapperEl.addEventListener("mouseleave", handleMouseLeave);
 
         tipCleanupFnsRef.current.push(() => {
-          tipText.removeEventListener("mouseenter", handleMouseEnter);
-          tipText.removeEventListener("mouseleave", handleMouseLeave);
+          wrapperEl.removeEventListener("mouseenter", handleMouseEnter);
+          wrapperEl.removeEventListener("mouseleave", handleMouseLeave);
           if (showTimer) clearTimeout(showTimer);
           if (hideTimer) clearTimeout(hideTimer);
         });

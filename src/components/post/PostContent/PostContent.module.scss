@@ -870,10 +870,14 @@
   opacity: 0.8;
 }
 
+.postContent :global(.anzhiyu-tip-wrapper.tip-click .anzhiyu-tip-text) {
+  cursor: pointer;
+}
+
 .postContent :global(.anzhiyu-tip) {
   position: absolute;
   z-index: 9999;
-  min-width: 120px;
+  width: max-content;
   max-width: 300px;
   padding: 8px 12px;
   font-size: 14px;
