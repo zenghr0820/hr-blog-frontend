@@ -187,7 +187,7 @@
 }
 
 .siteData a:hover {
-    background: var(--anzhiyu-secondbg);
+    color: var(--anzhiyu-theme);
 }
 
 .siteData>a {
@@ -205,13 +205,10 @@
 } */
 
 .headline {
-    color: var(--font-color);
-    font-size: 0.9em;
 }
 
 .lengthNum {
     margin-top: -0.32em;
-    color: var(--text-highlight-color);
     font-size: 1.4em;
     font-weight: 600;
 }
