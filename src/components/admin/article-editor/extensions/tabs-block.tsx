@@ -85,6 +85,7 @@ function TabsBlockView({ node, updateAttributes, editor, getPos }: NodeViewProps
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const activeIndex = parseInt((node.attrs.activeIndex as string) || "0", 10);
+  const tabType = (node.attrs.type as string) || "";
   const panelCount = node.content.childCount;
   const safeIdx = Math.min(Math.max(0, activeIndex), panelCount - 1);
 
@@ -238,6 +239,15 @@ function TabsBlockView({ node, updateAttributes, editor, getPos }: NodeViewProps
           <button type="button" className="editor-tabs-add" onClick={addTab} title="添加标签">
             <Plus className="w-3.5 h-3.5" />
           </button>
+
+          <button
+            type="button"
+            className={`editor-tabs-type-toggle ${tabType === "compact" ? "is-compact" : ""}`}
+            onClick={() => updateAttributes({ type: tabType === "compact" ? "" : "compact" })}
+            title={tabType === "compact" ? "切换为默认样式" : "切换为紧凑样式"}
+          >
+            {tabType === "compact" ? "紧凑" : "默认"}
+          </button>
         </div>
       </div>
 
@@ -251,7 +261,7 @@ function TabsBlockView({ node, updateAttributes, editor, getPos }: NodeViewProps
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     tabsBlock: {
-      insertTabsBlock: (attrs?: { titles?: string[]; activeIndex?: number }) => ReturnType;
+      insertTabsBlock: (attrs?: { titles?: string[]; activeIndex?: number; type?: string }) => ReturnType;
     };
   }
 }
@@ -268,6 +278,7 @@ export const TabsBlock = Node.create({
   addAttributes() {
     return {
       activeIndex: { default: "0" },
+      type: { default: "" },
     };
   },
 
@@ -283,7 +294,8 @@ export const TabsBlock = Node.create({
             const idx = Array.from(allBtns).indexOf(activeBtn);
             if (idx >= 0) activeIndex = String(idx);
           }
-          return { activeIndex };
+          const type = el.getAttribute("data-type") || (el.classList.contains("tabs-compact") ? "compact" : "");
+          return { activeIndex, type };
         },
         contentElement: ".tab-contents",
       },
@@ -292,6 +304,9 @@ export const TabsBlock = Node.create({
 
   renderHTML({ node, HTMLAttributes }) {
     const activeIndex = parseInt((node.attrs.activeIndex as string) || "0", 10);
+    const tabType = (node.attrs.type as string) || "";
+    const typeClass = tabType === "compact" ? " tabs-compact" : "";
+    const typeDataAttr = tabType ? { "data-type": tabType } : {};
 
     const navButtons: unknown[] = [];
     let index = 0;
@@ -307,7 +322,7 @@ export const TabsBlock = Node.create({
 
     return [
       "div",
-      mergeAttributes(HTMLAttributes, { class: "tabs" }),
+      mergeAttributes(HTMLAttributes, { class: `tabs${typeClass}`, ...typeDataAttr }),
       ["div", { class: "nav-tabs" }, ...navButtons],
       ["div", { class: "tab-contents" }, 0],
     ];
@@ -325,7 +340,7 @@ export const TabsBlock = Node.create({
           const titles = attrs?.titles ?? DEFAULT_PANEL_TITLES;
           return commands.insertContent({
             type: this.name,
-            attrs: { activeIndex: String(attrs?.activeIndex ?? 0) },
+            attrs: { activeIndex: String(attrs?.activeIndex ?? 0), type: attrs?.type ?? "" },
             content: titles.map(title => ({
               type: "tabPanel",
               attrs: { title },

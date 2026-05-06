@@ -21,8 +21,11 @@ export function serializeDocTabsBlocksToMarkdown(editor: Editor, turndown: Turnd
     const rawIdx = parseInt(String(node.attrs.activeIndex ?? "0"), 10);
     const safeIdx =
       panelCount > 0 ? Math.min(Math.max(0, Number.isNaN(rawIdx) ? 0 : rawIdx), panelCount - 1) : 0;
+    const tabType = String(node.attrs.type ?? "");
 
-    let md = `\n:::tabs active=${safeIdx + 1}\n`;
+    let params = `active=${safeIdx + 1}`;
+    if (tabType) params += ` type=${tabType}`;
+    let md = `\n:::tabs ${params}\n`;
     node.content.forEach((panel, _offset, idx) => {
       const title = String(panel.attrs?.title ?? `标签 ${idx + 1}`);
       const fragment = serializer.serializeFragment(panel.content);

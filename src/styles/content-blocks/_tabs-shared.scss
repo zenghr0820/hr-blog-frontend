@@ -56,4 +56,62 @@
       display: block;
     }
   }
+
+  .tabs.tabs-compact {
+    padding: 0;
+    background: var(--anzhiyu-card-bg, var(--card));
+    border: 1px solid var(--anzhiyu-card-border, var(--border));
+    border-radius: 8px;
+    box-shadow: none;
+  }
+
+  .tabs.tabs-compact > .nav-tabs {
+    padding: 0 8px;
+    margin: 0;
+    background: var(--anzhiyu-card-bg-grey, var(--muted));
+    justify-content: flex-start;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    gap: 0;
+  }
+
+  .tabs.tabs-compact > .nav-tabs > .tab {
+    padding: 8px 16px;
+    margin: 0;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    color: var(--anzhiyu-fontcolor, var(--foreground));
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    transition: color 0.3s, border-color 0.3s;
+    position: relative;
+    top: 1px;
+  }
+
+  .tabs.tabs-compact > .nav-tabs > .tab.active {
+    background: transparent;
+    border-color: var(--anzhiyu-theme, var(--primary));
+    color: var(--anzhiyu-theme, var(--primary));
+    font-weight: 600;
+    cursor: default;
+  }
+
+  .tabs.tabs-compact > .nav-tabs > .tab:not(.active):hover {
+    color: var(--anzhiyu-theme, var(--primary));
+    background: transparent;
+  }
+
+  .tabs.tabs-compact .tab-item-content {
+    padding: 0.8rem 1rem;
+    background: var(--anzhiyu-background, var(--background));
+    border: none;
+    border-radius: 0 0 8px 8px;
+    animation: fadeIn 0.3s;
+  }
+
+  .tabs.tabs-compact .tab-to-top {
+    display: none;
+  }
 }

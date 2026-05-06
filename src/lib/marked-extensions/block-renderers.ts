@@ -13,6 +13,10 @@ export type BlockRenderer = (body: string, params: string, parse: (md: string) =
 function renderTabs(body: string, params: string, parse: (md: string) => string): string {
   const activeMatch = params.match(/active=(\d+)/);
   const activeIdx = activeMatch ? parseInt(activeMatch[1], 10) - 1 : 0;
+  const typeMatch = params.match(/type=(\w+)/);
+  const tabType = typeMatch ? typeMatch[1].toLowerCase() : "";
+  const typeClass = tabType === "compact" ? " tabs-compact" : "";
+  const typeDataAttr = tabType ? ` data-type="${escapeHtml(tabType)}"` : "";
 
   const lines = body.split("\n");
   const tabs: { caption: string; content: string }[] = [];
@@ -37,7 +41,7 @@ function renderTabs(body: string, params: string, parse: (md: string) => string)
     }
   }
   if (current) tabs.push(current);
-  if (tabs.length === 0) return `<div class="tabs">${parse(body)}</div>`;
+  if (tabs.length === 0) return `<div class="tabs${typeClass}"${typeDataAttr}>${parse(body)}</div>`;
 
   const id = `tabs-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   let nav = `<ul class="nav-tabs">`;
@@ -52,7 +56,7 @@ function renderTabs(body: string, params: string, parse: (md: string) => string)
 
   nav += "</ul>";
   contents += "</div>";
-  return `<div class="tabs" id="${id}">${nav}${contents}<div class="tab-to-top"><button type="button" aria-label="scroll to top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div>`;
+  return `<div class="tabs${typeClass}" id="${id}"${typeDataAttr}>${nav}${contents}<div class="tab-to-top"><button type="button" aria-label="scroll to top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div>`;
 }
 
 /** 渲染密码保护内容块，包含锁图标、标题、预览区和密码输入区 */

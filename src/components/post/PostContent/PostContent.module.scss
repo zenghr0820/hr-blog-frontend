@@ -213,6 +213,9 @@
   border-radius: 10px;
 }
 
+.postContent :global(.tabs-compact .md-editor-code) {
+  margin: 0;
+}
 .postContent :global(.md-editor-code.is-collapsed) {
   overflow: hidden;
 }
@@ -349,6 +352,10 @@
   font-size: 16px;
   background: var(--muted);
   border-right: 1px solid var(--border);
+}
+
+.postContent :global(.tabs-compact .md-editor-code span[rn-wrapper]) {
+  display: none;
 }
 
 .postContent :global(.md-editor-code span[rn-wrapper] span) {
@@ -2013,6 +2020,11 @@
   .postContent :global(.tabs > .nav-tabs > .tab) {
     padding: 6px 12px;
     font-size: 0.9rem;
+  }
+
+  .postContent :global(.tabs.tabs-compact > .nav-tabs > .tab) {
+    padding: 6px 10px;
+    font-size: 0.85rem;
   }
 }
 

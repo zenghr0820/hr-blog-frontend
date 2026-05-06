@@ -132,8 +132,11 @@ export function registerBlockContainerRules(td: TurndownService) {
       const buttons = navTabs.querySelectorAll(".tab");
       const items = tabContents.querySelectorAll(".tab-item-content");
       const activeIndex = Array.from(buttons).findIndex((b) => b.classList.contains("active"));
+      const tabType = el.getAttribute("data-type") || (el.classList.contains("tabs-compact") ? "compact" : "");
 
-      let md = `\n:::tabs active=${activeIndex >= 0 ? activeIndex + 1 : 1}\n`;
+      let params = `active=${activeIndex >= 0 ? activeIndex + 1 : 1}`;
+      if (tabType) params += ` type=${tabType}`;
+      let md = `\n:::tabs ${params}\n`;
 
       buttons.forEach((btn, i) => {
         const caption = btn.textContent?.trim() || `Tab ${i + 1}`;
