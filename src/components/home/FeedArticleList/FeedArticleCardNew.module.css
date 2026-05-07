@@ -104,8 +104,7 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-  margin-bottom: 0.625rem;
-  break-inside: avoid;
+  margin-bottom: 0;
   background: var(--anzhiyu-card-bg);
   box-shadow: var(--anzhiyu-shadow-card);
   border-radius: 12px;
