@@ -683,7 +683,10 @@
 @media (max-width: 768px) {
   .posterDialogContent {
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
+    padding: 0.8rem;
+    max-height: calc(90vh - 60px);
+    overflow-y: auto;
   }
 }
 
@@ -699,6 +702,7 @@
   .posterPreviewSide {
     flex: 1;
     width: 100%;
+    order: 1;
   }
 }
 
@@ -715,6 +719,12 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
+@media (max-width: 480px) {
+  .posterImageWrapper {
+    max-width: 280px;
+  }
+}
+
 .posterImage {
   width: 100%;
   height: auto;
@@ -728,6 +738,12 @@
   font-size: 14px;
 }
 
+@media (max-width: 480px) {
+  .posterLoading {
+    padding: 2rem;
+  }
+}
+
 .posterActionsSide {
   flex: 1;
   display: flex;
@@ -735,6 +751,14 @@
   gap: 1.25rem;
   padding: 0.5rem 0;
   justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .posterActionsSide {
+    order: 2;
+    gap: 1rem;
+    padding: 0;
+  }
 }
 
 /* 下载按钮 */
@@ -761,4 +785,74 @@
 .downloadBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* 移动端弹窗优化 */
+@media (max-width: 768px) {
+  .dialog {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .posterDialog {
+    max-width: none;
+  }
+
+  .dialogHeader {
+    padding: 0.8rem 1rem;
+  }
+
+  .dialogHeader h3 {
+    font-size: 16px;
+  }
+
+  .sectionLabel {
+    font-size: 13px;
+    margin-bottom: 0.5rem;
+  }
+
+  .urlInput {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  /* 分享按钮横向排列 */
+  .shareButtons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .shareBtn {
+    flex: 1;
+    min-width: calc(50% - 0.25rem);
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .shareBtn svg {
+    font-size: 16px;
+  }
+
+  .actionSection {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog {
+    width: 100%;
+    max-height: 90vh;
+    border-radius: 12px 12px 0 0;
+    margin-top: auto;
+  }
+
+  .dialogOverlay {
+    align-items: flex-end;
+  }
+
+  .shareBtn {
+    min-width: 100%;
+    padding: 10px;
+  }
 }
