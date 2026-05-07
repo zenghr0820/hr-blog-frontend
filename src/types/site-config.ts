@@ -313,6 +313,12 @@ export interface SiteConfigData {
       loading?: string;
       default_rectangle?: boolean;
     };
+    countdown?: {
+      enable?: boolean | string;
+      target_date?: string;
+      target_name?: string;
+      node_types?: string;
+    };
   };
 
   // 文章配置

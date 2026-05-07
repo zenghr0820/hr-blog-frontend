@@ -24,6 +24,10 @@ const CardPoem = dynamic(() => import("@/components/home/Sidebar/CardPoem").then
   ssr: false,
 });
 
+const CardCountdown = dynamic(() => import("@/components/home/Sidebar/CardCountdown").then(m => m.CardCountdown), {
+  ssr: false,
+});
+
 interface PostSidebarProps {
   article: Article;
   recentArticles?: RecentArticle[];
@@ -42,6 +46,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
     sidebarRecentPost,
     sidebarToc,
     sidebarPoem,
+    sidebarCountdown,
   } = useSiteConfigStore(
     useShallow(s => ({
       sidebarAuthor: s.siteConfig?.sidebar?.author,
@@ -55,6 +60,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
       sidebarRecentPost: s.siteConfig?.sidebar?.recentPost,
       sidebarToc: s.siteConfig?.sidebar?.toc,
       sidebarPoem: s.siteConfig?.sidebar?.poem,
+      sidebarCountdown: s.siteConfig?.sidebar?.countdown,
     }))
   );
   const { data: categories } = useCategories();
@@ -159,6 +165,14 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
     return val === true || val === "true";
   }, [sidebarPoem]);
 
+  const countdownConfig = useMemo(() => {
+    if (!sidebarCountdown?.enable) return null;
+    return {
+      targetDate: (sidebarCountdown.target_date as string) || "",
+      targetName: (sidebarCountdown.target_name as string) || "",
+    };
+  }, [sidebarCountdown]);
+
   return (
     <aside id="post-sidebar" className={styles.postSidebar}>
       {/* 作者信息卡片 */}
@@ -172,6 +186,9 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
 
       {/* 今日诗词 */}
       {poemEnabled && <CardPoem />}
+
+      {/* 倒计时卡片 */}
+      {countdownConfig && <CardCountdown targetDate={countdownConfig.targetDate || undefined} targetName={countdownConfig.targetName || undefined} />}
 
       {/* 天气时钟 */}
       {clockConfig && <CardClock config={clockConfig} />}

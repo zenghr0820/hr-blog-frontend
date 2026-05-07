@@ -26,6 +26,10 @@ const CardClock = dynamic(() => import("./CardClock").then(m => m.CardClock), {
   ssr: false,
 });
 
+const CardCountdown = dynamic(() => import("./CardCountdown").then(m => m.CardCountdown), {
+  ssr: false,
+});
+
 export function Sidebar() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
   const { data: categories } = useCategories();
@@ -90,6 +94,15 @@ export function Sidebar() {
     };
   }, [siteConfig, ownerRectangle]);
 
+  const countdownConfig = useMemo(() => {
+    const c = siteConfig?.sidebar?.countdown;
+    if (!c?.enable) return null;
+    return {
+      targetDate: (c.target_date as string) || "",
+      targetName: (c.target_name as string) || "",
+    };
+  }, [siteConfig]);
+
   return (
     <aside className={styles.asideContent}>
       {authorInfoConfig && <AuthorInfoCardCur config={authorInfoConfig} />}
@@ -97,6 +110,7 @@ export function Sidebar() {
       <CustomSidebarBlocks />
       {welcomeConfig && <CardWelcome config={welcomeConfig} />}
       {poemEnabled && <CardPoem />}
+      {countdownConfig && <CardCountdown targetDate={countdownConfig.targetDate || undefined} targetName={countdownConfig.targetName || undefined} />}
       {clockConfig && <CardClock config={clockConfig} />}
       <StickyCards />
     </aside>

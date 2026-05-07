@@ -15,6 +15,7 @@ import {
 import { addToast } from "@heroui/react";
 import { useAuthStore } from "@/store/auth-store";
 import { broadcastSiteConfigUpdate, useSiteConfigStore } from "@/store/site-config-store";
+import { getQueryClient } from "@/providers/query-provider";
 
 interface UseSettingsReturn {
   /** 当前表单值 */
@@ -126,6 +127,10 @@ export function useSettings(categoryId: SettingCategoryId): UseSettingsReturn {
       // 强制刷新前台站点配置，确保注入的自定义代码等立即生效
       await useSiteConfigStore.getState().forceRefreshFromServer();
       broadcastSiteConfigUpdate(Object.keys(changed));
+      const countdownKeys = ["sidebar.countdown.node_types", "sidebar.countdown.enable", "sidebar.countdown.target_date", "sidebar.countdown.target_name"];
+      if (Object.keys(changed).some(k => countdownKeys.includes(k))) {
+        getQueryClient().invalidateQueries({ queryKey: ["next-holiday"] });
+      }
       addToast({ title: "保存成功", color: "success" });
       return true;
     } catch (err) {
@@ -247,6 +252,10 @@ export function useMultiSettings(categoryIds: SettingCategoryId[]) {
       // 强制刷新前台站点配置，确保注入的自定义代码等立即生效
       await useSiteConfigStore.getState().forceRefreshFromServer();
       broadcastSiteConfigUpdate(Object.keys(changed));
+      const countdownKeys = ["sidebar.countdown.node_types", "sidebar.countdown.enable", "sidebar.countdown.target_date", "sidebar.countdown.target_name"];
+      if (Object.keys(changed).some(k => countdownKeys.includes(k))) {
+        getQueryClient().invalidateQueries({ queryKey: ["next-holiday"] });
+      }
       addToast({ title: "保存成功", color: "success" });
       return true;
     } catch (err) {

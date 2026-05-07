@@ -1,0 +1,142 @@
+.cardCountdown {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  overflow: hidden;
+  background: var(--anzhiyu-card-bg);
+  border: var(--style-border);
+  border-radius: 12px;
+  box-shadow: var(--anzhiyu-shadow-card);
+  transition: box-shadow 0.3s ease;
+}
+
+.cardCountdown:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
+}
+
+.itemContent {
+  display: flex;
+}
+
+.countLeft {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-right: 0.8rem;
+  line-height: 1.5;
+  align-items: center;
+  justify-content: center;
+}
+
+.text {
+  font-size: 14px;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.name {
+  font-weight: bold;
+  font-size: 18px;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.time {
+  font-size: 30px;
+  font-weight: bold;
+  color: var(--anzhiyu-main);
+}
+
+.date {
+  font-size: 12px;
+  opacity: 0.6;
+  color: var(--anzhiyu-secondtext);
+}
+
+.countLeft::after {
+  content: "";
+  position: absolute;
+  right: -0.8rem;
+  width: 2px;
+  height: 80%;
+  background-color: var(--anzhiyu-main);
+  opacity: 0.5;
+}
+
+.countRight {
+  flex: 1;
+  margin-left: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.countItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 24px;
+}
+
+.itemName {
+  font-size: 14px;
+  margin-right: 0.8rem;
+  white-space: nowrap;
+  color: var(--anzhiyu-fontcolor);
+}
+
+.itemProgress {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+  background-color: var(--anzhiyu-background);
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  border-radius: 8px;
+  background-color: var(--anzhiyu-main);
+  transition: width 0.6s ease;
+}
+
+.percentage,
+.remaining {
+  position: absolute;
+  font-size: 12px;
+  margin: 0 6px;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.many {
+  color: #fff;
+}
+
+.remaining {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.tip {
+  font-size: 12px;
+}
+
+.cardCountdown:hover .remaining {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.cardCountdown:hover .percentage {
+  transform: translateX(-10px);
+  opacity: 0;
+}
+
+@media (max-width: 992px) {
+  .cardCountdown {
+    display: none;
+  }
+}

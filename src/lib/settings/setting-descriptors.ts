@@ -549,6 +549,10 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_WEATHER_IP_API_KEY, type: "password" },
     { backendKey: K.KEY_WEATHER_LOADING, type: "string" },
     { backendKey: K.KEY_WEATHER_DEFAULT_RECT, type: "boolean" },
+    { backendKey: K.KEY_SIDEBAR_COUNTDOWN_ENABLE, type: "boolean", defaultValue: "false" },
+    { backendKey: K.KEY_SIDEBAR_COUNTDOWN_TARGET_DATE, type: "string" },
+    { backendKey: K.KEY_SIDEBAR_COUNTDOWN_TARGET_NAME, type: "string" },
+    { backendKey: K.KEY_SIDEBAR_COUNTDOWN_NODE_TYPES, type: "string", defaultValue: "legal_holiday,lunar_festival,solar_festival,solar_term" },
   ],
   "appearance-page": [
     { backendKey: K.KEY_ENABLE_EXTERNAL_LINK_WARNING, type: "boolean" },

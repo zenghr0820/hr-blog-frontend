@@ -46,7 +46,30 @@ import {
   KEY_WEATHER_IP_API_KEY,
   KEY_WEATHER_LOADING,
   KEY_WEATHER_DEFAULT_RECT,
+  KEY_SIDEBAR_COUNTDOWN_ENABLE,
+  KEY_SIDEBAR_COUNTDOWN_TARGET_DATE,
+  KEY_SIDEBAR_COUNTDOWN_TARGET_NAME,
+  KEY_SIDEBAR_COUNTDOWN_NODE_TYPES,
 } from "@/lib/settings/setting-keys";
+
+const NODE_TYPE_OPTIONS = [
+  { key: "legal_holiday", label: "法定假期" },
+  { key: "lunar_festival", label: "民俗节日" },
+  { key: "solar_festival", label: "公历纪念日" },
+  { key: "solar_term", label: "节气" },
+] as const;
+
+const NODE_TYPE_DEFAULTS = NODE_TYPE_OPTIONS.map(o => o.key).join(",");
+
+function parseNodeTypes(raw: string | undefined): Set<string> {
+  const value = raw || NODE_TYPE_DEFAULTS;
+  const parts = value.split(",").map(s => s.trim()).filter(Boolean);
+  return parts.length > 0 ? new Set(parts) : new Set(NODE_TYPE_OPTIONS.map(o => o.key));
+}
+
+function serializeNodeTypes(types: Set<string>): string {
+  return NODE_TYPE_OPTIONS.map(o => o.key).filter(k => types.has(k)).join(",");
+}
 
 // 自定义侧边栏块字段定义
 const customSidebarFields: FieldDef[] = [
@@ -305,6 +328,54 @@ export function SidebarForm({ values, onChange, loading }: SidebarFormProps) {
             wordWrap
             description="来访者卡片上方的自定义内容，支持 HTML。例如博主自我介绍、联系方式等。留空则只显示 IP 定位欢迎信息。"
           />
+        )}
+      </SettingsSection>
+
+      {/* 倒计时卡片 */}
+      <SettingsSection title="倒计时卡片">
+        <FormSwitch
+          label="启用倒计时卡片"
+          description="在侧边栏显示倒计时卡片，展示距离目标日期的剩余天数和时间进度"
+          checked={values[KEY_SIDEBAR_COUNTDOWN_ENABLE] === "true"}
+          onCheckedChange={v => onChange(KEY_SIDEBAR_COUNTDOWN_ENABLE, String(v))}
+        />
+
+        {values[KEY_SIDEBAR_COUNTDOWN_ENABLE] === "true" && (
+          <>
+            <FormInput
+              label="目标日期"
+              type="date"
+              value={values[KEY_SIDEBAR_COUNTDOWN_TARGET_DATE]}
+              onValueChange={v => onChange(KEY_SIDEBAR_COUNTDOWN_TARGET_DATE, v)}
+              description="设置倒计时的目标日期"
+            />
+            <FormInput
+              label="目标名称"
+              placeholder="例如：元旦"
+              value={values[KEY_SIDEBAR_COUNTDOWN_TARGET_NAME]}
+              onValueChange={v => onChange(KEY_SIDEBAR_COUNTDOWN_TARGET_NAME, v)}
+              description="目标事件的显示名称"
+            />
+            <div className="space-y-3">
+              <p className="text-sm font-medium">节点类型</p>
+              <p className="text-xs text-muted-foreground">选择自动获取的日期节点类型，未配置自定义目标时显示最近的节点</p>
+              {NODE_TYPE_OPTIONS.map(opt => {
+                const enabled = parseNodeTypes(values[KEY_SIDEBAR_COUNTDOWN_NODE_TYPES]).has(opt.key);
+                return (
+                  <FormSwitch
+                    key={opt.key}
+                    label={opt.label}
+                    checked={enabled}
+                    onCheckedChange={v => {
+                      const current = parseNodeTypes(values[KEY_SIDEBAR_COUNTDOWN_NODE_TYPES]);
+                      if (v) current.add(opt.key); else current.delete(opt.key);
+                      onChange(KEY_SIDEBAR_COUNTDOWN_NODE_TYPES, serializeNodeTypes(current));
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </>
         )}
       </SettingsSection>
 

@@ -108,6 +108,11 @@ export const KEY_WEATHER_IP_API_KEY = "sidebar.weather.ip_api_key";
 export const KEY_WEATHER_LOADING = "sidebar.weather.loading";
 export const KEY_WEATHER_DEFAULT_RECT = "sidebar.weather.default_rectangle";
 
+export const KEY_SIDEBAR_COUNTDOWN_ENABLE = "sidebar.countdown.enable";
+export const KEY_SIDEBAR_COUNTDOWN_TARGET_DATE = "sidebar.countdown.target_date";
+export const KEY_SIDEBAR_COUNTDOWN_TARGET_NAME = "sidebar.countdown.target_name";
+export const KEY_SIDEBAR_COUNTDOWN_NODE_TYPES = "sidebar.countdown.node_types";
+
 // ==================== 站点服务 ====================
 export const KEY_SITE_OWNER_RECTANGLE = "site.owner.rectangle";
 
