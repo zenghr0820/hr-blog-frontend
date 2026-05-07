@@ -13,18 +13,30 @@
   gap: 0.75rem;
 }
 
-/* 双栏模式 - 网格布局（行优先排列） */
+/* 双栏模式 - 瀑布流布局（行优先排列） */
 .doubleColumnContainer {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  gap: 0.625rem;
+}
+
+.doubleColumn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   gap: 0.625rem;
 }
 
 /* 平板范围 - 恢复单栏行布局 */
 @media screen and (min-width: 769px) and (max-width: 992px) {
   .doubleColumnContainer {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 0;
+  }
+
+  .doubleColumn {
+    flex: none;
+    width: 100%;
   }
 
   .skeletonCardDouble {
@@ -47,8 +59,13 @@
 /* 移动端 - 单栏 */
 @media (max-width: 768px) {
   .doubleColumnContainer {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 0;
+  }
+
+  .doubleColumn {
+    flex: none;
+    width: 100%;
   }
 }
 

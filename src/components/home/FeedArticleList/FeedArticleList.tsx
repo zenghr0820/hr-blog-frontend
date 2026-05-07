@@ -15,6 +15,9 @@ interface FeedArticleListProps {
   pageSize?: number;
 }
 
+const COLUMN_COUNT = 2;
+const SKELETON_PER_COLUMN = 3;
+
 export function FeedArticleList({ category, tag, pageSize: propPageSize }: FeedArticleListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
@@ -43,8 +46,17 @@ export function FeedArticleList({ category, tag, pageSize: propPageSize }: FeedA
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / pageSize);
 
-  // 判断是否是最新文章（第一页第一条）
   const isNewest = (index: number) => currentPage === 1 && index === 0;
+
+  // 将文章按行优先顺序分入各列：0→左列, 1→右列, 2→左列, 3→右列 ...
+  const columns = useMemo(() => {
+    if (!isDoubleColumn) return [articles];
+    const cols: (typeof articles)[] = Array.from({ length: COLUMN_COUNT }, () => []);
+    articles.forEach((article, index) => {
+      cols[index % COLUMN_COUNT].push(article);
+    });
+    return cols;
+  }, [articles, isDoubleColumn]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -55,22 +67,39 @@ export function FeedArticleList({ category, tag, pageSize: propPageSize }: FeedA
     }
   };
 
+  // 骨架屏卡片
+  const renderSkeletonCard = (double: boolean) => (
+    <div className={cn(styles.skeletonCard, double && styles.skeletonCardDouble)}>
+      <div className={styles.skeletonCover} />
+      <div className={styles.skeletonContent}>
+        <div className={styles.skeletonTags} />
+        <div className={styles.skeletonTitle} />
+        <div className={styles.skeletonMeta} />
+      </div>
+    </div>
+  );
+
   // 加载状态 - 骨架屏
   if (isLoading) {
     return (
       <div className={styles.feedArticleList}>
-        <div className={cn(styles.articleList, isDoubleColumn && styles.doubleColumnContainer)}>
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className={cn(styles.skeletonCard, isDoubleColumn && styles.skeletonCardDouble)}>
-              <div className={styles.skeletonCover} />
-              <div className={styles.skeletonContent}>
-                <div className={styles.skeletonTags} />
-                <div className={styles.skeletonTitle} />
-                <div className={styles.skeletonMeta} />
+        {isDoubleColumn ? (
+          <div className={styles.doubleColumnContainer}>
+            {Array.from({ length: COLUMN_COUNT }, (_, colIndex) => (
+              <div key={colIndex} className={styles.doubleColumn}>
+                {Array.from({ length: SKELETON_PER_COLUMN }, (_, i) => (
+                  <div key={i}>{renderSkeletonCard(true)}</div>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.articleList}>
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i}>{renderSkeletonCard(false)}</div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -102,17 +131,39 @@ export function FeedArticleList({ category, tag, pageSize: propPageSize }: FeedA
   return (
     <div className={styles.feedArticleList}>
       {/* 文章列表 */}
-      <div className={cn(styles.articleList, isDoubleColumn && styles.doubleColumnContainer)}>
-        {articles.map((article, index) => (
-          <FeedArticleCardNew
-            key={article.id}
-            article={article}
-            isDoubleColumn={isDoubleColumn}
-            isNewest={isNewest(index)}
-            animationOrder={index}
-          />
-        ))}
-      </div>
+      {isDoubleColumn ? (
+        <div className={styles.doubleColumnContainer}>
+          {columns.map((col, colIndex) => (
+            <div key={colIndex} className={styles.doubleColumn}>
+              {col.map((article, index) => {
+                // 还原原始索引：第 colIndex 列中第 index 个元素 = index * COLUMN_COUNT + colIndex
+                const originalIndex = index * COLUMN_COUNT + colIndex;
+                return (
+                  <FeedArticleCardNew
+                    key={article.id}
+                    article={article}
+                    isDoubleColumn={isDoubleColumn}
+                    isNewest={isNewest(originalIndex)}
+                    animationOrder={originalIndex}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.articleList}>
+          {articles.map((article, index) => (
+            <FeedArticleCardNew
+              key={article.id}
+              article={article}
+              isDoubleColumn={isDoubleColumn}
+              isNewest={isNewest(index)}
+              animationOrder={index}
+            />
+          ))}
+        </div>
+      )}
 
       {/* 分页 */}
       {totalPages > 1 && (
