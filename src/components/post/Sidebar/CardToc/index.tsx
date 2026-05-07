@@ -9,7 +9,6 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { FaBars } from "react-icons/fa6";
 import { useScrollY } from "@/store";
 import styles from "./CardToc.module.css";
-import { scrollTo } from "@/store/scroll-store";
 
 interface TocItem {
   id: string;
@@ -210,7 +209,10 @@ export function CardToc({ contentHtml, collapseMode = false }: CardTocProps) {
       const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
       const targetTop = Math.min(Math.max(0, elementPosition - headerOffset), maxScrollTop);
 
-      scrollTo(targetTop);
+      window.scrollTo({
+        top: targetTop,
+        behavior: "smooth",
+      });
 
       // 清除之前的定时器
       if (scrollTimeoutRef.current) {

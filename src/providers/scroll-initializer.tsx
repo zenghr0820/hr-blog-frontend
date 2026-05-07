@@ -9,17 +9,12 @@ import { useEffect } from "react";
 import { useScrollStore } from "@/store";
 
 export function ScrollInitializer() {
+  const initialize = useScrollStore(state => state.initialize);
+
   useEffect(() => {
-    useScrollStore.setState({
-      scrollY: 0,
-      scrollPercent: 0,
-      scrollDirection: "none",
-      isAtTop: true,
-      isScrolled: false,
-      isFooterVisible: false,
-      _lastScrollY: 0,
-    });
-  }, []);
+    const cleanup = initialize();
+    return cleanup;
+  }, [initialize]);
 
   return null;
 }

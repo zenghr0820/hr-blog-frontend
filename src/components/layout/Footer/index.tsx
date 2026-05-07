@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import { Icon } from "@iconify/react";
 import { Tooltip } from "@/components/ui";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { scrollTo } from "@/store/scroll-store";
 import { apiClient } from "@/lib/api/client";
 import styles from "./Footer.module.css";
 
@@ -305,7 +304,7 @@ export function Footer() {
 
   // 返回顶部
   const scrollToTop = () => {
-    scrollTo(0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Uptime 状态文本

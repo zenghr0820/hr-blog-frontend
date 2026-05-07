@@ -3,7 +3,6 @@
 import { useCallback, useRef } from "react";
 import { useEssayList } from "@/hooks/queries/use-essays";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { scrollTo } from "@/store/scroll-store";
 import { Spinner } from "@/components/ui";
 import { BannerCard } from "@/components/common/BannerCard";
 import { CommentSection } from "@/components/post/Comment";
@@ -34,7 +33,9 @@ export function EssayPageClient() {
       : "[动态]";
 
     if (commentSectionRef.current) {
-      scrollTo(commentSectionRef.current, { offset: -80 });
+      // 计算目标位置：元素顶部位置 + 当前滚动位置 + 偏移量
+      const targetPosition = commentSectionRef.current.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: targetPosition, behavior: "smooth" });
     }
 
     setTimeout(() => {

@@ -6,7 +6,6 @@ import { FilteredArticleList } from "@/components/articles";
 import { TagFilterContext } from "@/hooks/use-tag-filter";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { useUiStore } from "@/store/ui-store";
-import { scrollTo } from "@/store/scroll-store";
 
 interface TagDetailPageContentProps {
   tagName: string;
@@ -33,7 +32,8 @@ export function TagDetailPageContent({ tagName: initialTagName, page = 1 }: TagD
       setCurrentPage(1);
       // 直接更新浏览器 URL，不触发 Next.js 路由系统（避免组件重新挂载和动画重播）
       window.history.replaceState(null, "", buildTagPath(tagName, 1));
-      scrollTo(0, { immediate: true });
+      // 滚动到顶部
+      window.scrollTo({ top: 0 });
     },
     [buildTagPath]
   );

@@ -5,7 +5,6 @@ import { useState, useMemo, useCallback, useRef, memo } from "react";
 import { useRouter } from "next/navigation";
 import { FaBagShopping, FaBook, FaFire, FaHashtag, FaThumbtack } from "react-icons/fa6";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { scrollTo } from "@/store/scroll-store";
 import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/utils/date";
 import type { FeedItem } from "@/types/article";
@@ -169,13 +168,13 @@ export const FeedArticleCard = memo(function FeedArticleCard({
   const goToCategoryPage = (e: React.MouseEvent, category: { name: string; slug?: string }) => {
     e.stopPropagation();
     router.push(`/categories/${category.slug || encodeURIComponent(category.name)}/`);
-    scrollTo(0, { immediate: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const goToTagPage = (e: React.MouseEvent, tag: { name: string; slug?: string }) => {
     e.stopPropagation();
     router.push(`/tags/${tag.slug || encodeURIComponent(tag.name)}/`);
-    scrollTo(0, { immediate: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   return (

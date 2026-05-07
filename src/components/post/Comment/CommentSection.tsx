@@ -12,7 +12,6 @@ import { Spinner, Tooltip } from "@/components/ui";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { useShallow } from "zustand/shallow";
 import { useAuthStore } from "@/store/auth-store";
-import { scrollTo } from "@/store/scroll-store";
 import { useCommentsByPath, useLikeComment, useUnlikeComment, commentKeys } from "@/hooks/queries";
 import { commentApi, type Comment, type CommentListResponse } from "@/lib/api/comment";
 import { CommentForm, type CommentFormHandle } from "./CommentForm";
@@ -212,7 +211,7 @@ export function CommentSection({ targetTitle, targetPath, className }: CommentSe
       const rect = commentElement.getBoundingClientRect();
       const absoluteTop = rect.top + window.scrollY;
       const top = absoluteTop - 80;
-      scrollTo(top);
+      window.scrollTo({ top, behavior: "smooth" });
     }
   }, []);
 
@@ -232,7 +231,7 @@ export function CommentSection({ targetTitle, targetPath, className }: CommentSe
             const rect = postCommentElement.getBoundingClientRect();
             const absoluteTop = rect.top + window.scrollY;
             const top = absoluteTop - 120;
-            scrollTo(top);
+            window.scrollTo({ top, behavior: "smooth" });
           }
         }, 100);
         return;

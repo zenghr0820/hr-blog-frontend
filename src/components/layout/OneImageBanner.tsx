@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Volume2, VolumeX, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { scrollTo } from "@/store/scroll-store";
 import { useTheme } from "@/hooks/use-theme";
 import type { PageOneImageItem } from "@/types/site-config";
 import styles from "./OneImageBanner.module.css";
@@ -277,7 +276,7 @@ export function OneImageBanner() {
     if (!mainEl) return;
     const mainTop = mainEl.getBoundingClientRect().top + window.pageYOffset;
     const offsetPosition = mainTop - 70;
-    scrollTo(offsetPosition);
+    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
   }, []);
 
   const isWechatBrowser = useCallback(() => {

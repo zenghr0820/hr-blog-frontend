@@ -7,7 +7,6 @@ import { addToast } from "@heroui/react";
 import { useUiStore } from "@/store/ui-store";
 import { useTheme } from "@/hooks/use-theme";
 import { useReadingMode } from "@/hooks/use-reading-mode";
-import { scrollTo } from "@/store/scroll-store";
 import styles from "./GlobalSidebar.module.css";
 
 export function GlobalSidebar() {
@@ -59,7 +58,7 @@ export function GlobalSidebar() {
   }, [isReadingMode, toggleReadingMode]);
 
   const handleScrollToTop = useCallback(() => {
-    scrollTo(0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   const handleScrollToComment = useCallback(() => {

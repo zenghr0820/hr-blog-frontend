@@ -4,7 +4,6 @@
 import { useState, useMemo, useCallback, useRef, memo } from "react";
 import { useRouter } from "next/navigation";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { scrollTo } from "@/store/scroll-store";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/utils/date";
 import { Icon } from "@iconify/react";
@@ -94,14 +93,14 @@ export const FeedArticleCardNew = memo(function FeedArticleCardNew({
     e.preventDefault();
     e.stopPropagation();
     router.push(`/categories/${category.slug || encodeURIComponent(category.name)}/`);
-    scrollTo(0, { immediate: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const goToTagPage = (e: React.MouseEvent, tag: { name: string; slug?: string }) => {
     e.preventDefault();
     e.stopPropagation();
     router.push(`/tags/${tag.slug || encodeURIComponent(tag.name)}/`);
-    scrollTo(0, { immediate: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const firstCategory = article.post_categories?.[0];

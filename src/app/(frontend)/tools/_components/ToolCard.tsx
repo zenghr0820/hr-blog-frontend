@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { RiChat1Fill } from "react-icons/ri";
-import { scrollTo } from "@/store/scroll-store";
 import type { ToolItem } from "./types";
 
 interface ToolCardProps {
@@ -27,7 +26,7 @@ export function ToolCard({ item }: ToolCardProps) {
     const el = document.getElementById("post-comment");
     if (el) {
       const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
-      scrollTo(top);
+      window.scrollTo({ top, behavior: "smooth" });
     }
   };
 

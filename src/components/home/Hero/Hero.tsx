@@ -14,7 +14,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui";
 import { GlowingOrb, ParticleField } from "@/components/effects";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { scrollTo } from "@/store/scroll-store";
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -146,7 +145,7 @@ export function Hero() {
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 0.8, repeat: Infinity, ease: "easeOut" }}
             className="cursor-pointer"
-            onClick={() => scrollTo(window.innerHeight)}
+            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
           >
             <Icon icon="fa6-solid:angles-down" className="w-6 h-6 text-muted-foreground/60" />
           </motion.div>

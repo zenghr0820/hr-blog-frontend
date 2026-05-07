@@ -32,7 +32,6 @@ import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { useUiStore } from "@/store/ui-store";
 import { usePageStore } from "@/store/page-store";
-import { scrollTo } from "@/store/scroll-store";
 import { setArticleMetaThemeColor, restoreMetaThemeColor } from "@/utils/theme-manager";
 import { resolvePostDefaultCoverUrl } from "@/utils/same-origin-media-url";
 import { docSeriesApi } from "@/lib/api/doc-series";
@@ -154,7 +153,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
     (url: string) => {
       setIsDocSidebarOpen(false);
       router.push(url);
-      scrollTo(0);
+      window.scrollTo({ top: 0, behavior: "instant" });
     },
     [router]
   );
@@ -165,7 +164,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
 
   // 进入文章页面时立即跳到顶部（不带缓动）
   useEffect(() => {
-    scrollTo(0, { immediate: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, [article.id]);
 
   // 设置文章标题到 Header

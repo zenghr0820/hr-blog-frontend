@@ -22,7 +22,6 @@ import { SiteThemeColorsSync } from "./SiteThemeColorsSync";
 import { ReducedMotionSync } from "./ReducedMotionSync";
 import { BackgroundImageSync } from "./BackgroundImageSync";
 import { VisitStatisticsTracker } from "./visit-statistics-tracker";
-import { LenisScroll } from "./LenisScroll";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -130,7 +129,6 @@ export function Providers({ children }: ProvidersProps) {
               <SiteThemeColorsSync />
               <ReducedMotionSync />
               <BackgroundImageSync />
-              <LenisScroll />
               <GlobalLoading />
               <VisitStatisticsTracker />
               {children}
