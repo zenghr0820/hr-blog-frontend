@@ -103,8 +103,9 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
   const { initPasswordContentEvents } = usePasswordContentEvents(articleId);
   const { initLoginRequiredContentEvents } = useLoginRequiredEvents();
   const { initMusicPlayers, handleMusicPlayerToggle, handleMusicPlayerSeek } = useMusicPlayer();
-  const { renderMermaidBlocks, initMermaidZoom } = useMermaid();
+  const { renderAndInitMermaid, shouldRerenderOnThemeChange, isDark } = useMermaid();
 
+  // 处理文章内容中的链接、标签插件等
   useEffect(() => {
     if (!contentRef.current) return;
     const currentContent = contentRef.current;
@@ -205,20 +206,12 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
     window.__musicPlayerSeek = handleMusicPlayerSeek;
     initMusicPlayers(currentContent);
 
-    if (mermaidCleanupRef.current) {
-      mermaidCleanupRef.current();
-      mermaidCleanupRef.current = null;
-    }
-    let cancelled = false;
-    renderMermaidBlocks(currentContent).then(() => {
-      if (cancelled) return;
-      mermaidCleanupRef.current = initMermaidZoom(currentContent);
-    });
+    // 渲染 Mermaid 图表并初始化缩放功能
+    renderAndInitMermaid(currentContent, mermaidCleanupRef);
 
     let fancyboxModule: typeof import("@fancyapps/ui") | null = null;
     import("@fancyapps/ui/dist/fancybox/fancybox.css");
     import("@fancyapps/ui").then(mod => {
-      if (cancelled) return;
       fancyboxModule = mod;
       mod.Fancybox.bind(currentContent, "img:not(a img)", {
         groupAll: true,
@@ -226,7 +219,6 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
     });
 
     return () => {
-      cancelled = true;
       if (eventCleanupRef.current) {
         eventCleanupRef.current();
         eventCleanupRef.current = null;
@@ -266,11 +258,19 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
     initMusicPlayers,
     handleMusicPlayerToggle,
     handleMusicPlayerSeek,
-    renderMermaidBlocks,
-    initMermaidZoom,
+    renderAndInitMermaid,
     cleanupTipEvents,
   ]);
 
+  // 主题切换时重新渲染 Mermaid 图表以适配深/浅模式
+  // 通过 next-themes 的 useTheme hook 订阅，避免直接监听 DOM 实现细节
+  useEffect(() => {
+    // 首挂时主渲染 useEffect 已经按当前主题渲染过一次，跳过避免重复
+    if (!shouldRerenderOnThemeChange(contentRef.current)) return;
+    renderAndInitMermaid(contentRef.current!, mermaidCleanupRef);
+  }, [isDark, renderAndInitMermaid, shouldRerenderOnThemeChange]);
+
+  // 浏览器不会执行通过 innerHTML 插入的 <script>，需手动重建节点
   useEffect(() => {
     if (!enableScripts || !contentRef.current) return;
     const container = contentRef.current;
