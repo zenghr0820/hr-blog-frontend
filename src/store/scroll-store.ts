@@ -27,17 +27,17 @@ interface ScrollState {
   // 内部状态（不直接暴露）
   _lastScrollY: number;
   _isInitialized: boolean;
-  _throttleTimer: ReturnType<typeof setTimeout> | null;
 
   // Actions
   initialize: () => () => void; // 返回 cleanup 函数
   _handleScroll: () => void;
 }
 
-// 节流间隔（毫秒）
-const THROTTLE_INTERVAL = 16; // ~60fps
 // 滚动方向判断阈值
 const SCROLL_DIRECTION_THRESHOLD = 60;
+
+// 模块级 rAF ID，不放入 Zustand state 避免触发订阅者重渲染
+let _rafId: number | null = null;
 
 export const useScrollStore = create<ScrollState>()((set, get) => ({
   // 初始状态
@@ -49,17 +49,16 @@ export const useScrollStore = create<ScrollState>()((set, get) => ({
   isFooterVisible: false,
   _lastScrollY: 0,
   _isInitialized: false,
-  _throttleTimer: null,
 
   // 处理滚动事件（内部方法）
   _handleScroll: () => {
-    const state = get();
+    // 使用 rAF 节流：一帧内只处理一次滚动
+    if (_rafId !== null) return;
 
-    // 节流处理
-    if (state._throttleTimer) return;
+    _rafId = requestAnimationFrame(() => {
+      _rafId = null;
 
-    const timer = setTimeout(() => {
-      set({ _throttleTimer: null });
+      const state = get();
 
       // 确保 scrollY 不为负数
       const scrollY = Math.max(0, window.scrollY);
@@ -102,9 +101,7 @@ export const useScrollStore = create<ScrollState>()((set, get) => ({
         isFooterVisible,
         _lastScrollY: scrollY,
       });
-    }, THROTTLE_INTERVAL);
-
-    set({ _throttleTimer: timer });
+    });
   },
 
   // 初始化滚动监听
@@ -131,13 +128,12 @@ export const useScrollStore = create<ScrollState>()((set, get) => ({
     // 返回清理函数
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      const timer = get()._throttleTimer;
-      if (timer) {
-        clearTimeout(timer);
+      if (_rafId !== null) {
+        cancelAnimationFrame(_rafId);
+        _rafId = null;
       }
       set({
         _isInitialized: false,
-        _throttleTimer: null,
       });
     };
   },

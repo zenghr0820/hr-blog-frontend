@@ -39,7 +39,9 @@ export const FeedArticleCardNew = memo(function FeedArticleCardNew({
   animationOrder = 0,
 }: FeedArticleCardProps) {
   const router = useRouter();
-  const siteConfig = useSiteConfigStore(state => state.siteConfig);
+  const defaultCover = useSiteConfigStore(
+    state => state.siteConfig?.post?.default?.default_cover || FALLBACK_COVER
+  );
   const [isRead, setIsRead] = useState(() => checkIsRead(article.id));
   const [imageLoaded, setImageLoaded] = useState(false);
   const [useDefaultCover, setUseDefaultCover] = useState(false);
@@ -57,8 +59,8 @@ export const FeedArticleCardNew = memo(function FeedArticleCardNew({
 
   const coverUrl = useMemo(() => {
     if (useDefaultCover) return FALLBACK_COVER;
-    return article.cover_url || siteConfig?.post?.default?.default_cover || FALLBACK_COVER;
-  }, [article.cover_url, siteConfig, useDefaultCover]);
+    return article.cover_url || defaultCover;
+  }, [article.cover_url, defaultCover, useDefaultCover]);
 
   const handleImageError = useCallback(() => {
     if (!useDefaultCover) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, memo, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-media-query";
@@ -48,14 +48,11 @@ export const ArticleSwiper = memo(function ArticleSwiper({
   const pendingUrlRef = useRef("");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isMobile = useIsMobile();
-  const siteConfig = useSiteConfigStore(state => state.siteConfig);
+  const defaultCover = useSiteConfigStore(
+    state => state.siteConfig?.post?.default?.default_cover || FALLBACK_COVER
+  );
 
   const total = articles.length;
-
-  const defaultCover = useMemo(
-    () => siteConfig?.post?.default?.default_cover || FALLBACK_COVER,
-    [siteConfig]
-  );
 
   const getCoverUrl = useCallback(
     (article: FeedItem) => {
