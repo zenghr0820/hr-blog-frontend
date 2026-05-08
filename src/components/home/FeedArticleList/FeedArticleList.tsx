@@ -5,6 +5,7 @@ import { FaFileLines, FaTriangleExclamation } from "react-icons/fa6";
 import { useFeedList } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { cn } from "@/lib/utils";
+import type { FeedItem } from "@/types/article";
 import { FeedArticleCardNew } from "./FeedArticleCardNew";
 import { Pagination } from "../Pagination";
 import styles from "./FeedArticleList.module.css";
@@ -50,10 +51,10 @@ export function FeedArticleList({ category, tag, pageSize: propPageSize }: FeedA
 
   // 将文章按行优先顺序分入各列：0→左列, 1→右列, 2→左列, 3→右列 ...
   const columns = useMemo(() => {
-    if (!isDoubleColumn) return [articles];
-    const cols: (typeof articles)[] = Array.from({ length: COLUMN_COUNT }, () => []);
+    if (!isDoubleColumn) return [articles.map((article, index) => ({ article, originalIndex: index }))];
+    const cols: { article: FeedItem; originalIndex: number }[][] = Array.from({ length: COLUMN_COUNT }, () => []);
     articles.forEach((article, index) => {
-      cols[index % COLUMN_COUNT].push(article);
+      cols[index % COLUMN_COUNT].push({ article, originalIndex: index });
     });
     return cols;
   }, [articles, isDoubleColumn]);
@@ -135,19 +136,20 @@ export function FeedArticleList({ category, tag, pageSize: propPageSize }: FeedA
         <div className={styles.doubleColumnContainer}>
           {columns.map((col, colIndex) => (
             <div key={colIndex} className={styles.doubleColumn}>
-              {col.map((article, index) => {
-                // 还原原始索引：第 colIndex 列中第 index 个元素 = index * COLUMN_COUNT + colIndex
-                const originalIndex = index * COLUMN_COUNT + colIndex;
-                return (
+              {col.map((item) => (
+                <div
+                  key={item.article.id}
+                  className={styles.cardWrapper}
+                  style={{ "--card-order": item.originalIndex } as React.CSSProperties}
+                >
                   <FeedArticleCardNew
-                    key={article.id}
-                    article={article}
+                    article={item.article}
                     isDoubleColumn={isDoubleColumn}
-                    isNewest={isNewest(originalIndex)}
-                    animationOrder={originalIndex}
+                    isNewest={isNewest(item.originalIndex)}
+                    animationOrder={item.originalIndex}
                   />
-                );
-              })}
+                </div>
+              ))}
             </div>
           ))}
         </div>

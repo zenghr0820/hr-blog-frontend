@@ -13,7 +13,7 @@
   gap: 0.75rem;
 }
 
-/* 双栏模式 - 瀑布流布局（行优先排列） */
+/* 双栏模式 - Flex 瀑布流布局（行优先排列） */
 .doubleColumnContainer {
   display: flex;
   gap: 0.625rem;
@@ -27,16 +27,24 @@
   gap: 0.625rem;
 }
 
-/* 平板范围 - 恢复单栏行布局 */
+.cardWrapper {
+  width: 100%;
+}
+
+/* 平板范围 - 单栏，用 display:contents + order 恢复自然顺序 */
 @media screen and (min-width: 769px) and (max-width: 992px) {
   .doubleColumnContainer {
+    display: flex;
     flex-direction: column;
     gap: 0;
   }
 
   .doubleColumn {
-    flex: none;
-    width: 100%;
+    display: contents;
+  }
+
+  .cardWrapper {
+    order: var(--card-order, 0);
   }
 
   .skeletonCardDouble {
@@ -56,16 +64,20 @@
   }
 }
 
-/* 移动端 - 单栏 */
+/* 移动端 - 单栏，用 display:contents + order 恢复自然顺序 */
 @media (max-width: 768px) {
   .doubleColumnContainer {
+    display: flex;
     flex-direction: column;
     gap: 0;
   }
 
   .doubleColumn {
-    flex: none;
-    width: 100%;
+    display: contents;
+  }
+
+  .cardWrapper {
+    order: var(--card-order, 0);
   }
 }
 

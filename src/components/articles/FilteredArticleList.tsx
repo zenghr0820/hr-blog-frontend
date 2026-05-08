@@ -8,9 +8,12 @@ import { useSiteConfigStore } from "@/store/site-config-store";
 import { FeedArticleCardNew } from "@/components/home/FeedArticleList/FeedArticleCardNew";
 import { Pagination } from "@/components/home";
 import { cn } from "@/lib/utils";
+import type { FeedItem } from "@/types/article";
 import styles from "@/components/home/FeedArticleList/FeedArticleList.module.css";
 
 type FilterType = "category" | "tag";
+
+const COLUMN_COUNT = 2;
 
 interface FilteredArticleListProps {
   filterType: FilterType;
@@ -50,6 +53,17 @@ export function FilteredArticleList({ filterType, filterValue, page = 1, onPageC
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / pageSize);
 
+  const isNewest = (index: number) => page === 1 && index === 0;
+
+  const columns = useMemo(() => {
+    if (!isDoubleColumn) return [feedItems.map((article, index) => ({ article, originalIndex: index }))];
+    const cols: { article: FeedItem; originalIndex: number }[][] = Array.from({ length: COLUMN_COUNT }, () => []);
+    feedItems.forEach((article, index) => {
+      cols[index % COLUMN_COUNT].push({ article, originalIndex: index });
+    });
+    return cols;
+  }, [feedItems, isDoubleColumn]);
+
   const handlePageChange = useCallback(
     (nextPage: number) => {
       if (onPageChange) {
@@ -69,18 +83,23 @@ export function FilteredArticleList({ filterType, filterValue, page = 1, onPageC
   if (isLoading) {
     return (
       <div className={styles.feedArticleList}>
-        <div className={cn(styles.articleList, isDoubleColumn && styles.doubleColumnContainer)}>
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className={cn(styles.skeletonCard, isDoubleColumn && styles.skeletonCardDouble)}>
-              <div className={styles.skeletonCover} />
-              <div className={styles.skeletonContent}>
-                <div className={styles.skeletonTags} />
-                <div className={styles.skeletonTitle} />
-                <div className={styles.skeletonMeta} />
+        {isDoubleColumn ? (
+          <div className={styles.doubleColumnContainer}>
+            {Array.from({ length: COLUMN_COUNT }, (_, colIndex) => (
+              <div key={colIndex} className={styles.doubleColumn}>
+                {Array.from({ length: 3 }, (_, i) => (
+                  <div key={i}>{renderSkeletonCard(true)}</div>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.articleList}>
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i}>{renderSkeletonCard(false)}</div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -109,19 +128,55 @@ export function FilteredArticleList({ filterType, filterValue, page = 1, onPageC
 
   return (
     <div className={styles.feedArticleList}>
-      <div className={cn(styles.articleList, isDoubleColumn && styles.doubleColumnContainer)}>
-        {feedItems.map((article, index) => (
-          <FeedArticleCardNew
-            key={article.id}
-            article={article}
-            isDoubleColumn={isDoubleColumn}
-            isNewest={page === 1 && index === 0}
-            animationOrder={index}
-          />
-        ))}
-      </div>
+      {isDoubleColumn ? (
+        <div className={styles.doubleColumnContainer}>
+          {columns.map((col, colIndex) => (
+            <div key={colIndex} className={styles.doubleColumn}>
+              {col.map((item) => (
+                <div
+                  key={item.article.id}
+                  className={styles.cardWrapper}
+                  style={{ "--card-order": item.originalIndex } as React.CSSProperties}
+                >
+                  <FeedArticleCardNew
+                    article={item.article}
+                    isDoubleColumn={isDoubleColumn}
+                    isNewest={isNewest(item.originalIndex)}
+                    animationOrder={item.originalIndex}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.articleList}>
+          {feedItems.map((article, index) => (
+            <FeedArticleCardNew
+              key={article.id}
+              article={article}
+              isDoubleColumn={isDoubleColumn}
+              isNewest={isNewest(index)}
+              animationOrder={index}
+            />
+          ))}
+        </div>
+      )}
 
       {totalPages > 1 && <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />}
+    </div>
+  );
+}
+
+function renderSkeletonCard(double: boolean) {
+  return (
+    <div className={cn(styles.skeletonCard, double && styles.skeletonCardDouble)}>
+      <div className={styles.skeletonCover} />
+      <div className={styles.skeletonContent}>
+        <div className={styles.skeletonTags} />
+        <div className={styles.skeletonTitle} />
+        <div className={styles.skeletonMeta} />
+      </div>
     </div>
   );
 }
