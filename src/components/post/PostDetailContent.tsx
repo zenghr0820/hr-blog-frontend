@@ -18,6 +18,7 @@ import { FaHashtag } from "react-icons/fa6";
 import { List, X, PanelLeftClose, Search } from "lucide-react";
 import { PostHeader } from "./PostHeader";
 import { ArticleAiSummary } from "./ArticleAiSummary";
+import { PostOutdateNotice } from "./PostOutdateNotice";
 import { PostContent } from "./PostContent";
 import { ArticlePasswordGate } from "./ArticlePasswordGate";
 import { PostCopyright } from "./PostCopyright";
@@ -285,6 +286,9 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
             {isEnabledAiSummaryShow && !isPasswordProtected && (
               <ArticleAiSummary article={article} />
             )}
+
+            {/* 文章过期通知 */}
+            <PostOutdateNotice updatedAt={article.updated_at} />
 
             {/* 密码保护门控 */}
             {isPasswordProtected && !isUnlocked ? (

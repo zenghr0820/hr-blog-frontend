@@ -330,6 +330,7 @@ export interface SiteConfigData {
       page_size?: number;
       enable_ai_summary_show?: boolean | string;
     };
+    expiration_time?: number | string;
     // 复制版权配置
     copy?: {
       enable?: boolean;

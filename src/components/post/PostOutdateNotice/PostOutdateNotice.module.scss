@@ -1,0 +1,24 @@
+.notice {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  padding: 0.6em 1em;
+  margin-bottom: 1rem;
+  color: var(--outdated-fg, #f66);
+  background-color: var(--outdated-bg, #ffe6e6);
+  border-left: 5px solid var(--outdated-border, #ff8080);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.icon {
+  flex-shrink: 0;
+  font-size: 1.1em;
+}
+
+:global([data-theme="dark"]) .notice {
+  --outdated-fg: #ff8a8a;
+  --outdated-bg: rgba(255, 107, 107, 0.1);
+  --outdated-border: #ff6b6b;
+}
