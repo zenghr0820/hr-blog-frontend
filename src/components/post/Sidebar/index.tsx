@@ -36,6 +36,7 @@ interface PostSidebarProps {
 export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) {
   const {
     sidebarAuthor,
+    sidebarSiteinfo,
     frontDeskSiteOwner,
     subTitle,
     userAvatar,
@@ -50,6 +51,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
   } = useSiteConfigStore(
     useShallow(s => ({
       sidebarAuthor: s.siteConfig?.sidebar?.author,
+      sidebarSiteinfo: s.siteConfig?.sidebar?.siteinfo,
       frontDeskSiteOwner: s.siteConfig?.frontDesk?.siteOwner,
       subTitle: s.siteConfig?.SUB_TITLE,
       userAvatar: s.siteConfig?.USER_AVATAR,
@@ -106,11 +108,11 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
       statusImg: sidebarAuthor.statusImg || "",
       skills: sidebarAuthor.skills || [],
       social: sidebarAuthor.social || {},
-      totalPostCount: 0,
+      totalPostCount: sidebarSiteinfo?.totalPostCount || 0,
       totalCategoryCount: mounted ? (categories?.length || 0) : 0,
       totalTagCount: mounted ? (tags?.length || 0) : 0,
     };
-  }, [sidebarAuthor, frontDeskSiteOwner, subTitle, userAvatar, categories, tags, mounted]);
+  }, [sidebarAuthor, sidebarSiteinfo, frontDeskSiteOwner, subTitle, userAvatar, categories, tags, mounted]);
 
   // 微信配置 - 从 sidebar.wechat 获取
   const wechatConfig = useMemo(() => {
