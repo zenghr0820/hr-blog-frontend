@@ -11,7 +11,8 @@
 import type { marked as Marked, Tokens } from "marked";
 import { escapeHtml } from "./shared-utils";
 import { resolveContainerAlias, matchContainerBlock, matchAdmonitionBlock, ADMONITION_TYPES, setContainerAliases } from "./container-parser";
-import { blockRenderers } from "./block-renderers";
+import { matchObsidianCallout, resolveCalloutType } from "./callout-parser";
+import { blockRenderers, renderCallout } from "./block-renderers";
 import { inlineSimpleTags, inlineComplexTags, renderInlineHide } from "./inline-renderers";
 
 export { setContainerAliases };
@@ -36,6 +37,39 @@ export function registerMarkedExtensions(marked: typeof Marked) {
     if (renderer) return renderer(body, params, parseInline);
     return `<div class="custom-block custom-block-${tagName}">${parseInline(body)}</div>`;
   }
+
+  marked.use({
+    extensions: [
+      {
+        name: "obsidianCallout",
+        level: "block" as const,
+        start(src: string) {
+          return src.match(/^>\s*\[!\w/m)?.index;
+        },
+        tokenizer(src: string) {
+          const match = matchObsidianCallout(src);
+          if (!match) return undefined;
+          return {
+            type: "obsidianCallout",
+            raw: match.raw,
+            calloutType: match.calloutType,
+            title: match.title,
+            fold: match.fold,
+            body: match.body,
+          };
+        },
+        renderer(token: Tokens.Generic) {
+          const { calloutType, title, fold, body } = token as Tokens.Generic & {
+            calloutType: string;
+            title: string;
+            fold: string;
+            body: string;
+          };
+          return renderCallout({ calloutType, title, fold, body }, parseInline);
+        },
+      },
+    ],
+  });
 
   marked.use({
     extensions: [

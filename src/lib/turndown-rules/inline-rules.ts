@@ -295,6 +295,35 @@ export function registerInlineRules(td: TurndownService) {
     },
   });
 
+  td.addRule("obsidianCallout", {
+    filter: (node) =>
+      (node.nodeName === "DIV" || node.nodeName === "DETAILS") &&
+      (node as HTMLElement).classList.contains("callout") &&
+      !!(node as HTMLElement).getAttribute("data-callout"),
+    replacement: (_content, node) => {
+      const el = node as HTMLElement;
+      const calloutType = el.getAttribute("data-callout") || "note";
+      const fold = el.getAttribute("data-callout-fold") || "";
+      const titleEl = el.querySelector(".callout-title-inner");
+      const title = titleEl?.textContent?.trim() || "";
+
+      let contentEl: Element | null;
+      if (el.nodeName === "DETAILS") {
+        contentEl = el.querySelector(".callout-content");
+      } else {
+        contentEl = el.querySelector(".callout-content");
+      }
+      const inner = contentEl ? td.turndown(contentEl.innerHTML.trim()) : "";
+
+      const foldPart = fold || "";
+      const titlePart = title ? ` ${title}` : "";
+      const lines = inner.split("\n");
+      const bodyLines = lines.map(line => (line.trim() ? `> ${line}` : ">"));
+
+      return `\n> [!${calloutType}]${foldPart}${titlePart}\n${bodyLines.join("\n")}\n\n`;
+    },
+  });
+
   td.addRule("admonition", {
     filter: (node) =>
       node.nodeName === "DIV" && (node as HTMLElement).classList.contains("admonition"),

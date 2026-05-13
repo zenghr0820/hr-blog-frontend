@@ -14,6 +14,7 @@ import { allInlineStyleMarks } from "./extensions/inline-styles";
 import { FoldingBlock } from "./extensions/folding-block";
 import { LinkCard } from "./extensions/link-card";
 import { CalloutBlock } from "./extensions/callout-block";
+import { ObsidianCalloutBlock } from "./extensions/obsidian-callout-block";
 import { AdmonitionBlock } from "./extensions/admonition-block";
 import { HiddenBlock } from "./extensions/hidden-block";
 import { MusicBlock } from "./extensions/music-block";
@@ -220,6 +221,7 @@ export function useArticleEditor({
       FoldingBlock,
       LinkCard,
       CalloutBlock,
+      ObsidianCalloutBlock,
       AdmonitionBlock,
       HiddenBlock,
       MusicBlock,

@@ -5,6 +5,7 @@
  */
 
 import { escapeHtml, extractAttr } from "./shared-utils";
+import { CALLOUT_ICONS, getCalloutIcon } from "./callout-icons";
 
 /** 块级渲染器函数类型：接收内容体、参数和行内解析器，返回 HTML 字符串 */
 export type BlockRenderer = (body: string, params: string, parse: (md: string) => string) => string;
@@ -236,6 +237,36 @@ function renderAdmonition(type: string): BlockRenderer {
     const titleHtml = title ? `<div class="admonition-title">${escapeHtml(title)}</div>` : "";
     return `<div class="admonition ${type}">${titleHtml}<div class="admonition-body">${parse(body)}</div></div>`;
   };
+}
+
+function toTitleCase(str: string): string {
+  return str
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+export interface CalloutRenderParams {
+  calloutType: string;
+  title: string;
+  fold: string;
+  body: string;
+}
+
+export function renderCallout(params: CalloutRenderParams, parse: (md: string) => string): string {
+  const { calloutType, title, fold, body } = params;
+  const icon = getCalloutIcon(calloutType);
+  const displayTitle = title || toTitleCase(calloutType);
+  const titleHtml = `<div class="callout-title-inner">${escapeHtml(displayTitle)}</div>`;
+  const iconHtml = `<div class="callout-title-icon">${icon}</div>`;
+  const contentHtml = parse(body);
+
+  if (fold) {
+    const isOpen = fold === "+" ? " open" : "";
+    return `<div class="callout-wrap"><details class="callout" data-callout="${escapeHtml(calloutType)}" data-callout-fold="${escapeHtml(fold)}"${isOpen}><summary class="callout-title">${iconHtml}${titleHtml}<div class="callout-fold"></div></summary><div class="callout-content">${contentHtml}</div></details></div>`;
+  }
+
+  return `<div class="callout-wrap"><div class="callout" data-callout="${escapeHtml(calloutType)}"><div class="callout-title">${iconHtml}${titleHtml}</div><div class="callout-content">${contentHtml}</div></div></div>`;
 }
 
 /** 块级渲染器注册表：容器标签名 -> 渲染函数，未匹配的标签将使用默认 custom-block 渲染 */
