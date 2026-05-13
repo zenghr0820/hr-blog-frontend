@@ -833,7 +833,7 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
     { backendKey: K.KEY_ALBUM_ABOUT_LINK, type: "string" },
   ],
   "pages-music": [
-    { backendKey: K.KEY_MUSIC_PLAYER_ENABLE, type: "boolean" },
+    { backendKey: K.KEY_MUSIC_PLAYER_ENABLE, type: "boolean", defaultValue: "true" },
     { backendKey: K.KEY_MUSIC_PLAYER_PLAYLIST_ID, type: "string" },
     { backendKey: K.KEY_MUSIC_PLAYER_CUSTOM_PLAYLIST, type: "string" },
     { backendKey: K.KEY_MUSIC_CAPSULE_CUSTOM_PLAYLIST, type: "string" },
