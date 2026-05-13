@@ -278,7 +278,7 @@
   kbd,
   samp,
   pre {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: var(--font-mono);
     font-size: 1em;
   }
 
@@ -578,15 +578,7 @@ body {
   font-size: var(--global-font-size);
   /* 字体设置 - 与 anheyu-app 保持一致 */
   /* font-family: "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", Helvetica, "Microsoft YaHei", "微软雅黑", Arial, */
-  font-family:
-    'LXGW WenKai Screen',
-    'Yozai Medium',
-    'LXGW WenKai Lite',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font);
   /* line-height: inherit; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1035,7 +1027,13 @@ html.dark [data-slot="content"][role="tooltip"] {
 
 /* ===================== AnHeYu Pro 变量映射 ===================== */
 :root {
-  --global-font-size: 0.9375rem;
+  --font: "LXGW WenKai Screen","Yozai Medium",PingFang SC,Hiragino Sans GB,Droid Sans Fallback,Microsoft YaHei,sans-serif !important;
+  --font-heading: "LXGW WenKai Screen","Yozai Medium",PingFang SC,Hiragino Sans GB,Droid Sans Fallback,Microsoft YaHei,sans-serif !important;
+  --font-mono: "LXGW WenKai Screen","Yozai Medium",PingFang SC,Hiragino Sans GB,Droid Sans Fallback,Microsoft YaHei,sans-serif !important;
+  --code-font-size: .875em;
+  --code-font-family: consolas, monaco, "Andale Mono", "Ubuntu Mono", monospace;
+
+  --global-font-size: 1rem;
   /* 主题色（从 --primary 派生，确保颜色一致性） */
   --anzhiyu-theme: var(--primary);
   --anzhiyu-theme-op: var(--primary-op);

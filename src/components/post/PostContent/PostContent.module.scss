@@ -315,7 +315,7 @@
   padding: 0;
   margin: 0;
   overflow: auto;
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: var(--font-mono);
   line-height: 1.6;
   color: var(--anzhiyu-fontcolor);
   background: var(--card);
@@ -330,7 +330,7 @@
   overflow-x: auto;
   white-space: pre;
   word-break: normal;
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: var(--font-mono);
   line-height: 1.6;
   vertical-align: bottom;
 }
@@ -346,8 +346,8 @@
   width: auto !important;
   min-width: fit-content;
   padding: 10px 8px 10px 12px;
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-  font-size: 16px;
+  font-family: var(--code-font-family);
+  font-size: var(--code-font-size);
   background: var(--muted);
   border-right: 1px solid var(--border);
 }

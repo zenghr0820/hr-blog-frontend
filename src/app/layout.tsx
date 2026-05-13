@@ -122,6 +122,7 @@ export default async function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
+        <link rel="stylesheet" href="https://cdn.jsdmirror.com/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css" media="all" />
         {webSiteJsonLd && (
           <script
             type="application/ld+json"
