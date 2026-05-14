@@ -21,10 +21,11 @@ export const STORAGE_TYPE_LABELS: Record<StoragePolicyType, string> = {
 };
 
 /** 策略标志类型 */
-export const POLICY_FLAGS = ["article_image", "comment_image", "user_avatar"] as const;
+export const POLICY_FLAGS = ["default", "article_image", "comment_image", "user_avatar"] as const;
 export type PolicyFlag = (typeof POLICY_FLAGS)[number];
 
 export const POLICY_FLAG_LABELS: Record<string, string> = {
+  default: "默认存储",
   article_image: "文章图片默认",
   comment_image: "评论图片默认",
   user_avatar: "用户头像默认",
