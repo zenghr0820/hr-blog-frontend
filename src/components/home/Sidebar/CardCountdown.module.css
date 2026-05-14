@@ -1,4 +1,5 @@
 .cardCountdown {
+  composes: anzhiyu-card-shadow from global;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -7,12 +8,6 @@
   background: var(--anzhiyu-card-bg);
   border: var(--style-border);
   border-radius: 12px;
-  box-shadow: var(--anzhiyu-shadow-card);
-  transition: box-shadow 0.3s ease;
-}
-
-.cardCountdown:hover {
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .itemContent {

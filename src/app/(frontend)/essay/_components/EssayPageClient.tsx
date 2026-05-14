@@ -8,7 +8,7 @@ import { BannerCard } from "@/components/common/BannerCard";
 import { CommentSection } from "@/components/post/Comment";
 import { MomentCard } from "./MomentCard";
 import type { EssayItem } from "@/types/essay";
-import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
+import { extractBannerConfig } from "@/lib/banner-config";
 import styles from "../essay.module.css";
 
 export function EssayPageClient() {
@@ -16,7 +16,6 @@ export function EssayPageClient() {
   
   // 使用统一的 Banner 配置提取器（essay 对应 moments）
   const bannerConfig = extractBannerConfig(siteConfig, 'essay');
-  const defaultConfig = getDefaultBannerConfig('essay');
   
   const { data, isPending, isError } = useEssayList({
     page: 1,
@@ -49,15 +48,7 @@ export function EssayPageClient() {
 
   return (
     <div className={`cardWidget ${styles.essayPage}`}>
-      <BannerCard
-        tips={bannerConfig.tips || defaultConfig.tips}
-        title={bannerConfig.title || defaultConfig.title}
-        description={bannerConfig.description || defaultConfig.description}
-        backgroundImage={bannerConfig.backgroundImage}
-        height={300}
-        buttonText={bannerConfig.buttonText}
-        buttonLink={bannerConfig.buttonLink}
-      />
+      <BannerCard bannerConfig={bannerConfig} type="essay" />
 
       {isPending && (
         <div className={styles.loading}>

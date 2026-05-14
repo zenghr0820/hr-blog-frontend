@@ -12,17 +12,11 @@
 
 /* 卡片基础样式（与 StickyCards.cardWidget 行为一致，供复用时使用） */
 .cardWidget {
+  composes: anzhiyu-card-shadow from global;
   position: relative;
   overflow: hidden;
   background: var(--anzhiyu-card-bg);
   border-radius: 12px;
-  box-shadow: var(--anzhiyu-shadow-card);
-  transition: box-shadow 0.3s ease;
-}
-
-.cardWidget:hover {
-  /* border: var(--style-border-hover); */
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 /* 响应式 - 992px 以下隐藏侧边栏 */

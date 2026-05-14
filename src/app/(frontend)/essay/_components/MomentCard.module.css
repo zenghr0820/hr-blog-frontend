@@ -1,13 +1,12 @@
 .momentItem {
+  composes: anzhiyu-card-shadow from global;
   background: var(--card-bg);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--anzhiyu-shadow-card);
   transition: all 0.3s ease;
 }
 
 .momentItem:hover {
-  box-shadow: var(--anzhiyu-shadow-card-hover);
   transform: translateY(-2px);
 }
 

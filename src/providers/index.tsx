@@ -21,6 +21,7 @@ import { DefaultThemeSync } from "./DefaultThemeSync";
 import { SiteThemeColorsSync } from "./SiteThemeColorsSync";
 import { ReducedMotionSync } from "./ReducedMotionSync";
 import { BackgroundImageSync } from "./BackgroundImageSync";
+import { PersonalizationSync } from "./PersonalizationSync";
 import { VisitStatisticsTracker } from "./visit-statistics-tracker";
 
 interface ProvidersProps {
@@ -129,6 +130,7 @@ export function Providers({ children }: ProvidersProps) {
               <SiteThemeColorsSync />
               <ReducedMotionSync />
               <BackgroundImageSync />
+              <PersonalizationSync />
               <GlobalLoading />
               <VisitStatisticsTracker />
               {children}

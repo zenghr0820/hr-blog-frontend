@@ -259,7 +259,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
   margin: 0 auto;
   line-height: 1;
 }
@@ -470,8 +470,8 @@
 /* 响应式 - 大屏幕不换行 */
 @media screen and (min-width: 1280px) {
   .footerLinkGrid {
-    padding-left: calc((100% - 1200px) / 2) !important;
-    padding-right: calc((100% - 1200px) / 2) !important;
+    padding-left: calc((100% - var(--anzhiyu-content-width)) / 2) !important;
+    padding-right: calc((100% - var(--anzhiyu-content-width)) / 2) !important;
   }
 }
 

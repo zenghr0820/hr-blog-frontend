@@ -39,6 +39,7 @@ const PRESET_PAGES: Array<{ key: PresetBannerPageKey; label: string; icon: strin
   { key: 'essay', label: '动态页面', icon: '✨' },
   { key: 'fcircle', label: '朋友圈', icon: '🌐' },
   { key: 'recent_comments', label: '最近评论', icon: '💬' },
+  { key: 'comment', label: '留言板', icon: '📝' },
   { key: 'equipment', label: '装备页面', icon: '🛠️' },
   { key: 'tools', label: '工具库页面', icon: '🔧' },
   { key: 'friend_link', label: '友链页面', icon: '🔗' },
@@ -319,10 +320,6 @@ export function BannerManagerForm({ values, onChange, loading }: BannerManagerFo
   // 现在所有 Banner 都统一存储在 banner key 中
   const storageKey = KEY_BANNER_CONFIG;
 
-  const showButtonFields = selectedTab === 'preset' 
-    ? (selectedPresetKey === 'essay' || selectedPresetKey === 'home_top')
-    : false;
-
   return (
     <div className="space-y-6">
       {/* 说明卡片 */}
@@ -551,25 +548,21 @@ export function BannerManagerForm({ values, onChange, loading }: BannerManagerFo
                   description="Banner 的背景图片，建议使用高清大图"
                 />
 
-                {showButtonFields && (
-                  <>
-                    <Input
-                      label="按钮文字（可选）"
-                      placeholder="例如：查看更多、立即体验"
-                      value={currentBanner.buttonText || ''}
-                      onValueChange={(v) => handleFieldChange('buttonText', v)}
-                      description="如果需要在 Banner 上显示按钮，请填写按钮文字"
-                    />
+                <Input
+                  label="按钮文字（可选）"
+                  placeholder="例如：查看更多、立即体验"
+                  value={currentBanner.buttonText || ''}
+                  onValueChange={(v) => handleFieldChange('buttonText', v)}
+                  description="如果需要在 Banner 上显示按钮，请填写按钮文字；留空则不显示按钮"
+                />
 
-                    <Input
-                      label="按钮链接（可选）"
-                      placeholder="/path/to/page 或 https://example.com"
-                      value={currentBanner.buttonLink || ''}
-                      onValueChange={(v) => handleFieldChange('buttonLink', v)}
-                      description="按钮点击后跳转的链接"
-                    />
-                  </>
-                )}
+                <Input
+                  label="按钮链接（可选）"
+                  placeholder="/path/to/page 或 https://example.com"
+                  value={currentBanner.buttonLink || ''}
+                  onValueChange={(v) => handleFieldChange('buttonLink', v)}
+                  description="按钮点击后跳转的链接"
+                />
               </div>
 
               {/* 预览区域 */}

@@ -1,16 +1,11 @@
 /* CardToc 目录组件样式 - 参考 anheyu-app */
 
 .cardToc {
+  composes: anzhiyu-card-shadow from global;
   padding: 1rem;
   background: var(--anzhiyu-card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: var(--anzhiyu-shadow-card);
-  transition: box-shadow 0.3s ease;
-}
-
-.cardToc:hover {
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .cardTitle {

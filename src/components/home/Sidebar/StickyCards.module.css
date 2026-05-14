@@ -9,20 +9,13 @@
 }
 
 .cardWidget {
+  composes: anzhiyu-card-shadow from global;
   position: relative;
   padding: 1rem;
   overflow: hidden;
   background: var(--anzhiyu-card-bg);
   border: var(--style-border);
   border-radius: 12px;
-  /* 与旧版一致：仅过渡边框，避免 transition: all + 大阴影产生「抬起」观感 */
-  box-shadow: var(--anzhiyu-shadow-card);
-  transition: box-shadow 0.3s ease;
-}
-
-.cardWidget:hover {
-  /* border: var(--style-border-hover); */
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 /* Section Header */

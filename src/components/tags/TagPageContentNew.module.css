@@ -1,6 +1,6 @@
 .tagPageContainer {
   margin-bottom: 20px;
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
   margin: 0 auto;
   min-height: 400px;
   padding: 50px 40px;

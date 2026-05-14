@@ -13,12 +13,6 @@ export interface ParsedAlbumConfig {
       small: number;
     };
   };
-  banner: {
-    tip: string;
-    title: string;
-    description: string;
-    background: string;
-  };
 }
 
 const DEFAULT_CONFIG: ParsedAlbumConfig = {
@@ -32,12 +26,6 @@ const DEFAULT_CONFIG: ParsedAlbumConfig = {
       medium: 3,
       small: 1,
     },
-  },
-  banner: {
-    tip: "",
-    title: "",
-    description: "",
-    background: "",
   },
 };
 
@@ -155,26 +143,6 @@ export function parseAlbumConfig(config: SiteConfigData | undefined): ParsedAlbu
     albumConfig.waterfall?.column_count ?? getConfigValue(config, "album.waterfall.column_count")
   );
 
-  const tip = String(
-    albumConfig.banner?.tip ?? getConfigValue(config, "album.banner.tip") ?? DEFAULT_CONFIG.banner.tip
-  );
-
-  const title = String(
-    albumConfig.banner?.title ?? getConfigValue(config, "album.banner.title") ?? DEFAULT_CONFIG.banner.title
-  );
-
-  const description = String(
-    albumConfig.banner?.description ??
-      getConfigValue(config, "album.banner.description") ??
-      DEFAULT_CONFIG.banner.description
-  );
-
-  const background = String(
-    albumConfig.banner?.background ??
-      getConfigValue(config, "album.banner.background") ??
-      DEFAULT_CONFIG.banner.background
-  );
-
   return {
     layoutMode,
     pageSize,
@@ -182,12 +150,6 @@ export function parseAlbumConfig(config: SiteConfigData | undefined): ParsedAlbu
     waterfall: {
       gap: waterfallGap,
       columnCount: waterfallColumnCount,
-    },
-    banner: {
-      tip,
-      title,
-      description,
-      background,
     },
   };
 }

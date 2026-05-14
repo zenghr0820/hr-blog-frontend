@@ -6,7 +6,6 @@ import { FormSwitch } from "@/components/ui/form-switch";
 import { FormSelect, FormSelectItem } from "@/components/ui/form-select";
 import { SettingsSection, SettingsFieldGroup } from "./SettingsSection";
 import { Spinner } from "@/components/ui/spinner";
-import { BannerEditor } from "./editors/BannerEditor";
 import {
   KEY_ALBUM_LAYOUT_MODE,
   KEY_ALBUM_WATERFALL_COLUMNS,
@@ -67,28 +66,6 @@ export function AlbumPageForm({ values, onChange, loading }: AlbumPageFormProps)
 
   return (
     <div className="space-y-8">
-      {/* 横幅配置 */}
-      <SettingsSection title="横幅" description="页面顶部展示区域">
-        <BannerEditor
-          prefix="album.banner"
-          values={values}
-          onChange={onChange}
-          cols={2}
-          labels={{
-            background: "背景图",
-            title: "标题",
-            description: "描述",
-            tip: "提示",
-          }}
-          placeholders={{
-            background: "横幅背景图 URL",
-            title: "相册",
-            description: "记录生活的美好瞬间",
-            tip: "分享精彩图片",
-          }}
-        />
-      </SettingsSection>
-
       {/* 布局配置 */}
       <SettingsSection title="布局" description="网格等高排列；瀑布流按原始比例参差错落">
         <div className="rounded-xl border border-border/60 bg-muted/30 p-5 shadow-[0_0_0_0.5px_rgba(0,0,0,0.04)] dark:shadow-[0_0_0_0.5px_rgba(255,255,255,0.04)]">

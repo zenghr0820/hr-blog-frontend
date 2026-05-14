@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
+import { useUiStore } from "@/store/ui-store";
 import styles from "./BackgroundImageSync.module.css";
 
 const DEFAULT_BG = "/images/bg.webp";
@@ -18,6 +19,7 @@ export function BackgroundImageSync() {
       backgroundImageDark: s.siteConfig.page?.background_image_dark,
     }))
   );
+  const isMinimalTheme = useUiStore(s => s.isMinimalTheme);
   const { resolvedTheme } = useTheme();
   const pathname = usePathname();
 
@@ -34,6 +36,11 @@ export function BackgroundImageSync() {
       return;
     }
 
+    if (isMinimalTheme) {
+      setBgUrl(null);
+      return;
+    }
+
     const enabled = backgroundImageEnable !== false && backgroundImageEnable !== "false";
     if (!enabled) {
       setBgUrl(null);
@@ -46,7 +53,7 @@ export function BackgroundImageSync() {
       : backgroundImage || DEFAULT_BG;
 
     setBgUrl(bg);
-  }, [isLoaded, backgroundImageEnable, backgroundImage, backgroundImageDark, resolvedTheme, isAdmin]);
+  }, [isLoaded, backgroundImageEnable, backgroundImage, backgroundImageDark, resolvedTheme, isAdmin, isMinimalTheme]);
 
   if (!bgUrl) return null;
 

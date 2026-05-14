@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useCallback, useMemo } from "react";
+import { useEffect, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { Icon } from "@iconify/react";
 import { Tooltip } from "@/components/ui";
+import { FormColorPicker } from "@/components/ui/form-color-picker";
 import { cn } from "@/lib/utils";
 import { addToast } from "@heroui/react";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -33,9 +34,19 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
   const isMusicPlayerVisible = useUiStore(state => state.isMusicPlayerVisible);
   const isSidebarVisible = useUiStore(state => state.isSidebarVisible);
   const toggleSidebar = useUiStore(state => state.toggleSidebar);
+  const isMinimalTheme = useUiStore(state => state.isMinimalTheme);
+  const toggleMinimalTheme = useUiStore(state => state.toggleMinimalTheme);
+  const customPrimaryColor = useUiStore(state => state.customPrimaryColor);
+  const setCustomPrimaryColor = useUiStore(state => state.setCustomPrimaryColor);
+  const resetPersonalization = useUiStore(state => state.resetPersonalization);
+  const contentWidth = useUiStore(state => state.contentWidth);
+  const setContentWidth = useUiStore(state => state.setContentWidth);
+
+  const [isPersonalizationOpen, setIsPersonalizationOpen] = useState(false);
 
   const isDarkMode = mounted && isDark;
 
+  const hasPersonalizationChanges = isMinimalTheme || customPrimaryColor !== null || contentWidth !== "1200";
   // 获取标签数据
   const { data: tags = [] } = useTags();
 
@@ -131,13 +142,24 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
-        onClose();
+        if (isPersonalizationOpen) {
+          setIsPersonalizationOpen(false);
+        } else {
+          onClose();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isPersonalizationOpen]);
+
+  // 中控台关闭时同步关闭个性化面板
+  useEffect(() => {
+    if (!isOpen) {
+      setIsPersonalizationOpen(false);
+    }
+  }, [isOpen]);
 
   // 处理空白区域点击关闭（用于所有可能有空白区域的容器）
   const handleBlankClick = useCallback(
@@ -149,6 +171,45 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
     },
     [isOpen, onClose]
   );
+
+  const handleMinimalThemeToggle = useCallback(() => {
+    toggleMinimalTheme();
+    addToast({
+      title: isMinimalTheme ? "简洁主题已关闭" : "简洁主题已开启",
+      color: isMinimalTheme ? "default" : "success",
+      timeout: 2000,
+    });
+  }, [isMinimalTheme, toggleMinimalTheme]);
+
+  const handleColorChange = useCallback(
+    (color: string) => {
+      setCustomPrimaryColor(color);
+      addToast({
+        title: "主题色已更新",
+        color: "success",
+        timeout: 2000,
+      });
+    },
+    [setCustomPrimaryColor]
+  );
+
+  const handleResetColor = useCallback(() => {
+    setCustomPrimaryColor(null);
+    addToast({
+      title: "主题色已恢复默认",
+      color: "default",
+      timeout: 2000,
+    });
+  }, [setCustomPrimaryColor]);
+
+  const handleResetAll = useCallback(() => {
+    resetPersonalization();
+    addToast({
+      title: "个性化设置已重置",
+      color: "default",
+      timeout: 2000,
+    });
+  }, [resetPersonalization]);
 
   return (
     <div className={cn(styles.console, isOpen && styles.show)}>
@@ -378,7 +439,107 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
               </button>
             </div>
           </Tooltip>
+
+          <Tooltip
+            content="个性化设置"
+            placement="top"
+            delay={300}
+            closeDelay={0}
+            classNames={{ content: "custom-tooltip-content" }}
+          >
+            <div className={cn(styles.consoleBtnItem, hasPersonalizationChanges && styles.on)}>
+              <button
+                className={styles.personalizationSwitch}
+                aria-label="个性化设置"
+                onClick={() => setIsPersonalizationOpen(prev => !prev)}
+              >
+                <Icon icon="solar:palette-bold" width={24} height={24} />
+              </button>
+            </div>
+          </Tooltip>
         </div>
+
+        {/* 个性化设置面板 */}
+        {isPersonalizationOpen && (
+          <div className={styles.personalizationPanel}>
+            <div className={styles.personalizationHeader}>
+              <span className={styles.personalizationTitle}>个性化设置</span>
+              <button
+                className={styles.personalizationClose}
+                onClick={() => setIsPersonalizationOpen(false)}
+                aria-label="关闭个性化设置"
+              >
+                <Icon icon="ri:close-line" width={20} height={20} />
+              </button>
+            </div>
+
+            <div className={styles.personalizationBody}>
+              <div className={styles.personalizationRow}>
+                <div className={styles.personalizationLabel}>
+                  <Icon icon="solar:minimalistic-magnifer-bold" width={16} height={16} />
+                  <span>简洁主题</span>
+                </div>
+                <button
+                  className={cn(styles.toggleSwitch, isMinimalTheme && styles.toggleSwitchOn)}
+                  onClick={handleMinimalThemeToggle}
+                  aria-label="简洁主题开关"
+                >
+                  <span className={styles.toggleSwitchThumb} />
+                </button>
+              </div>
+
+              <div className={styles.personalizationSection}>
+                <div className={styles.personalizationLabel}>
+                  <Icon icon="solar:pallete-2-bold" width={16} height={16} />
+                  <span>主题颜色</span>
+                </div>
+                <div className={styles.colorPickerRow}>
+                  <FormColorPicker
+                    value={customPrimaryColor || "#3B82F6"}
+                    onChange={handleColorChange}
+                    triggerAriaLabel="选择主题颜色"
+                  />
+                  <span className={styles.colorPickerHint}>取色器</span>
+                  {customPrimaryColor && (
+                    <button className={styles.customColorReset} onClick={handleResetColor}>
+                      重置
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.personalizationSection}>
+                <div className={styles.personalizationLabel}>
+                  <Icon icon="solar:monitor-bold" width={16} height={16} />
+                  <span>内容宽度</span>
+                </div>
+                <div className={styles.widthToggleGroup}>
+                  <button
+                    className={cn(styles.widthToggleBtn, contentWidth === "1200" && styles.widthToggleBtnActive)}
+                    onClick={() => setContentWidth("1200")}
+                    aria-label="1200px 宽度"
+                  >
+                    标准
+                  </button>
+                  <button
+                    className={cn(styles.widthToggleBtn, contentWidth === "1400" && styles.widthToggleBtnActive)}
+                    onClick={() => setContentWidth("1400")}
+                    aria-label="1400px 宽度"
+                  >
+                    宽屏
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.personalizationFooter}>
+              <button className={styles.resetAllBtn} onClick={handleResetAll}>
+                <Icon icon="ri:refresh-line" width={14} height={14} />
+                恢复默认
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 遮罩 */}

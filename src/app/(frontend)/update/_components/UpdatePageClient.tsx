@@ -150,11 +150,13 @@ export function UpdatePageClient() {
   return (
     <div className="w-full max-w-[1400px] mx-auto px-6 py-8 space-y-6">
       <BannerCard
-        tips="更新日志"
-        title="更新日志"
-        description="每一次更新，都是一次成长"
-        backgroundImage={DEFAULT_BANNER_IMAGE}
-        height={300}
+        bannerConfig={{
+          tips: "更新日志",
+          title: "更新日志",
+          description: "每一次更新，都是一次成长",
+          backgroundImage: DEFAULT_BANNER_IMAGE,
+          height: 300,
+        }}
       />
 
       <div className="space-y-6">

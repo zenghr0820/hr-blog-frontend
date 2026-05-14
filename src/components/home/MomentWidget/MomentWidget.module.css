@@ -1,16 +1,16 @@
 .momentWidget {
   margin: 0 auto 20px;
   padding: 0 1.5rem;
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
 }
 
 .momentContainer {
+  composes: anzhiyu-card-shadow from global;
   width: 100%;
   height: 50px;
   display: flex;
   align-items: center;
   background: var(--anzhiyu-card-bg);
-  box-shadow: var(--anzhiyu-shadow-card);
   transition: all 0.3s;
   border-radius: 8px;
   text-decoration: none;
@@ -19,7 +19,6 @@
 }
 
 .momentContainer:hover {
-  box-shadow: var(--anzhiyu-shadow-card-hover);
   .momentContent{
     color: var(--anzhiyu-theme);
   }

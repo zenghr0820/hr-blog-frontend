@@ -157,6 +157,7 @@
 }
 
 .commentThreadItem {
+  composes: anzhiyu-card-shadow from global;
   /* background: var(--comment-item-bg, var(--card));
   border: var(--comment-item-border, 1px solid var(--border));
   border-radius: var(--comment-item-radius, 12px);
@@ -169,12 +170,7 @@
   margin-bottom: 20px;
   background-color: var(--comment-item-bg, var(--card));
   border: var(--style-border-always);
-  box-shadow: var(--anzhiyu-shadow-card);
   transition: border .3s ease-in-out,box-shadow .3s ease-in-out
-}
-
-.commentThreadItem:hover {
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .commentThreadItem:first-child .commentThreadDivider {

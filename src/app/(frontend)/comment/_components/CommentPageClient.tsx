@@ -21,15 +21,7 @@ export function CommentPageClient() {
       <div className="main-content">
         <div className={`cardWidget ${styles.commentPageContent}`}>
           {hasBanner && (
-            <BannerCard
-              tips={bannerConfig.tips || "留言板"}
-              title={bannerConfig.title || "Message"}
-              description={bannerConfig.description || "欢迎在这里留下你的足迹"}
-              backgroundImage={bannerConfig.backgroundImage}
-              height={300}
-              buttonText={bannerConfig.buttonText}
-              buttonLink={bannerConfig.buttonLink}
-            />
+            <BannerCard bannerConfig={bannerConfig} type="comment" />
           )}
           
           <div>

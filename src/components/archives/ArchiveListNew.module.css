@@ -1,16 +1,12 @@
 /* ArchiveListNew - 时间线样式归档列表 */
 
 .archive {
+  composes: anzhiyu-card-shadow from global;
   position: relative;
   padding: 50px 40px;
   border-radius: 12px;
   background-color: var(--anzhiyu-card-bg);
-  box-shadow: var(--anzhiyu-shadow-card);
   transition: all .3s;
-}
-
-.archive:hover {
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .articleSort {

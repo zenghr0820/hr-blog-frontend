@@ -101,12 +101,12 @@
    瀑布流布局（双栏）
    ============================================ */
 .postItems {
+  composes: anzhiyu-card-shadow from global;
   position: relative;
   overflow: hidden;
   width: 100%;
   margin-bottom: 0;
   background: var(--anzhiyu-card-bg);
-  box-shadow: var(--anzhiyu-shadow-card);
   border-radius: 12px;
   transition: all 0.3s ease-in-out;
 
@@ -120,10 +120,6 @@
 
 .postItems:active {
   transform: scale(0.97);
-}
-
-.postItems:hover {
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .postItems:hover .postBg {
@@ -214,13 +210,13 @@
    单列布局
    ============================================ */
 .singleColumnItem {
+  composes: anzhiyu-card-shadow from global;
   display: flex;
   flex-direction: row;
   overflow: hidden;
   width: 100%;
   margin-bottom: 16px;
   background: var(--anzhiyu-card-bg);
-  box-shadow: var(--anzhiyu-shadow-card);
   border-radius: 12px;
   transition: all 0.3s ease-in-out;
 
@@ -234,10 +230,6 @@
 
 .singleColumnItem:active {
   transform: scale(0.97);
-}
-
-.singleColumnItem:hover {
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .singleColumnItem:hover .postBg {

@@ -395,12 +395,6 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
 
       {/* 移动端目录抽屉 */}
       <aside className={cn(styles.mobileTocDrawer, isTocOpen && styles.mobileTocDrawerOpen)}>
-        <div className={styles.mobileTocDrawerHeader}>
-          <span className={styles.mobileTocDrawerTitle}>目录</span>
-          <button className={styles.mobileTocDrawerClose} onClick={closeTocDrawer}>
-            <X className="w-4 h-4" />
-          </button>
-        </div>
         <div className={styles.mobileTocDrawerBody}>
           <CardToc
             contentHtml={unlockedContent ?? article.content_html ?? ""}

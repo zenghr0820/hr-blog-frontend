@@ -90,7 +90,7 @@
   align-items: center;
   justify-content: center;
   width: 100dvw;
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
   max-height: 800px;
   padding-top: 30px;
   color: var(--foreground);
@@ -567,5 +567,232 @@
   .cardArchiveListItem {
     flex: 0 0 100%;
     height: 82px;
+  }
+}
+
+/* 个性化设置面板 */
+.personalizationPanel {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  z-index: 10020;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  transform: translateX(-50%);
+  animation: personalizationSlideUp 0.25s ease-out;
+}
+
+@keyframes personalizationSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.personalizationHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.personalizationTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.personalizationClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted-foreground);
+  background: none;
+  border: none;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.personalizationClose:hover {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.personalizationBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.personalizationRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.personalizationLabel {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.personalizationSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Toggle Switch */
+.toggleSwitch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  padding: 0;
+  cursor: pointer;
+  background: var(--border);
+  border: none;
+  border-radius: 12px;
+  transition: background 0.3s;
+}
+
+.toggleSwitchOn {
+  background: var(--primary);
+}
+
+.toggleSwitchThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s;
+}
+
+.toggleSwitchOn .toggleSwitchThumb {
+  transform: translateX(20px);
+}
+
+/* Color Picker Row */
+.colorPickerRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.colorPickerHint {
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.customColorReset {
+  margin-left: auto;
+  height: 32px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition:
+    background 0.2s,
+    opacity 0.2s;
+}
+
+.customColorReset:hover {
+  background: var(--border);
+}
+
+/* Width Toggle Group */
+.widthToggleGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.widthToggleBtn {
+  flex: 1;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.widthToggleBtn:hover {
+  border-color: var(--primary);
+}
+
+.widthToggleBtnActive {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.widthToggleBtnActive:hover {
+  opacity: 0.9;
+}
+
+/* Footer */
+.personalizationFooter {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.resetAllBtn {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 36px;
+  padding: 0;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.resetAllBtn:hover {
+  color: var(--foreground);
+  border-color: var(--foreground);
+}
+
+@media (max-width: 768px) {
+  .personalizationPanel {
+    bottom: 90px;
+    width: calc(100vw - 24px);
   }
 }

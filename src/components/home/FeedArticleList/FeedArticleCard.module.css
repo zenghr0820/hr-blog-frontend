@@ -1,6 +1,7 @@
 /* FeedArticleCard - 文章卡片组件 */
 
 .recentPostItem {
+  composes: anzhiyu-card-shadow from global;
   position: relative;
   display: flex;
   flex-direction: row;
@@ -10,7 +11,6 @@
   cursor: pointer;
   background: var(--anzhiyu-card-bg);
   /* border: var(--style-border); */
-  box-shadow: var(--anzhiyu-shadow-card);
   border-radius: 12px;
   transition: all 0.3s ease-in-out;
 
@@ -38,11 +38,6 @@
 
 .recentPostItem:active {
   transform: scale(0.97);
-}
-
-.recentPostItem:hover {
-  /* border: var(--style-border-hover); */
-  box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 
 .recentPostItem:hover .postBg {

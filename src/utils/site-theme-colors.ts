@@ -31,7 +31,7 @@ function expandToHex6(hex: string): string | null {
   return `#${to(rgb.r)}${to(rgb.g)}${to(rgb.b)}`;
 }
 
-function applyPrimaryWithOps(root: HTMLElement, hex: string): boolean {
+export function applyPrimaryWithOps(root: HTMLElement, hex: string): boolean {
   const normalized = expandToHex6(hex);
   if (!normalized) return false;
   const rgb = parseHexRgb(normalized);

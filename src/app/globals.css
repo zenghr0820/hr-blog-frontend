@@ -993,17 +993,22 @@ html.dark [data-slot="content"][role="tooltip"] {
   box-shadow: 0 4px 14px 0 rgb(0 0 0 / 25%), 0 0 0 1px var(--border) !important;
 }
 
+/* Admin 后台暗色模式下覆盖 card-bg */
+html.dark .admin-layout {
+  --anzhiyu-card-bg: rgba(35, 37, 58, 0.95);
+}
+
 /* 即刻条容器 */
 .essay-bar-wrapper {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
   margin: 0 auto;
 }
 
 /* 首页轮播容器 */
 .post-swiper-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
   margin: 0 auto;
   overflow: hidden;
   user-select: none;
@@ -1012,7 +1017,7 @@ html.dark [data-slot="content"][role="tooltip"] {
 /* 首页顶部区域容器 */
 .post-home-top-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
   /* padding: 0 1.5rem; */
   margin: 0 auto;
   overflow: hidden;
@@ -1089,6 +1094,7 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-card-bg-op: var(--anzhiyu-black-op);
   --anzhiyu-card-bg-none: rgb(255 255 255 / 0%);
   --anzhiyu-card-bg-grey: #f0f2f5;
+  --anzhiyu-content-width: 1200px;
   --anzhiyu-card-btn-bg: #edf0f7;
   --anzhiyu-card-border: #e3e8f7;
   --anzhiyu-ahoverbg: #f7f7fa;
@@ -1131,8 +1137,8 @@ html.dark [data-slot="content"][role="tooltip"] {
   --anzhiyu-shadow-nav: 0 5px 12px -5px rgb(102 68 68 / 5%);
   --anzhiyu-shadow-lightblack: 0 5px 12px -5px rgb(102 68 68 / 0%);
   --anzhiyu-shadow-light2black: 0 5px 12px -5px rgb(102 68 68 / 0%);
-  --anzhiyu-shadow-card: 0 3px 8px 6px rgba(7, 17, 27, 0.09);
-  --anzhiyu-shadow-card-hover: 0 3px 8px 6px rgba(7, 17, 27, 0.2);
+  --anzhiyu-shadow-card: 0 3px 8px 6px rgba(7, 17, 27, 0.05);
+  --anzhiyu-shadow-card-hover: 0 3px 8px 6px rgba(7, 17, 27, 0.09);
   
 
   /* 边框样式 */
@@ -1302,12 +1308,19 @@ html.dark [data-slot="content"][role="tooltip"] {
   --footer-wrap-bg:  linear-gradient(0deg, #202020, rgba(24, 40, 72, 0));
 }
 
+/* ===================== 简洁主题阴影覆盖 ===================== */
+/* 简洁主题下移除所有卡片阴影，通过 CSS 变量覆盖实现，无需逐个修改组件 */
+html.minimal-theme {
+  /* --anzhiyu-shadow-card-hover: none;
+  --anzhiyu-card-bg: var(--card-bg); */
+}
+
 /* ===================== Content Inner 主内容区布局 ===================== */
 .content-inner {
   display: flex;
   gap: 0.625rem;
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
   padding: 0.5rem 1.5rem 1rem;
   margin: 0 auto;
 }
@@ -1355,9 +1368,9 @@ html.dark [data-slot="content"][role="tooltip"] {
 } */
 
 :root:has(.frontend-layout) body {
-  background-color: var(--background);
+  background-color: var(--card);
   background-image: var(--body-bg-grid);
-  background-size: 45px 45px;
+  background-size: 35px 35px;
   transition: background-color 0.3s, background-image 0.3s;
 }
 
@@ -1860,6 +1873,7 @@ body.reading-mode .exit-readmode:hover {
 }
 
 /* ===================== cardWidget 统一样式 ===================== */
+/* cardWidget 复用公共阴影样式，简洁主题下通过 CSS 变量覆盖自动去除阴影 */
 .cardWidget {
   position: relative;
   overflow: hidden;
@@ -1870,6 +1884,20 @@ body.reading-mode .exit-readmode:hover {
 }
 
 .cardWidget:hover {
+  box-shadow: var(--anzhiyu-shadow-card-hover);
+}
+
+/* ===================== 卡片阴影公共样式 ===================== */
+/* 使用方式：在 CSS Module 中通过 composes 引入，或直接在 className 中添加全局类 */
+/* .anzhiyu-card-shadow — 卡片默认阴影 + hover 阴影过渡 */
+/* 简洁主题下通过 CSS 变量覆盖自动去除阴影 */
+/* 注意：全局 .cardWidget 已内置相同阴影逻辑，使用 cardWidget 的组件无需再添加此类 */
+.anzhiyu-card-shadow {
+  box-shadow: var(--anzhiyu-shadow-card);
+  transition: box-shadow 0.3s ease;
+}
+
+.anzhiyu-card-shadow:hover {
   box-shadow: var(--anzhiyu-shadow-card-hover);
 }
 

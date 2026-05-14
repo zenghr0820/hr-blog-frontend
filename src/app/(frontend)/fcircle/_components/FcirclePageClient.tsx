@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { BannerCard } from "@/components/common/BannerCard";
 import { useSiteConfigStore } from "@/store/site-config-store";
-import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
+import { extractBannerConfig } from "@/lib/banner-config";
 import { fcircleApi } from "@/lib/api/fcircle";
 import type { FCircleMoment, FCircleStatistics, LinkInfo } from "@/types/fcircle";
 import { CommentSection } from "@/components/post/Comment";
@@ -130,7 +130,6 @@ export function FcirclePageClient() {
 
   // 使用统一的 Banner 配置提取器
   const bannerConfig = extractBannerConfig(siteConfig, 'fcircle');
-  const defaultConfig = getDefaultBannerConfig('fcircle');
 
   useEffect(() => {
     const data = loadFishingData();
@@ -326,13 +325,7 @@ export function FcirclePageClient() {
     <>
       <div className={`cardWidget ${styles.fcircle}`}>
 
-        <BannerCard
-            tips={bannerConfig.tips || defaultConfig.tips}
-            title={bannerConfig.title || defaultConfig.title}
-            description={bannerConfig.description || defaultConfig.description}
-            backgroundImage={bannerConfig.backgroundImage}
-            height={300}
-        />
+        <BannerCard bannerConfig={bannerConfig} type="fcircle" />
 
         <div className={styles.momentsList}>
           <div className={styles.randomPostContainer}>

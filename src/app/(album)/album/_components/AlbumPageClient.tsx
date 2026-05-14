@@ -10,7 +10,7 @@ import { albumPublicApi } from "@/lib/api/album-public";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import type { AlbumSortOrder, AlbumStatType, PublicAlbumCategory, PublicAlbumItem } from "@/types/album";
 import { parseAlbumConfig } from "../_utils/album-config";
-import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
+import { extractBannerConfig } from "@/lib/banner-config";
 import { buildAlbumFilterQuery, parseAlbumFilterQuery } from "../_utils/album-filter-query";
 import { AlbumHeader } from "./AlbumHeader";
 import { AlbumList } from "./AlbumList";
@@ -20,19 +20,9 @@ export function AlbumPageClient() {
   const { theme, setTheme } = useTheme();
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
 
-  // 使用统一的 Banner 配置提取器（优先）或旧的 album 配置
-  const unifiedBannerConfig = extractBannerConfig(siteConfig, 'album');
+  // 使用统一的 Banner 配置提取器
+  const bannerConfig = extractBannerConfig(siteConfig, 'album');
   const albumConfig = useMemo(() => parseAlbumConfig(siteConfig), [siteConfig]);
-  
-  // 合并配置：优先使用统一格式，降级使用旧格式
-  const bannerConfig = {
-    tips: unifiedBannerConfig.tips || albumConfig.banner.tip,
-    title: unifiedBannerConfig.title || albumConfig.banner.title,
-    description: unifiedBannerConfig.description || albumConfig.banner.description,
-    backgroundImage: unifiedBannerConfig.backgroundImage || albumConfig.banner.background,
-  };
-  
-  const defaultConfig = getDefaultBannerConfig('album');
 
   const [sortOrder, setSortOrder] = useState<AlbumSortOrder>("display_order_asc");
   const [categoryId, setCategoryId] = useState<number | null>(null);
@@ -257,13 +247,7 @@ export function AlbumPageClient() {
           <div className="album-content">
             {bannerConfig.title || bannerConfig.backgroundImage ? (
               <div className="album-banner">
-                <BannerCard
-                  tips={bannerConfig.tips || defaultConfig.tips}
-                  title={bannerConfig.title || defaultConfig.title}
-                  description={bannerConfig.description || defaultConfig.description}
-                  backgroundImage={bannerConfig.backgroundImage}
-                  height={300}
-                />
+                <BannerCard bannerConfig={bannerConfig} type="album" />
               </div>
             ) : null}
 

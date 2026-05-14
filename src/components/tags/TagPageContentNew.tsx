@@ -28,11 +28,8 @@ export function TagPageContentNew() {
       {!isOneImageEnabled && Object.keys(bannerConfig).length === 0 && <h1 className={styles.pageTitle}>标签</h1>}
 
       <BannerCard
-            tips={bannerConfig.tips || "分类标签"}
-            title={bannerConfig.title || "文章分类"}
-            description={bannerConfig.description || ""}
-            backgroundImage={bannerConfig.backgroundImage}
-            height={300}
+            bannerConfig={bannerConfig}
+            defaultConfig={{ tips: "分类标签", title: "文章分类", description: "" }}
         />
 
 

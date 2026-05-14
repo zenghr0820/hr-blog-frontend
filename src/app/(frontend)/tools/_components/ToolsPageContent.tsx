@@ -7,7 +7,7 @@ import { Spinner } from "@/components/ui";
 import { BannerCard } from "@/components/common/BannerCard";
 import { CommentSection } from "@/components/post/Comment";
 import { ToolCard } from "./ToolCard";
-import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
+import { extractBannerConfig } from "@/lib/banner-config";
 import type { ToolCategory } from "./types";
 
 function parseToolsList(raw: unknown): ToolCategory[] {
@@ -42,7 +42,6 @@ export function ToolsPageContent() {
   const isLoaded = useSiteConfigStore(state => state.isLoaded);
 
   const bannerConfig = extractBannerConfig(siteConfig, "tools");
-  const defaultConfig = getDefaultBannerConfig("tools");
 
   const categories = useMemo(() => parseToolsList(siteConfig?.tools?.list), [siteConfig?.tools?.list]);
 
@@ -74,13 +73,7 @@ export function ToolsPageContent() {
 
   return (
     <div className="cardWidget mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
-      <BannerCard
-        tips={bannerConfig.tips || defaultConfig.tips}
-        title={bannerConfig.title || defaultConfig.title}
-        description={bannerConfig.description || defaultConfig.description}
-        backgroundImage={bannerConfig.backgroundImage}
-        height={300}
-      />
+      <BannerCard bannerConfig={bannerConfig} type="tools" />
 
       {categories.length === 0 ? (
         <div className="mt-10 flex flex-col items-center justify-center py-16 text-center">

@@ -12,7 +12,7 @@ import { useLatestComments } from "@/hooks/queries";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { Spinner } from "@/components/ui";
 import { BannerCard } from "@/components/common/BannerCard";
-import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
+import { extractBannerConfig } from "@/lib/banner-config";
 import { CommentCard } from "@/components/post/Comment/CommentCard";
 import type { CommentDisplayConfig } from "@/components/post/Comment/comment-utils";
 
@@ -21,7 +21,6 @@ export function RecentCommentsPageClient() {
 
   // 使用统一的 Banner 配置提取器
   const bannerConfig = extractBannerConfig(siteConfig, 'recent_comments');
-  const defaultConfig = getDefaultBannerConfig('recent_comments');
 
   const { data, isPending, isError } = useLatestComments({ page: 1, pageSize: 20 });
   const comments = data?.list || [];
@@ -38,13 +37,7 @@ export function RecentCommentsPageClient() {
 
   return (
     <div className="cardWidget w-full max-w-[1400px] mx-auto px-6 py-8 space-y-6">
-      <BannerCard
-        tips={bannerConfig.tips || defaultConfig.tips}
-        title={bannerConfig.title || defaultConfig.title}
-        description={bannerConfig.description || defaultConfig.description}
-        backgroundImage={bannerConfig.backgroundImage}
-        height={300}
-      />
+      <BannerCard bannerConfig={bannerConfig} type="recent_comments" />
 
       {isPending && (
         <div className="flex items-center justify-center py-10">

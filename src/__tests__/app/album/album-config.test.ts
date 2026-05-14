@@ -13,12 +13,6 @@ describe("parseAlbumConfig", () => {
           gap: "20",
           column_count: '{"large":5,"medium":4,"small":2}',
         },
-        banner: {
-          tip: "相册",
-          title: "我的相册",
-          description: "描述",
-          background: "https://example.com/banner.jpg",
-        },
       },
     };
 
@@ -29,7 +23,6 @@ describe("parseAlbumConfig", () => {
     expect(parsed.enableComment).toBe(true);
     expect(parsed.waterfall.gap).toBe(20);
     expect(parsed.waterfall.columnCount).toEqual({ large: 5, medium: 4, small: 2 });
-    expect(parsed.banner.title).toBe("我的相册");
   });
 
   it("支持扁平 key 配置", () => {
@@ -39,10 +32,6 @@ describe("parseAlbumConfig", () => {
       "album.enable_comment": "false",
       "album.waterfall.gap": "18",
       "album.waterfall.column_count": { large: "6", medium: 3, small: "2" },
-      "album.banner.tip": "Tip",
-      "album.banner.title": "Title",
-      "album.banner.description": "Description",
-      "album.banner.background": "bg.png",
     } as SiteConfigData;
 
     const parsed = parseAlbumConfig(config);
@@ -52,7 +41,6 @@ describe("parseAlbumConfig", () => {
     expect(parsed.enableComment).toBe(false);
     expect(parsed.waterfall.gap).toBe(18);
     expect(parsed.waterfall.columnCount).toEqual({ large: 6, medium: 3, small: 2 });
-    expect(parsed.banner.tip).toBe("Tip");
   });
 
   it("非法配置会回退默认值", () => {

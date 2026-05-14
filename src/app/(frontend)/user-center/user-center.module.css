@@ -1,6 +1,6 @@
 /* User Center Page */
 .container {
-  max-width: 1200px;
+  max-width: var(--anzhiyu-content-width);
   min-height: calc(100vh - 200px);
   padding: 2rem 1rem;
   margin: 0 auto;

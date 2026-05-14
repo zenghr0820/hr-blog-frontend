@@ -6,7 +6,7 @@ import { Spinner } from "@/components/ui";
 import { BannerCard } from "@/components/common/BannerCard";
 import { CommentSection } from "@/components/post/Comment";
 import { EquipmentCard } from "./EquipmentCard";
-import { extractBannerConfig, getDefaultBannerConfig } from "@/lib/banner-config";
+import { extractBannerConfig } from "@/lib/banner-config";
 import type { EquipmentCategory } from "./types";
 
 function parseEquipmentList(raw: unknown): EquipmentCategory[] {
@@ -43,7 +43,6 @@ export function EquipmentPageContent() {
 
   // 使用统一的 Banner 配置提取器
   const bannerConfig = extractBannerConfig(siteConfig, 'equipment');
-  const defaultConfig = getDefaultBannerConfig('equipment');
 
   const categories = useMemo(() => parseEquipmentList(siteConfig?.equipment?.list), [siteConfig?.equipment?.list]);
 
@@ -57,13 +56,7 @@ export function EquipmentPageContent() {
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
-      <BannerCard
-        tips={bannerConfig.tips || defaultConfig.tips}
-        title={bannerConfig.title || defaultConfig.title}
-        description={bannerConfig.description || defaultConfig.description}
-        backgroundImage={bannerConfig.backgroundImage}
-        height={300}
-      />
+      <BannerCard bannerConfig={bannerConfig} type="equipment" />
 
       {categories.length === 0 ? (
         <div className="mt-10 flex flex-col items-center justify-center py-16 text-center">
