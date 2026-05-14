@@ -111,7 +111,7 @@ export function ArticlePasswordGate({ articleId, hint, onVerified }: ArticlePass
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-sm text-destructive">
+              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--anzhiyu-red, #d80020)' }}>
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
