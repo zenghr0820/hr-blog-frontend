@@ -40,11 +40,15 @@ export function getPosterCoverImageUrl(
   return configured !== "" ? configured : BUILTIN_POST_DEFAULT_COVER_PATH;
 }
 
+function isInlineImageUrl(url: string): boolean {
+  return url.startsWith("data:") || url.startsWith("blob:");
+}
+
 function shouldSetCrossOriginForImageLoad(url: string): boolean {
   if (typeof window === "undefined") {
     return true;
   }
-  if (url.startsWith("data:") || url.startsWith("blob:")) {
+  if (isInlineImageUrl(url)) {
     return false;
   }
   try {
@@ -64,7 +68,7 @@ function rewriteCrossOriginImageUrlForPosterCanvas(imageUrl: string): string {
     return imageUrl;
   }
   const trimmed = imageUrl.trim();
-  if (trimmed === "" || trimmed.startsWith("data:") || trimmed.startsWith("blob:")) {
+  if (trimmed === "" || isInlineImageUrl(trimmed)) {
     return imageUrl;
   }
   if (trimmed.includes("/api/proxy/download?")) {
@@ -84,51 +88,48 @@ function rewriteCrossOriginImageUrlForPosterCanvas(imageUrl: string): string {
   }
 }
 
-/**
- * 加载图片，跨域资源优先使用 fetch+Blob 策略以规避浏览器缓存导致的 CORS 失败。
- *
- * 背景：页面 <img> 标签在不带 crossOrigin 属性的情况下加载过图片后，浏览器
- * 会缓存不含 CORS 响应头的版本。随后 Canvas 以 crossOrigin="anonymous" 请求
- * 同一 URL 时，浏览器复用了缓存中的无 CORS 响应，导致加载失败。fetch 和 <img>
- * 使用独立的 HTTP 缓存，因此通过 fetch 获取后转为同源 Blob URL 可彻底绕开此问题。
- */
-async function loadImage(url: string): Promise<HTMLImageElement> {
-  url = rewriteCrossOriginImageUrlForPosterCanvas(url);
-  const isCrossOrigin = shouldSetCrossOriginForImageLoad(url);
-
-  if (isCrossOrigin) {
-    try {
-      const res = await fetch(url, { mode: "cors" });
-      if (res.ok) {
-        const blob = await res.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        return new Promise<HTMLImageElement>((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => {
-            URL.revokeObjectURL(blobUrl);
-            resolve(img);
-          };
-          img.onerror = () => {
-            URL.revokeObjectURL(blobUrl);
-            reject(new Error(`Image blob load failed: ${url}`));
-          };
-          img.src = blobUrl;
-        });
-      }
-    } catch {
-      // fetch 失败（如网络错误），回退到 crossOrigin 方式
-    }
-  }
-
+function loadImageElement(url: string, crossOrigin: boolean): Promise<HTMLImageElement> {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
-    if (isCrossOrigin) {
+    if (crossOrigin) {
       img.crossOrigin = "anonymous";
     }
     img.onload = () => resolve(img);
-    img.onerror = reject;
+    img.onerror = () => reject(new Error(`Image load failed: ${url}`));
     img.src = url;
   });
+}
+
+/**
+ * 加载图片时统一转为 Blob URL 后绘制，避免复用无 CORS 图片缓存或代理链路差异导致 Canvas 被污染。
+ */
+async function loadImage(url: string): Promise<HTMLImageElement> {
+  const resolvedUrl = rewriteCrossOriginImageUrlForPosterCanvas(url);
+
+  if (!isInlineImageUrl(resolvedUrl)) {
+    try {
+      const fetchMode: RequestMode = shouldSetCrossOriginForImageLoad(resolvedUrl) ? "cors" : "same-origin";
+      const res = await fetch(resolvedUrl, {
+        mode: fetchMode,
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        throw new Error(`Image fetch failed: ${res.status}`);
+      }
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      try {
+        return await loadImageElement(blobUrl, false);
+      } finally {
+        URL.revokeObjectURL(blobUrl);
+      }
+    } catch {
+      // 兜底保留原 img 加载路径；正常代理路径应优先走上面的 Blob 绘制。
+    }
+  }
+
+  return loadImageElement(resolvedUrl, shouldSetCrossOriginForImageLoad(resolvedUrl));
 }
 
 /**
