@@ -43,6 +43,7 @@ function bytesToHuman(bytes: number, defaultUnit = 1024 * 1024): { value: number
 
 const FLAG_OPTIONS = [
   { key: "", label: "无 (普通策略)" },
+  { key: "default", label: "默认存储" },
   { key: "article_image", label: "文章图片默认" },
   { key: "comment_image", label: "评论图片默认" },
   { key: "user_avatar", label: "用户头像默认" },
