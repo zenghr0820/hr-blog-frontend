@@ -15,7 +15,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaHashtag } from "react-icons/fa6";
-import { List, X, PanelLeftClose, Search } from "lucide-react";
+import { List, X, PanelLeftClose, Search, ListOrdered } from "lucide-react";
 import { PostHeader } from "./PostHeader";
 import { ArticleAiSummary } from "./ArticleAiSummary";
 import { PostOutdateNotice } from "./PostOutdateNotice";
@@ -28,6 +28,7 @@ import { PostPaginationFloat } from "./PostPaginationFloat";
 import { CommentSection } from "./Comment";
 import { CommentBarrage } from "./CommentBarrage";
 import { PostSidebar } from "./Sidebar";
+import { CardToc } from "./Sidebar/CardToc";
 import { DocSidebar } from "@/components/doc/DocSidebar";
 import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -89,6 +90,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const [docSeries, setDocSeries] = useState<DocSeriesWithArticles | null>(null);
   const [isDocSidebarOpen, setIsDocSidebarOpen] = useState(false);
   const [isDocSidebarCollapsed, setIsDocSidebarCollapsed] = useState(false);
+  const [isTocOpen, setIsTocOpen] = useState(false);
   const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
 
   const isPasswordProtected = article.access_rule?.type === "password" && !article.content_html;
@@ -161,6 +163,10 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
 
   const openSearch = useCallback(() => {
     window.dispatchEvent(new CustomEvent("frontend-open-search"));
+  }, []);
+
+  const closeTocDrawer = useCallback(() => {
+    setIsTocOpen(false);
   }, []);
 
   // 进入文章页面时立即跳到顶部（不带缓动）
@@ -374,10 +380,43 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
       {/* 移动端文档侧边栏切换按钮 */}
       {isDoc && activeDocSeries && (
         <button
-          className={styles.docMobileSidebarToggle}
+          className={cn(styles.docMobileSidebarToggle, styles.docMobileSidebarToggleShifted)}
           onClick={() => setIsDocSidebarOpen(prev => !prev)}
         >
           {isDocSidebarOpen ? <X className="w-5 h-5" /> : <List className="w-5 h-5" />}
+        </button>
+      )}
+
+      {/* 移动端目录遮罩 */}
+      <div
+        className={cn(styles.mobileTocOverlay, isTocOpen && styles.mobileTocOverlayOpen)}
+        onClick={closeTocDrawer}
+      />
+
+      {/* 移动端目录抽屉 */}
+      <aside className={cn(styles.mobileTocDrawer, isTocOpen && styles.mobileTocDrawerOpen)}>
+        <div className={styles.mobileTocDrawerHeader}>
+          <span className={styles.mobileTocDrawerTitle}>目录</span>
+          <button className={styles.mobileTocDrawerClose} onClick={closeTocDrawer}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <div className={styles.mobileTocDrawerBody}>
+          <CardToc
+            contentHtml={unlockedContent ?? article.content_html ?? ""}
+            collapseMode={false}
+            onItemClick={closeTocDrawer}
+          />
+        </div>
+      </aside>
+
+      {/* 移动端目录浮动按钮 */}
+      {article.content_html && (
+        <button
+          className={styles.mobileTocToggle}
+          onClick={() => setIsTocOpen(prev => !prev)}
+        >
+          <ListOrdered className="w-5 h-5" />
         </button>
       )}
 

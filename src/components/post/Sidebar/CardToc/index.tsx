@@ -21,6 +21,7 @@ interface TocItem {
 interface CardTocProps {
   contentHtml: string;
   collapseMode?: boolean;
+  onItemClick?: () => void;
 }
 
 const HEADING_SELECTOR = "h1, h2, h3, h4, h5, h6";
@@ -125,7 +126,7 @@ function computeActiveId(tocItems: TocItem[], headings: HTMLElement[]): string {
   return currentId;
 }
 
-export function CardToc({ contentHtml, collapseMode = false }: CardTocProps) {
+export function CardToc({ contentHtml, collapseMode = false, onItemClick }: CardTocProps) {
   const [activeId, setActiveId] = useState<string>("");
   const [isScrolling, setIsScrolling] = useState(false);
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
@@ -200,7 +201,6 @@ export function CardToc({ contentHtml, collapseMode = false }: CardTocProps) {
     const headings = getPostContentHeadings();
     const element = getHeadingElement(item, headings);
     if (element) {
-      // 标记正在滚动，暂停滚动监听
       setIsScrolling(true);
       setActiveId(item.uniqueId);
 
@@ -214,17 +214,17 @@ export function CardToc({ contentHtml, collapseMode = false }: CardTocProps) {
         behavior: "smooth",
       });
 
-      // 清除之前的定时器
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
 
-      // 延迟恢复滚动监听
       scrollTimeoutRef.current = setTimeout(() => {
         setIsScrolling(false);
       }, 1000);
+
+      onItemClick?.();
     }
-  }, []);
+  }, [onItemClick]);
 
   // 清理定时器
   useEffect(() => {

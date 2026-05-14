@@ -494,7 +494,7 @@
   }
 
   .footerContainer {
-    z-index: 99;
+    z-index: 89;
     margin-top: 1rem;
     background: linear-gradient(180deg, transparent 0, var(--anzhiyu-card-bg) 25%);
     width: 100%;

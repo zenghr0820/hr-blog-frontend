@@ -28,6 +28,7 @@
   min-height: 62px;
   color: var(--anzhiyu-fontcolor);
   letter-spacing: 0.5px;
+  font-size: 0.935rem;
 }
 
 .poemInfo {
