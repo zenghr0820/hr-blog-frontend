@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Icon } from "@iconify/react";
 import { addToast } from "@heroui/react";
 import { useUiStore } from "@/store/ui-store";
+import { useScrollStore } from "@/store/scroll-store";
 import { useTheme } from "@/hooks/use-theme";
 import { useReadingMode } from "@/hooks/use-reading-mode";
 import styles from "./GlobalSidebar.module.css";
@@ -17,6 +18,12 @@ export function GlobalSidebar() {
   const toggleCommentBarrage = useUiStore(state => state.toggleCommentBarrage);
   const isSidebarVisible = useUiStore(state => state.isSidebarVisible);
   const { isReadingMode, toggleReadingMode } = useReadingMode();
+
+  // 滚动状态：顶部隐藏，向下滚动显示
+  const isAtTop = useScrollStore(state => state.isAtTop);
+
+  // 侧边栏可见条件：不在顶部 且 向下滚动
+  const isSidebarShown = !isAtTop;
 
   const isDarkMode = mounted && isDark;
 
@@ -87,7 +94,7 @@ export function GlobalSidebar() {
   );
 
   return (
-    <div id="rightside" className={`${styles.sidebar} ${styles.show}`}>
+    <div id="rightside" className={`${styles.sidebar} ${isSidebarShown ? styles.show : ""}`}>
       {renderButton(
         isDarkMode ? "solar:sun-bold" : "solar:moon-bold",
         "亮暗切换",
