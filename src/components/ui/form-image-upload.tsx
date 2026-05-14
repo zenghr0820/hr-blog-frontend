@@ -5,9 +5,12 @@ import { Input, Button } from "@heroui/react";
 import { cn } from "@/lib/utils";
 import { Upload, Loader2 } from "lucide-react";
 import { postManagementApi } from "@/lib/api/post-management";
+import { uploadFile } from "@/lib/api/upload";
 import { addToast } from "@heroui/react";
 
 export interface FormImageUploadProps {
+  /** 上传策略标志，默认 "default" */
+  policyFlag?: string;
   /** 标签 */
   label?: string;
   /** 内联标签（显示在输入框左侧的 badge） */
@@ -41,6 +44,7 @@ export interface FormImageUploadProps {
 const FormImageUpload = React.forwardRef<HTMLDivElement, FormImageUploadProps>(
   (
     {
+      policyFlag = "default",
       label,
       inlineLabel,
       value,
@@ -85,7 +89,12 @@ const FormImageUpload = React.forwardRef<HTMLDivElement, FormImageUploadProps>(
         }
         setUploading(true);
         try {
-          const url = await postManagementApi.uploadArticleImage(file);
+          let url: string;
+          if (policyFlag === "article_image") {
+            url = await postManagementApi.uploadArticleImage(file);
+          } else {
+            url = await uploadFile(file, policyFlag);
+          }
           onValueChange?.(url);
           addToast({ title: "上传成功", color: "success" });
         } catch (err) {
@@ -99,7 +108,7 @@ const FormImageUpload = React.forwardRef<HTMLDivElement, FormImageUploadProps>(
           setUploading(false);
         }
       },
-      [onValueChange]
+      [onValueChange, policyFlag]
     );
 
     const handleUploadClick = () => {

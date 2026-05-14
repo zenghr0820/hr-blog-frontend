@@ -1,4 +1,5 @@
 import { apiClient } from "./client";
+import { toSameOriginMediaUrl } from "@/utils/same-origin-media-url";
 
 export interface UploadResponse {
   url: string;
@@ -8,7 +9,7 @@ export interface UploadResponse {
 export async function uploadFile(
   file: File,
   policyFlag = "default"
-): Promise<UploadResponse> {
+): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("policyFlag", policyFlag);
@@ -17,5 +18,12 @@ export async function uploadFile(
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-  return response.data;
+  if (response.code === 200 && response.data) {
+    const { url } = response.data;
+    if (url) {
+      return toSameOriginMediaUrl(url);
+    }
+  }
+
+  throw new Error(response.message || "上传图片失败");
 }
