@@ -16,6 +16,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Copy,
   Server,
   Database,
   ShieldAlert,
@@ -81,10 +82,12 @@ function PolicyCard({
   policy,
   onEdit,
   onDelete,
+  onClone,
 }: {
   policy: StoragePolicy;
   onEdit: (p: StoragePolicy) => void;
   onDelete: (p: StoragePolicy) => void;
+  onClone: (p: StoragePolicy) => void;
 }) {
   const Icon = TYPE_ICONS[policy.type] ?? Database;
   const iconColor = TYPE_ICON_COLORS[policy.type] ?? "text-foreground/60 bg-foreground/5";
@@ -156,6 +159,18 @@ function PolicyCard({
 
       {/* 操作按钮（常驻） */}
       <div className="flex items-center gap-1 shrink-0">
+        <Tooltip content="克隆" showArrow={false}>
+          <Button
+            isIconOnly
+            size="sm"
+            variant="light"
+            radius="full"
+            className="text-muted-foreground hover:text-foreground"
+            onPress={() => onClone(policy)}
+          >
+            <Copy className="w-3.5 h-3.5" />
+          </Button>
+        </Tooltip>
         <Tooltip content="编辑" showArrow={false}>
           <Button
             isIconOnly
@@ -323,16 +338,28 @@ const CREATE_FORM_MAP: Record<StoragePolicyType, typeof LocalForm> = {
 /** 表单主体（通过 key 强制重新挂载，确保 useState 初始化器每次打开都执行） */
 function CreateFormBody({
   storageType,
+  cloneSource,
   isLoading,
   onSubmit,
   onCancel,
 }: {
   storageType: StoragePolicyType;
+  cloneSource?: StoragePolicy | null;
   isLoading: boolean;
   onSubmit: (data: Partial<StoragePolicy>) => void;
   onCancel: () => void;
 }) {
-  const [formData, setFormData] = useState<Partial<StoragePolicy>>(() => ({ ...CREATE_DEFAULTS[storageType] }));
+  const [formData, setFormData] = useState<Partial<StoragePolicy>>(() => {
+    if (cloneSource) {
+      const { id, created_at, updated_at, ...rest } = cloneSource as StoragePolicy & { id?: unknown; created_at?: unknown; updated_at?: unknown };
+      return {
+        ...rest,
+        name: `${rest.name} - 副本`,
+        flag: "",
+      };
+    }
+    return { ...CREATE_DEFAULTS[storageType] };
+  });
 
   const handleConfirm = () => {
     const submitData = { ...formData };
@@ -379,6 +406,7 @@ function CreateFormModal({
   onOpenChange,
   title,
   storageType,
+  cloneSource,
   isLoading,
   onSubmit,
 }: {
@@ -386,9 +414,11 @@ function CreateFormModal({
   onOpenChange: (open: boolean) => void;
   title: string;
   storageType: StoragePolicyType | null;
+  cloneSource?: StoragePolicy | null;
   isLoading: boolean;
   onSubmit: (data: Partial<StoragePolicy>) => void;
 }) {
+  const isClone = !!cloneSource;
   return (
     <AdminDialog
       isOpen={isOpen}
@@ -398,16 +428,19 @@ function CreateFormModal({
       isDismissable={!isLoading}
       header={{
         title,
-        description: storageType
-          ? `配置 ${STORAGE_TYPE_LABELS[storageType]} 参数后即可创建`
-          : "填写配置后即可创建存储策略",
-        icon: Plus,
+        description: isClone
+          ? `基于已有策略配置创建新策略，修改名称和差异化配置即可`
+          : storageType
+            ? `配置 ${STORAGE_TYPE_LABELS[storageType]} 参数后即可创建`
+            : "填写配置后即可创建存储策略",
+        icon: isClone ? Copy : Plus,
       }}
     >
       {storageType && (
         <CreateFormBody
-          key={`${storageType}-${isOpen}`}
+          key={`${storageType}-${isOpen}-${isClone}`}
           storageType={storageType}
+          cloneSource={cloneSource}
           isLoading={isLoading}
           onSubmit={onSubmit}
           onCancel={() => onOpenChange(false)}
@@ -585,6 +618,7 @@ export default function StoragePage() {
                 policy={policy}
                 onEdit={sp.handleEdit}
                 onDelete={p => sp.setDeleteTarget(p)}
+                onClone={sp.triggerCloneFlow}
               />
             ))}
           </div>
@@ -617,8 +651,9 @@ export default function StoragePage() {
       <CreateFormModal
         isOpen={sp.createDialogOpen}
         onOpenChange={sp.setCreateDialogOpen}
-        title={sp.currentStorageConfig?.dialogTitle ?? "添加存储策略"}
+        title={sp.cloneSource ? `克隆策略 - ${sp.cloneSource.name}` : (sp.currentStorageConfig?.dialogTitle ?? "添加存储策略")}
         storageType={sp.currentStorageType}
+        cloneSource={sp.cloneSource}
         isLoading={sp.isCreating}
         onSubmit={sp.handleCreateSubmit}
       />

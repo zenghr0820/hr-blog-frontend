@@ -64,6 +64,7 @@ export function useStoragePage() {
 
   // ---- 创建流程 ----
   const [currentStorageType, setCurrentStorageType] = useState<StoragePolicyType | null>(null);
+  const [cloneSource, setCloneSource] = useState<StoragePolicy | null>(null);
 
   const currentStorageConfig = useMemo(
     () => STORAGE_TYPE_CONFIGS.find(c => c.type === currentStorageType) ?? null,
@@ -74,6 +75,14 @@ export function useStoragePage() {
   const triggerCreateFlow = useCallback((type: StoragePolicyType) => {
     setTypeSelectorOpen(false);
     setCurrentStorageType(type);
+    setCloneSource(null);
+    setCreateDialogOpen(true);
+  }, []);
+
+  /** 克隆策略：打开创建弹窗并预填源策略数据 */
+  const triggerCloneFlow = useCallback((source: StoragePolicy) => {
+    setCurrentStorageType(source.type);
+    setCloneSource(source);
     setCreateDialogOpen(true);
   }, []);
 
@@ -163,7 +172,9 @@ export function useStoragePage() {
     // 创建流程
     currentStorageType,
     currentStorageConfig,
+    cloneSource,
     triggerCreateFlow,
+    triggerCloneFlow,
     handleCreateSubmit,
     isCreating: createMutation.isPending,
     // 操作
