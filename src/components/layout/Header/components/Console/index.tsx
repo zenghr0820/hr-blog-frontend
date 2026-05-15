@@ -387,7 +387,7 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
             closeDelay={0}
             classNames={{ content: "custom-tooltip-content" }}
           >
-            <div className={cn(styles.consoleBtnItem, !isMusicPlayerVisible && styles.on)}>
+            <div className={cn(styles.consoleBtnItem, isMusicPlayerVisible && styles.on)}>
               <button
                 className={styles.musicSwitch}
                 aria-label="音乐胶囊开关"
