@@ -20,7 +20,7 @@ import { AdminDialog } from "@/components/admin/AdminDialog";
 import { useCreateEssay, useUpdateEssay } from "@/hooks/queries/use-essays";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { toolsApi } from "@/lib/api/tools";
-import { postManagementApi } from "@/lib/api/post-management";
+import { uploadFile } from "@/lib/api/upload";
 import {
   MUSIC_SERVER_LABELS,
   MUSIC_TYPE_LABELS,
@@ -139,7 +139,7 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
 
     for (let i = 0; i < files.length; i++) {
       try {
-        const remoteUrl = await postManagementApi.uploadArticleImage(files[i]);
+        const remoteUrl = await uploadFile(files[i]);
         setImageItems(prev =>
           prev.map(item => item.id === newItems[i].id ? { ...item, url: remoteUrl, uploading: false } : item)
         );
