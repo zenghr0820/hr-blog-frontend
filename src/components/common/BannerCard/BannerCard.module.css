@@ -19,13 +19,13 @@
   padding: 2rem;
 }
 
-/* .bannerInner::before {
+.bannerInner::before {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
   content: "";
-  background: rgb(0 0 0 / 40%);
-} */
+  background: rgb(0 0 0 / 10%);
+}
 
 .bannerContent {
   position: relative;
