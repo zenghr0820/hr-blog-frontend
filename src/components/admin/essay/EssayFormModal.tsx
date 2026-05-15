@@ -36,6 +36,7 @@ interface ImageItem {
   id: string;
   url: string;
   uploading?: boolean;
+  editing?: boolean; // 标记是否处于编辑状态
 }
 
 interface EssayFormModalProps {
@@ -73,10 +74,12 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
   const [tags, setTags] = useState(editItem?.content?.tags ?? "");
 
   const [imageItems, setImageItems] = useState<ImageItem[]>(
-    editItem?.content?.images?.map((url, i) => ({ id: `edit-${i}`, url })) ?? []
+    editItem?.content?.images?.map((url, i) => ({ id: `edit-${i}`, url, editing: false })) ?? []
   );
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [editingImageId, setEditingImageId] = useState<string | null>(null); // 当前正在编辑的图片ID
+  const [editingImageUrl, setEditingImageUrl] = useState(""); // 编辑中的图片URL
 
   const [linkUrl, setLinkUrl] = useState(editItem?.content?.link?.url ?? "");
   const [linkTitle, setLinkTitle] = useState(editItem?.content?.link?.title ?? "");
@@ -156,6 +159,31 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
 
   const removeImage = useCallback((id: string) => {
     setImageItems(prev => prev.filter(item => item.id !== id));
+  }, []);
+
+  // 开始编辑图片URL
+  const startEditImage = useCallback((item: ImageItem) => {
+    setEditingImageId(item.id);
+    setEditingImageUrl(item.url);
+  }, []);
+
+  // 保存编辑的图片URL
+  const saveEditImage = useCallback(() => {
+    if (!editingImageId || !editingImageUrl.trim()) return;
+    
+    setImageItems(prev =>
+      prev.map(item =>
+        item.id === editingImageId ? { ...item, url: editingImageUrl.trim() } : item
+      )
+    );
+    setEditingImageId(null);
+    setEditingImageUrl("");
+  }, [editingImageId, editingImageUrl]);
+
+  // 取消编辑
+  const cancelEditImage = useCallback(() => {
+    setEditingImageId(null);
+    setEditingImageUrl("");
   }, []);
 
   const handleParseLink = useCallback(async () => {
@@ -394,18 +422,71 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
                   />
                 )}
               </div>
-              <span className="text-xs text-muted-foreground truncate flex-1">
-                {item.uploading ? "上传中..." : item.url}
-              </span>
-              <Button
-                isIconOnly
-                size="sm"
-                variant="light"
-                className="text-default-400 hover:text-danger flex-shrink-0 min-w-6 w-6 h-6"
-                onPress={() => removeImage(item.id)}
-              >
-                <X className="w-3 h-3" />
-              </Button>
+              
+              {/* 编辑状态显示输入框 */}
+              {editingImageId === item.id ? (
+                <Input
+                  size="sm"
+                  value={editingImageUrl}
+                  onValueChange={setEditingImageUrl}
+                  className="flex-1"
+                  onKeyDown={e => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      saveEditImage();
+                    } else if (e.key === "Escape") {
+                      e.preventDefault();
+                      cancelEditImage();
+                    }
+                  }}
+                  autoFocus
+                />
+              ) : (
+                /* 正常状态显示URL文本，点击可编辑 */
+                <span
+                  className="text-xs text-muted-foreground truncate flex-1 cursor-pointer hover:text-foreground transition-colors"
+                  onClick={() => startEditImage(item)}
+                  title="点击编辑"
+                >
+                  {item.uploading ? "上传中..." : item.url}
+                </span>
+              )}
+              
+              {/* 编辑状态下的操作按钮 */}
+              {editingImageId === item.id ? (
+                <div className="flex gap-1 flex-shrink-0">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    color="success"
+                    className="min-w-6 w-6 h-6"
+                    onPress={saveEditImage}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </Button>
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    className="min-w-6 w-6 h-6"
+                    onPress={cancelEditImage}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ) : (
+                /* 正常状态下的删除按钮 */
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="light"
+                  className="text-default-400 hover:text-danger flex-shrink-0 min-w-6 w-6 h-6"
+                  onPress={() => removeImage(item.id)}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              )}
             </div>
           ))}
         </div>
