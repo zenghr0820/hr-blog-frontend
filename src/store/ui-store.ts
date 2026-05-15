@@ -47,7 +47,7 @@ export const useUiStore = create<UiState>()(
     (set, get) => ({
       isShortcutsEnabled: true,
       useCustomContextMenu: true,
-      isMusicPlayerVisible: true,
+      isMusicPlayerVisible: true, // ✅ 保持默认开启
       isCommentBarrageVisible: true,
       isSidebarVisible: true,
       isMinimalTheme: false,

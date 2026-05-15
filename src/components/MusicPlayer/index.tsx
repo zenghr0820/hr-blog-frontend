@@ -346,7 +346,7 @@ function MusicPlayerInner() {
   const containerClasses = [
     styles.navMusic,
     "music-player",
-    isMusicPlayerVisible ? styles.musicHidden : "",
+    !isMusicPlayerVisible ? styles.musicHidden : "", // ✅ 修复：当 isMusicPlayerVisible 为 false 时才隐藏
     isInFooterArea ? styles.inFooterArea : "",
   ]
     .filter(Boolean)
