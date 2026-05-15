@@ -367,7 +367,7 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
   };
 
   const imageSection = (
-    <div className="space-y-3">
+    <div className="space-y-3 w-full">
       <p className="text-sm font-medium">动态配图</p>
       <div className="flex gap-2">
         <Input
@@ -407,7 +407,7 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
       {imageItems.length > 0 && (
         <div className="space-y-2 max-h-[200px] overflow-y-auto">
           {imageItems.map(item => (
-            <div key={item.id} className="flex items-center gap-2 p-1.5 bg-default-50 rounded">
+            <div key={item.id} className="flex items-center gap-2 p-1.5 bg-default-50 rounded min-w-0">
               <div className="w-8 h-8 rounded overflow-hidden flex-shrink-0 bg-default-100">
                 {item.uploading ? (
                   <div className="w-full h-full flex items-center justify-center">
@@ -429,7 +429,7 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
                   size="sm"
                   value={editingImageUrl}
                   onValueChange={setEditingImageUrl}
-                  className="flex-1"
+                  className="flex-1 min-w-0"
                   onKeyDown={e => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -442,9 +442,9 @@ function EssayFormContent({ editItem, onClose }: { editItem?: EssayItem | null; 
                   autoFocus
                 />
               ) : (
-                /* 正常状态显示URL文本，点击可编辑 */
+                /* 正常状态显示URL文本,点击可编辑 */
                 <span
-                  className="text-xs text-muted-foreground truncate flex-1 cursor-pointer hover:text-foreground transition-colors"
+                  className="text-xs text-muted-foreground truncate flex-1 min-w-0 cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => startEditImage(item)}
                   title="点击编辑"
                 >
