@@ -8,7 +8,8 @@ import { useSiteConfigStore } from "@/store/site-config-store";
 import { useUiStore } from "@/store/ui-store";
 import styles from "./BackgroundImageSync.module.css";
 
-const DEFAULT_BG = "/images/bg.webp";
+const DEFAULT_BG = "/images/default-light.jpg";
+const DEFAULT_DARK_BG = "/images/default-dark.webp";
 
 export function BackgroundImageSync() {
   const isLoaded = useSiteConfigStore(s => s.isLoaded);
@@ -49,7 +50,7 @@ export function BackgroundImageSync() {
 
     const isDark = resolvedTheme === "dark";
     const bg = isDark
-      ? backgroundImageDark || backgroundImage || DEFAULT_BG
+      ? backgroundImageDark || backgroundImage || DEFAULT_DARK_BG
       : backgroundImage || DEFAULT_BG;
 
     setBgUrl(bg);
