@@ -449,7 +449,7 @@ function ImageNodeView({ node, updateAttributes, selected, editor, deleteNode }:
             className="image-node-img"
             style={{
               ...(width ? { width: `${width}px`, maxWidth: "100%" } : {}),
-              height: "auto",
+              ...(height ? { height: `${height}px` } : { height: "auto" }),
             }}
             draggable={false}
             onLoad={handleImgLoad}
@@ -716,7 +716,10 @@ export const CustomImage = Image.extend({
       rotation: {
         default: 0,
         parseHTML: (element: HTMLElement) => {
-          const style = element.getAttribute("style") || "";
+          // element 可能是 <figure> 或 <a>，而非 <img>，
+          // 需要从内部 <img> 子元素读取 style 才能获取旋转信息
+          const img = element.querySelector("img") || element.closest("img");
+          const style = (img || element).getAttribute("style") || "";
           if (style.includes("rotate(90deg)")) return 90;
           if (style.includes("rotate(180deg)")) return 180;
           if (style.includes("rotate(270deg)")) return 270;
@@ -878,16 +881,18 @@ export const CustomImage = Image.extend({
   },
 
   renderHTML({ node, HTMLAttributes }) {
-    const { align, caption, imageStyle, link, linkTarget, rotation } = node.attrs;
+    const { align, caption, imageStyle, link, linkTarget, rotation, width, height } = node.attrs;
     const alignClass = `image-align-${align || "center"}`;
     const styleClass = imageStyle && imageStyle !== "none" ? `image-style-${imageStyle}` : "";
 
     const rotationStyle = rotation && rotation !== 0 ? `transform: rotate(${rotation}deg);` : "";
 
     const imgAttrs = mergeAttributes(HTMLAttributes, {
-      class: [`article-image`, alignClass, styleClass].filter(Boolean).join(""),
+      class: [`article-image`, alignClass, styleClass].filter(Boolean).join(" "),
       draggable: "true",
       ...(rotationStyle ? { style: rotationStyle } : {}),
+      ...(width ? { width: String(width) } : {}),
+      ...(height ? { height: String(height) } : {}),
     });
 
     // 删除不需要在 HTML 中的属性

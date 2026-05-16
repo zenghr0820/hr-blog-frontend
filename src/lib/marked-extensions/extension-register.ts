@@ -11,7 +11,7 @@
 import type { marked as Marked, Tokens } from "marked";
 import { escapeHtml } from "./shared-utils";
 import { resolveContainerAlias, matchContainerBlock, matchAdmonitionBlock, ADMONITION_TYPES, setContainerAliases } from "./container-parser";
-import { matchObsidianCallout, resolveCalloutType } from "./callout-parser";
+import { matchObsidianCallout } from "./callout-parser";
 import { blockRenderers, renderCallout } from "./block-renderers";
 import { inlineSimpleTags, inlineComplexTags, renderInlineHide } from "./inline-renderers";
 
@@ -237,6 +237,100 @@ export function registerMarkedExtensions(marked: typeof Marked) {
         renderer(token: Tokens.Generic) {
           const latex = (token as Tokens.Generic & { latex: string }).latex;
           return `<span data-latex="${escapeHtml(latex)}" data-type="math-inline" class="math-inline">${escapeHtml(latex)}</span>`;
+        },
+      },
+    ],
+  });
+
+  // 带自定义属性的图片：![alt](src "title"){: width="100" height="200" rotation="90" align="left" imageStyle="border"}
+  // 使用 kramdown 属性语法 {: ... }，Typora/Obsidian/Pandoc 等广泛支持
+  // 必须在默认 image tokenizer 之前匹配，以拦截带属性块的图片
+  marked.use({
+    extensions: [
+      {
+        name: "imageWithAttrs",
+        level: "inline" as const,
+        start(src: string) {
+          // 查找后面紧跟 {: 属性块的图片语法
+          const idx = src.match(/!\[/)?.index;
+          if (idx === undefined) return undefined;
+          // 确认这个 ![ 后面确实有 {: 属性块
+          const rest = src.slice(idx);
+          if (/^!\[[^\]]*\]\([^)]*\)\{:/.test(rest)) return idx;
+          return undefined;
+        },
+        tokenizer(src: string) {
+          // 匹配 ![alt](src "title"){: key="value" ... }
+          const m = src.match(/^!\[([^\]]*)\]\(([^)]*?)\)(\{:\s+([^}]+?)\})/);
+          if (!m) return undefined;
+
+          const [, alt, hrefAndTitle, attrsRaw, attrsStr] = m;
+          const raw = `![${alt}](${hrefAndTitle})${attrsRaw}`;
+
+          // 解析 href 和 title
+          let href = hrefAndTitle;
+          let title = "";
+          const titleMatch = hrefAndTitle.match(/^(.*?)\s+"([^"]*)"$/);
+          if (titleMatch) {
+            href = titleMatch[1];
+            title = titleMatch[2];
+          }
+
+          // 解析自定义属性：key="value" 格式
+          const attrs: Record<string, string> = {};
+          const attrRegex = /(\w+)="([^"]*)"/g;
+          let attrMatch;
+          while ((attrMatch = attrRegex.exec(attrsStr)) !== null) {
+            attrs[attrMatch[1]] = attrMatch[2];
+          }
+
+          return {
+            type: "imageWithAttrs",
+            raw,
+            alt,
+            href,
+            title,
+            attrs,
+          };
+        },
+        renderer(token: Tokens.Generic) {
+          const { alt, href, title, attrs } = token as Tokens.Generic & {
+            alt: string;
+            href: string;
+            title: string;
+            attrs: Record<string, string>;
+          };
+
+          const align = attrs.align || "center";
+          const imageStyle = attrs.imageStyle || "none";
+          const width = attrs.width || "";
+          const height = attrs.height || "";
+          const rotation = attrs.rotation || "0";
+
+          const alignClass = `image-align-${align}`;
+          const styleClass = imageStyle !== "none" ? `image-style-${imageStyle}` : "";
+          const rotationStyle = rotation !== "0" ? `transform: rotate(${rotation}deg);` : "";
+
+          const imgClasses = [`article-image`, alignClass, styleClass].filter(Boolean).join(" ");
+          const imgAttrs: string[] = [
+            `class="${imgClasses}"`,
+            `src="${escapeHtml(href)}"`,
+            `alt="${escapeHtml(alt)}"`,
+            `draggable="true"`,
+            `loading="lazy"`,
+          ];
+          if (title) imgAttrs.push(`title="${escapeHtml(title)}"`);
+          if (width) imgAttrs.push(`width="${width}"`);
+          if (height) imgAttrs.push(`height="${height}"`);
+          if (rotationStyle) imgAttrs.push(`style="${rotationStyle}"`);
+
+          const figcap = title || alt;
+          if (figcap) {
+            const figureClasses = [`image-figure`, alignClass, styleClass].filter(Boolean).join(" ");
+            return `<figure class="${figureClasses}"><img ${imgAttrs.join(" ")}><figcaption>${escapeHtml(figcap)}</figcaption></figure>`;
+          }
+
+          return `<img ${imgAttrs.join(" ")}>`;
         },
       },
     ],
