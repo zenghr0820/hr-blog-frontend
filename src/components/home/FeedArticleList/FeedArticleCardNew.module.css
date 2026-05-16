@@ -37,9 +37,9 @@
    ============================================ */
 .articleDate,
 .articleMeta {
-  display: inline;
+  display: inline-flex;
   color: #858585;
-  font-size: 0.9em;
+  font-size: 0.89em;
   vertical-align: middle;
 }
 
@@ -47,7 +47,7 @@
   display: inline;
   margin-right: 4px;
   font-size: 1em;
-  vertical-align: middle;
+  vertical-align: bottom;
 }
 
 .articleMetaLabel {

@@ -162,11 +162,12 @@
   line-height: 3rem;
   letter-spacing: normal;
   transition: all 0.3s;
+  color: #e0e0e0;
 }
 
 .footerDescription {
   font-weight: 700;
-  color: var(--muted-foreground);
+  color: #e0e0e0;
 }
 
 .footerLink {
