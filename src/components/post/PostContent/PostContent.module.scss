@@ -104,7 +104,7 @@
 
 .postContent :global(figure:hover figcaption) {
   color: var(--foreground);
-  background: var(--card);
+  // background: var(--card);
   border-color: var(--primary);
 }
 
