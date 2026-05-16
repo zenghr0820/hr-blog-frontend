@@ -38,7 +38,7 @@ export function DashboardCharts({
         {/* 快捷统计卡片 */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Link
-            href="/admin/categories"
+            href="/categories"
             className="group flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:border-primary/30 transition-all"
           >
             <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500">
@@ -51,7 +51,7 @@ export function DashboardCharts({
           </Link>
 
           <Link
-            href="/admin/tags"
+            href="/tags"
             className="group flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:border-primary/30 transition-all"
           >
             <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
