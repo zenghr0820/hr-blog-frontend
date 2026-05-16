@@ -7,7 +7,7 @@ import { useSiteConfigStore } from "@/store/site-config-store";
 import { useShallow } from "zustand/shallow";
 import { useUiStore } from "@/store/ui-store";
 import { addToast } from "@heroui/react";
-import { gsap } from "gsap";
+// gsap 动态导入：弹幕组件不在首屏关键路径，延迟加载可减少主线程 JS 体积
 import md5 from "blueimp-md5";
 import type { Comment } from "@/lib/api/comment";
 import { sanitizeCommentHtml } from "../Comment/comment-utils";
@@ -29,6 +29,15 @@ const COMMENT_SECTION_IO_SHOW_THRESHOLD = 0.12;
 const OBSERVER_WAIT_FALLBACK_MS = 10_000;
 /** 点击跳转评论区后等待目标出现的超时（ms） */
 const SCROLL_TO_COMMENT_MO_TIMEOUT_MS = 5000;
+
+// gsap 单例缓存，避免每次渲染都重新 import
+let gsapPromise: Promise<typeof import("gsap").gsap> | null = null;
+function loadGSAP(): Promise<typeof import("gsap").gsap> {
+  if (!gsapPromise) {
+    gsapPromise = import("gsap").then(mod => mod.gsap);
+  }
+  return gsapPromise;
+}
 
 function getCommentReplies(item: Comment): Comment[] {
   const list: Comment[] = [];
@@ -350,20 +359,25 @@ export function CommentBarrage({
     const item = displayedBarrages[displayedBarrages.length - 1];
     if (!item || !itemRef.current) return;
     const el = itemRef.current;
-    if (isFirstBarrageRef.current) {
-      isFirstBarrageRef.current = false;
-      gsap.fromTo(
-        el,
-        { opacity: 0, y: 50, scale: 0.8, rotation: -5 },
-        { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.6, ease: "back.out(1.7)" }
-      );
-    } else {
-      gsap.fromTo(
-        el,
-        { opacity: 0, y: 30, scale: 1, rotation: 0 },
-        { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.4, ease: customEase }
-      );
-    }
+    let cancelled = false;
+    loadGSAP().then(gsap => {
+      if (cancelled) return;
+      if (isFirstBarrageRef.current) {
+        isFirstBarrageRef.current = false;
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 50, scale: 0.8, rotation: -5 },
+          { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.6, ease: "back.out(1.7)" }
+        );
+      } else {
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 30, scale: 1, rotation: 0 },
+          { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.4, ease: customEase }
+        );
+      }
+    });
+    return () => { cancelled = true; };
   }, [displayedBarrages]);
 
   useLayoutEffect(() => {
@@ -371,14 +385,19 @@ export function CommentBarrage({
     const el = exitingRef.current;
     el.style.position = "absolute";
     el.style.width = `${el.offsetWidth}px`;
-    gsap.to(el, {
-      opacity: 0,
-      y: 30,
-      scale: 1,
-      duration: 0.4,
-      ease: customEase,
-      onComplete: () => setExitingItem(null),
+    let cancelled = false;
+    loadGSAP().then(gsap => {
+      if (cancelled) return;
+      gsap.to(el, {
+        opacity: 0,
+        y: 30,
+        scale: 1,
+        duration: 0.4,
+        ease: customEase,
+        onComplete: () => setExitingItem(null),
+      });
     });
+    return () => { cancelled = true; };
   }, [exitingItem]);
 
   if (barrageList.length === 0) return null;

@@ -395,8 +395,8 @@ export function Console({ isOpen, onClose }: ConsoleProps) {
                   const store = useUiStore.getState();
                   store.toggleMusicPlayer();
                   addToast({
-                    title: store.isMusicPlayerVisible ? "音乐胶囊已开启" : "音乐胶囊已关闭",
-                    color: store.isMusicPlayerVisible ? "success" : "default",
+                    title: store.isMusicPlayerVisible ? "音乐胶囊已关闭" : "音乐胶囊已开启",
+                    color: store.isMusicPlayerVisible ? "default" : "success",
                   });
                 }}
               >

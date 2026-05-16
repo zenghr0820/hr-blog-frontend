@@ -316,7 +316,7 @@ function MusicPlayerInner() {
       isMouseOverPlaylist = playlistContainer === target || playlistContainer.contains(target);
       // 如果直接检查失败，尝试检查目标元素的祖先元素
       if (!isMouseOverPlaylist) {
-        let current = target;
+        let current: HTMLElement | null = target;
         while (current) {
           if (current === playlistContainer) {
             isMouseOverPlaylist = true;
@@ -361,7 +361,8 @@ function MusicPlayerInner() {
       onMouseLeave={handleMouseLeave}
     >
       {/* 音频元素 - 始终在同一树位置，避免被 React 销毁重建 */}
-      <audio ref={audioPlayer.audioRef} preload="metadata" />
+      {/* preload="none"：页面加载时不下载任何音频数据，用户点击播放后才加载 */}
+      <audio ref={audioPlayer.audioRef} preload="none" />
 
       {/* 播放列表 */}
       <Playlist
