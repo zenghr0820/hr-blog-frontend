@@ -1427,22 +1427,16 @@
    ================================ */
 .postContent :global(.password-content-editor-preview) {
   margin: 1.5rem 0;
-  border: 1px solid var(--border);
-  border-left: 4px solid #f59e0b;
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
   transition: border-color 0.2s;
   background: var(--card-bg);
 }
 
-.postContent :global(.password-content-editor-preview:hover) {
-  border-left-color: #f59e0b;
-}
 
 .postContent :global(.password-content-editor-preview.password-content-unlocked) {
   border: 1px solid var(--border);
-  border-left: 4px solid #22c55e;
-  border-radius: 12px;
+  border-radius: 6px;
   background: transparent;
   box-shadow: none;
   background: var(--card-bg);
@@ -1466,7 +1460,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 8px 14px;
   background: rgba(245, 158, 11, 0.06);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
@@ -1504,7 +1498,7 @@
 .postContent :global(.password-content-header .password-pro-badge) {
   margin-left: auto;
   padding: 2px 8px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: #b45309;
   background: rgba(245, 158, 11, 0.12);
@@ -1515,7 +1509,7 @@
   padding: 0;
   overflow: hidden;
   max-height: 2000px;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.2s ease;
 }
 
 .postContent :global(.password-content-editor-preview.password-collapsed .password-content-body) {
@@ -1534,16 +1528,18 @@
 
 .postContent :global(.password-content-preview .password-input-container) {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
-  max-width: 360px;
+  max-width: 400px;
   margin: 0 auto;
 }
 
 .postContent :global(.password-content-preview .password-input-container .password-input) {
   flex: 1;
-  padding: 8px 14px;
-  font-size: 0.875rem;
+  min-width: 0;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--background);
@@ -1558,8 +1554,8 @@
 }
 
 .postContent :global(.password-content-preview .password-input-container .password-verify-btn) {
-  padding: 8px 20px;
-  font-size: 0.875rem;
+  padding: 6px 16px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: #fff;
   background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -1568,6 +1564,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .postContent :global(.password-content-preview .password-input-container .password-verify-btn:hover) {
@@ -1580,8 +1577,8 @@
 }
 
 .postContent :global(.password-content-meta) {
-  padding: 8px 16px;
-  font-size: 0.8rem;
+  padding: 6px 14px;
+  font-size: 0.75rem;
   color: var(--muted-foreground);
   border-top: 1px solid var(--border);
   background: rgba(245, 158, 11, 0.03);
@@ -2028,6 +2025,20 @@
   .postContent :global(.tabs.tabs-compact > .nav-tabs > .tab) {
     padding: 6px 10px;
     font-size: 0.85rem;
+  }
+
+  /* 密码保护内容 - 移动端输入框和按钮换行堆叠 */
+  .postContent :global(.password-content-preview .password-input-container) {
+    max-width: 100%;
+  }
+
+  .postContent :global(.password-content-preview .password-input-container .password-input) {
+    flex-basis: 100%;
+  }
+
+  .postContent :global(.password-content-preview .password-input-container .password-verify-btn) {
+    flex-basis: 100%;
+    width: 100%;
   }
 }
 

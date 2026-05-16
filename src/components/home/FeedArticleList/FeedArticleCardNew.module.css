@@ -37,17 +37,16 @@
    ============================================ */
 .articleDate,
 .articleMeta {
-  display: inline-flex;
+  display: inline;
   color: #858585;
   font-size: 0.89em;
-  vertical-align: middle;
 }
 
 .metaIcon {
   display: inline;
   margin-right: 4px;
   font-size: 1em;
-  vertical-align: bottom;
+  vertical-align: -0.18em;
 }
 
 .articleMetaLabel {
@@ -55,10 +54,18 @@
   margin-right: 4px;
 }
 
-.articleMeta::before {
+/* 每个元信息项后面加分隔符 */
+.articleDate::after,
+.articleMeta::after {
   content: "|";
   margin: 0 6px;
   color: var(--anzhiyu-secondtext);
+}
+
+/* 最后一个元信息项不需要分隔符 */
+.articleDate:last-child::after,
+.articleMeta:last-child::after {
+  content: none;
 }
 
 .articleMetaLink {
@@ -188,7 +195,7 @@
 
 .articleMetaWrap {
   margin: 6px 0;
-  line-height: 1rem;
+  line-height: 1.6;
 }
 
 .articleMetaWrap a:hover {
