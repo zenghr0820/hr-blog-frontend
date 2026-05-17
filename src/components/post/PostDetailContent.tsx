@@ -29,6 +29,7 @@ import { CommentSection } from "./Comment";
 import { CommentBarrage } from "./CommentBarrage";
 import { PostSidebar } from "./Sidebar";
 import { CardToc } from "./Sidebar/CardToc";
+import { useTocItems } from "./Sidebar/CardToc/use-toc-items";
 import { DocSidebar } from "@/components/doc/DocSidebar";
 import { useShallow } from "zustand/shallow";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -92,6 +93,10 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const [isDocSidebarCollapsed, setIsDocSidebarCollapsed] = useState(false);
   const [isTocOpen, setIsTocOpen] = useState(false);
   const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
+
+  // 使用 useTocItems 检测文章是否有目录，控制移动端浮动按钮显隐
+  const { tocItems: mobileTocItems } = useTocItems(unlockedContent ?? article.content_html ?? "");
+  const hasToc = mobileTocItems.length > 0;
 
   const isPasswordProtected = article.access_rule?.type === "password" && !article.content_html;
   const hasEncryptedBlocks = !isPasswordProtected && (article.has_encrypted_blocks ?? false);
@@ -374,7 +379,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
         </main>
 
         {/* 文章详情侧边栏 */}
-        {isSidebarVisible && <PostSidebar article={article} recentArticles={recentArticles} />}
+        {isSidebarVisible && <PostSidebar article={article} recentArticles={recentArticles} tocItems={mobileTocItems} />}
       </div>
 
       {/* 移动端文档侧边栏切换按钮 */}
@@ -400,12 +405,13 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
             contentHtml={unlockedContent ?? article.content_html ?? ""}
             collapseMode={false}
             onItemClick={closeTocDrawer}
+            tocItems={mobileTocItems}
           />
         </div>
       </aside>
 
-      {/* 移动端目录浮动按钮 */}
-      {article.content_html && (
+      {/* 移动端目录浮动按钮 - 仅在有目录时显示 */}
+      {hasToc && (
         <button
           className={styles.mobileTocToggle}
           onClick={() => setIsTocOpen(prev => !prev)}

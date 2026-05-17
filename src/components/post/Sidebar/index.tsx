@@ -12,6 +12,7 @@ import { CardWechat } from "@/components/home/Sidebar/CardWechat";
 import { CardClock } from "@/components/home/Sidebar/CardClock";
 import { CustomSidebarBlocks } from "@/components/home/Sidebar/CustomSidebarBlocks";
 import { CardToc } from "./CardToc";
+import type { TocItem } from "./CardToc/use-toc-items";
 import { CardSeriesPost } from "./CardSeriesPost";
 import { CardRecentPost } from "./CardRecentPost";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -31,9 +32,11 @@ const CardCountdown = dynamic(() => import("@/components/home/Sidebar/CardCountd
 interface PostSidebarProps {
   article: Article;
   recentArticles?: RecentArticle[];
+  /** 外部传入的目录项，避免重复解析；不传时 CardToc 内部自行计算 */
+  tocItems?: TocItem[];
 }
 
-export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) {
+export function PostSidebar({ article, recentArticles = [], tocItems }: PostSidebarProps) {
   const {
     sidebarAuthor,
     sidebarSiteinfo,
@@ -208,7 +211,7 @@ export function PostSidebar({ article, recentArticles = [] }: PostSidebarProps) 
         )}
 
         {/* 文章目录 */}
-        {article.content_html && <CardToc contentHtml={article.content_html} collapseMode={tocCollapseMode} />}
+        {article.content_html && <CardToc contentHtml={article.content_html} collapseMode={tocCollapseMode} tocItems={tocItems} />}
 
         {/* 最近发布 */}
         {sidebarRecentPost?.enable !== false &&
