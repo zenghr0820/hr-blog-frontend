@@ -440,17 +440,27 @@ export function CommentSettingsForm({ values, onChange, loading }: CommentSettin
           onValueChange={v => onChange(KEY_COMMENT_MAIL_TEMPLATE, v)}
           height={220}
           wordWrap
-          description="支持变量：{{nick}}, {{reply_nick}}, {{content}}, {{url}}, {{site_name}}"
+          description="支持变量：{{.NICK}}, {{.PARENT_NICK}}, {{.COMMENT}}, {{.PARENT_COMMENT}}, {{.POST_URL}} 等"
         />
         <PlaceholderHelpPanel
           title="回复通知模板占位符"
           subtitle="点击可复制"
           items={[
-            { variable: "{{nick}}", description: "当前评论昵称" },
-            { variable: "{{reply_nick}}", description: "被回复昵称" },
-            { variable: "{{content}}", description: "评论内容" },
-            { variable: "{{url}}", description: "评论链接" },
-            { variable: "{{site_name}}", description: "站点名称" },
+            { variable: "{{.SITE_NAME}}", description: "站点名称" },
+            { variable: "{{.SITE_URL}}", description: "站点URL" },
+            { variable: "{{.SITE_DESC}}", description: "站点描述" },
+            { variable: "{{.SITE_OWNER_NICK}}", description: "站长昵称" },
+            { variable: "{{.SITE_OWNER_AVATAR}}", description: "站长头像" },
+            { variable: "{{.SITE_OWNER_EMAIL}}", description: "站长邮箱" },
+            { variable: "{{.SITE_START_YEAR}}", description: "建站年份" },
+            { variable: "{{.CURRENT_YEAR}}", description: "当前年份" },
+            { variable: "{{.NICK}}", description: "回复者昵称" },
+            { variable: "{{.PARENT_NICK}}", description: "被回复者昵称" },
+            { variable: "{{.COMMENT}}", description: "回复内容" },
+            { variable: "{{.PARENT_COMMENT}}", description: "原评论内容" },
+            { variable: "{{.POST_URL}}", description: "评论页面链接" },
+            { variable: "{{.IMG}}", description: "回复者头像" },
+            { variable: "{{.PARENT_IMG}}", description: "被回复者头像" },
           ]}
           className="mt-2"
         />
@@ -461,16 +471,27 @@ export function CommentSettingsForm({ values, onChange, loading }: CommentSettin
           onValueChange={v => onChange(KEY_COMMENT_MAIL_TEMPLATE_ADMIN, v)}
           height={220}
           wordWrap
-          description="支持变量：{{nick}}, {{content}}, {{url}}, {{site_name}}"
+          description="支持变量：{{.NICK}}, {{.COMMENT}}, {{.POST_URL}}, {{.SITE_NAME}} 等"
         />
         <PlaceholderHelpPanel
           title="管理员通知模板占位符"
           subtitle="点击可复制"
           items={[
-            { variable: "{{nick}}", description: "评论昵称" },
-            { variable: "{{content}}", description: "评论内容" },
-            { variable: "{{url}}", description: "评论链接" },
-            { variable: "{{site_name}}", description: "站点名称" },
+            { variable: "{{.SITE_NAME}}", description: "站点名称" },
+            { variable: "{{.SITE_URL}}", description: "站点URL" },
+            { variable: "{{.SITE_DESC}}", description: "站点描述" },
+            { variable: "{{.SITE_OWNER_NICK}}", description: "站长昵称" },
+            { variable: "{{.SITE_OWNER_AVATAR}}", description: "站长头像" },
+            { variable: "{{.SITE_OWNER_EMAIL}}", description: "站长邮箱" },
+            { variable: "{{.SITE_START_YEAR}}", description: "建站年份" },
+            { variable: "{{.CURRENT_YEAR}}", description: "当前年份" },
+            { variable: "{{.NICK}}", description: "评论者昵称" },
+            { variable: "{{.COMMENT}}", description: "评论内容" },
+            { variable: "{{.POST_URL}}", description: "评论页面链接" },
+            { variable: "{{.TARGET_TITLE}}", description: "评论目标标题" },
+            { variable: "{{.MAIL}}", description: "评论者邮箱" },
+            { variable: "{{.IP}}", description: "评论者IP" },
+            { variable: "{{.IMG}}", description: "评论者头像" },
           ]}
           className="mt-2"
         />
