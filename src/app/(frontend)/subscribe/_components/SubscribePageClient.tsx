@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import { apiClient } from "@/lib/api/client";
@@ -12,13 +12,24 @@ function SubscribeContent() {
 
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false);
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const [subscribeLoading, setSubscribeLoading] = useState(false);
   const [subscribeError, setSubscribeError] = useState("");
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [codeCountdown, setCodeCountdown] = useState(0);
 
   const [showUnsubscribeDialog, setShowUnsubscribeDialog] = useState(false);
   const [unsubscribeLoading, setUnsubscribeLoading] = useState(false);
   const [unsubscribeMessage, setUnsubscribeMessage] = useState("");
   const [unsubscribeSuccess, setUnsubscribeSuccess] = useState(false);
+
+  // 验证码倒计时
+  useEffect(() => {
+    if (codeCountdown > 0) {
+      const timer = setTimeout(() => setCodeCountdown(codeCountdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [codeCountdown]);
 
   useEffect(() => {
     const action = searchParams.get("action");
@@ -33,40 +44,94 @@ function SubscribeContent() {
   const openSubscribeDialog = () => {
     setShowSubscribeDialog(true);
     setEmail("");
+    setCode("");
     setSubscribeError("");
+    setCodeCountdown(0);
   };
 
-  const handleSubscribe = async () => {
-    if (!email) return;
+  // 发送验证码
+  const handleSendCode = useCallback(async () => {
+    if (!email) {
+      setSubscribeError("请输入邮箱地址");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setSubscribeError("请输入有效的邮箱地址");
+      return;
+    }
+
+    if (isSendingCode || codeCountdown > 0) return;
+
+    try {
+      setIsSendingCode(true);
+      setSubscribeError("");
+      const result = await apiClient.post<{ code: number; message: string }>(
+        "/api/public/subscribe/code",
+        { email }
+      );
+      if (result.code === 200) {
+        setCodeCountdown(60);
+      } else {
+        setSubscribeError(result.message || "发送验证码失败");
+      }
+    } catch {
+      setSubscribeError("发送验证码失败，请稍后重试");
+    } finally {
+      setIsSendingCode(false);
+    }
+  }, [email, isSendingCode, codeCountdown]);
+
+  // 提交订阅
+  const handleSubscribe = useCallback(async () => {
+    if (!email) {
+      setSubscribeError("请输入邮箱地址");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setSubscribeError("请输入有效的邮箱地址");
+      return;
+    }
+
+    if (!code) {
+      setSubscribeError("请输入验证码");
+      return;
+    }
+
     setSubscribeLoading(true);
     setSubscribeError("");
     try {
-      const res = await apiClient.post<{ code: number; message: string }>("/api/subscribe", {
-        email,
-      });
-      if (res.code === 0) {
+      const res = await apiClient.post<{ code: number; message: string }>(
+        "/api/public/subscribe",
+        { email, code }
+      );
+      if (res.code === 200) {
         setShowSubscribeDialog(false);
         setEmail("");
+        setCode("");
+        setCodeCountdown(0);
       } else {
         setSubscribeError(res.message || "订阅失败");
       }
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "订阅失败";
+      const message = err instanceof Error ? err.message : "订阅失败";
       setSubscribeError(message);
     } finally {
       setSubscribeLoading(false);
     }
-  };
+  }, [email, code]);
 
   const handleUnsubscribe = async (token: string) => {
     setUnsubscribeLoading(true);
     try {
       const res = await apiClient.get<{ code: number; message: string }>(
-        `/api/subscribe/unsubscribe?token=${token}`
+        `/api/public/unsubscribe/${token}`
       );
-      setUnsubscribeSuccess(res.code === 0);
-      setUnsubscribeMessage(res.code === 0 ? "退订成功！" : res.message || "退订失败");
+      setUnsubscribeSuccess(res.code === 200);
+      setUnsubscribeMessage(res.code === 200 ? "退订成功！" : res.message || "退订失败");
     } catch {
       setUnsubscribeSuccess(false);
       setUnsubscribeMessage("退订失败");
@@ -188,11 +253,36 @@ function SubscribeContent() {
                   placeholder="请输入您的邮箱地址"
                   disabled={subscribeLoading}
                   className={styles.input}
-                  onKeyDown={e => {
-                    if (e.key === "Enter") handleSubscribe();
-                  }}
                 />
               </div>
+
+              <div className={styles.codeInputGroup}>
+                <div className={styles.codeInputWrapper}>
+                  <label htmlFor="subscribe-code" className={styles.inputLabel}>
+                    验证码
+                  </label>
+                  <input
+                    id="subscribe-code"
+                    type="text"
+                    value={code}
+                    onChange={e => setCode(e.target.value)}
+                    placeholder="请输入验证码"
+                    disabled={subscribeLoading}
+                    className={styles.input}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") handleSubscribe();
+                    }}
+                  />
+                </div>
+                <button
+                  className={styles.sendCodeBtn}
+                  disabled={codeCountdown > 0 || isSendingCode}
+                  onClick={handleSendCode}
+                >
+                  {isSendingCode ? "发送中..." : codeCountdown > 0 ? `${codeCountdown}s` : "发送验证码"}
+                </button>
+              </div>
+
               {subscribeError && <p className={styles.formError}>{subscribeError}</p>}
             </div>
 
@@ -205,7 +295,7 @@ function SubscribeContent() {
               </button>
               <button
                 className={styles.btnPrimary}
-                disabled={subscribeLoading || !email}
+                disabled={subscribeLoading || !email || !code}
                 onClick={handleSubscribe}
               >
                 {subscribeLoading ? "订阅中..." : "确认订阅"}
