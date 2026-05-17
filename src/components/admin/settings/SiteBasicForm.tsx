@@ -22,6 +22,11 @@ import {
   KEY_ABOUT_LINK,
   KEY_DEFAULT_THUMB_PARAM,
   KEY_DEFAULT_BIG_PARAM,
+  KEY_FRONT_DESK_SITE_OWNER_NAME,
+  KEY_FRONT_DESK_SITE_OWNER_EMAIL,
+  KEY_FOOTER_OWNER_NAME,
+  KEY_FOOTER_OWNER_SINCE,
+  KEY_FOOTER_CUSTOM_TEXT,
 } from "@/lib/settings/setting-keys";
 
 const SITE_ANNOUNCEMENT_EXAMPLE = `<p>站点维护通知：今晚 22:00–24:00 进行升级，期间可能短暂不可用。</p>
@@ -106,6 +111,46 @@ export function SiteBasicForm({ values, onChange, loading }: SiteBasicFormProps)
             onValueChange={v => onChange(KEY_POLICE_RECORD_ICON, v)}
           />
         </SettingsFieldGroup>
+      </SettingsSection>
+
+      {/* 站长信息 */}
+      <SettingsSection title="站长信息">
+        <SettingsFieldGroup cols={2}>
+          <FormInput
+            label="站长名称"
+            placeholder="请输入站长名称"
+            value={values[KEY_FRONT_DESK_SITE_OWNER_NAME]}
+            onValueChange={v => onChange(KEY_FRONT_DESK_SITE_OWNER_NAME, v)}
+          />
+          <FormInput
+            label="站长邮箱"
+            placeholder="请输入站长邮箱"
+            value={values[KEY_FRONT_DESK_SITE_OWNER_EMAIL]}
+            onValueChange={v => onChange(KEY_FRONT_DESK_SITE_OWNER_EMAIL, v)}
+          />
+        </SettingsFieldGroup>
+
+        <SettingsFieldGroup cols={2}>
+          <FormInput
+            label="页脚版权名称"
+            placeholder="请输入页脚显示的名称"
+            value={values[KEY_FOOTER_OWNER_NAME]}
+            onValueChange={v => onChange(KEY_FOOTER_OWNER_NAME, v)}
+          />
+          <FormInput
+            label="建站年份"
+            placeholder="例如：2020"
+            value={values[KEY_FOOTER_OWNER_SINCE]}
+            onValueChange={v => onChange(KEY_FOOTER_OWNER_SINCE, v)}
+          />
+        </SettingsFieldGroup>
+
+        <FormInput
+          label="页脚自定义文本"
+          placeholder="页脚自定义显示的文本"
+          value={values[KEY_FOOTER_CUSTOM_TEXT]}
+          onValueChange={v => onChange(KEY_FOOTER_CUSTOM_TEXT, v)}
+        />
       </SettingsSection>
 
       {/* 站点功能 */}

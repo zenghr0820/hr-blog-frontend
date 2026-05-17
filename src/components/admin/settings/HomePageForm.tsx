@@ -25,11 +25,6 @@ import {
   KEY_HEADER_MENU,
   KEY_HEADER_NAV_TRAVELLING,
   KEY_HEADER_NAV_MENU,
-  KEY_FRONT_DESK_SITE_OWNER_NAME,
-  KEY_FRONT_DESK_SITE_OWNER_EMAIL,
-  KEY_FOOTER_OWNER_NAME,
-  KEY_FOOTER_OWNER_SINCE,
-  KEY_FOOTER_CUSTOM_TEXT,
   KEY_FOOTER_RUNTIME_ENABLE,
   KEY_FOOTER_RUNTIME_LAUNCH_TIME,
   KEY_FOOTER_RUNTIME_WORK_IMG,
@@ -257,46 +252,6 @@ export function HomePageForm({ values, onChange, loading }: HomePageFormProps) {
           value={values[KEY_HEADER_NAV_MENU]}
           onValueChange={v => onChange(KEY_HEADER_NAV_MENU, v)}
           description="导航栏右侧扩展菜单，支持分组管理"
-        />
-      </SettingsSection>
-
-      {/* 站点信息 */}
-      <SettingsSection title="站点信息">
-        <SettingsFieldGroup cols={2}>
-          <FormInput
-            label="站长名称"
-            placeholder="请输入站长名称"
-            value={values[KEY_FRONT_DESK_SITE_OWNER_NAME]}
-            onValueChange={v => onChange(KEY_FRONT_DESK_SITE_OWNER_NAME, v)}
-          />
-          <FormInput
-            label="站长邮箱"
-            placeholder="请输入站长邮箱"
-            value={values[KEY_FRONT_DESK_SITE_OWNER_EMAIL]}
-            onValueChange={v => onChange(KEY_FRONT_DESK_SITE_OWNER_EMAIL, v)}
-          />
-        </SettingsFieldGroup>
-
-        <SettingsFieldGroup cols={2}>
-          <FormInput
-            label="页脚版权名称"
-            placeholder="请输入页脚显示的名称"
-            value={values[KEY_FOOTER_OWNER_NAME]}
-            onValueChange={v => onChange(KEY_FOOTER_OWNER_NAME, v)}
-          />
-          <FormInput
-            label="建站年份"
-            placeholder="例如：2020"
-            value={values[KEY_FOOTER_OWNER_SINCE]}
-            onValueChange={v => onChange(KEY_FOOTER_OWNER_SINCE, v)}
-          />
-        </SettingsFieldGroup>
-
-        <FormInput
-          label="页脚自定义文本"
-          placeholder="页脚自定义显示的文本"
-          value={values[KEY_FOOTER_CUSTOM_TEXT]}
-          onValueChange={v => onChange(KEY_FOOTER_CUSTOM_TEXT, v)}
         />
       </SettingsSection>
 
