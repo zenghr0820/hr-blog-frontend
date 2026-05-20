@@ -342,6 +342,7 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
                     key={tag.id}
                     href={`/tags/${tag.slug || encodeURIComponent(tag.name)}`}
                     className={styles.postTagItem}
+                    prefetch={false}
                   >
                     <FaHashtag className={styles.postTagIcon} aria-hidden="true" />
                     <span className={styles.postTagName}>{tag.name}</span>

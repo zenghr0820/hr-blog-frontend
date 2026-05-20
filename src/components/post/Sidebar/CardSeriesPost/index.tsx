@@ -142,7 +142,7 @@ export function CardSeriesPost({
 
       {/* 查看更多按钮 */}
       {isOverflow && (
-        <Link href={`/categories/${seriesCategory.name}/`} className={styles.moreLink}>
+        <Link href={`/categories/${seriesCategory.name}/`} className={styles.moreLink} prefetch={false}>
           <span>查看更多</span>
           <FaArrowRight aria-hidden="true" />
         </Link>

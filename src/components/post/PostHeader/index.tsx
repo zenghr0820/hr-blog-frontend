@@ -187,6 +187,7 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
                     article.post_categories[0].slug || encodeURIComponent(article.post_categories[0].name)
                   }`}
                   className={styles.postMetaCategory}
+                  prefetch={false}
                 >
                   {article.post_categories[0].name}
                 </Link>
@@ -201,6 +202,7 @@ export function PostHeader({ article, defaultCoverUrl }: PostHeaderProps) {
                         key={tag.id}
                         href={`/tags/${tag.slug || encodeURIComponent(tag.name)}`}
                         className={styles.postMetaTag}
+                        prefetch={false}
                       >
                         <FaHashtag size={14} className={styles.tagIcon} />
                         <span className={styles.tagName}>{tag.name}</span>
