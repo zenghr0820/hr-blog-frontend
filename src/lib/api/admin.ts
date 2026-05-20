@@ -188,7 +188,7 @@ export const contentStatsApi = {
   async getContentStats(): Promise<ContentStats> {
     try {
       const [articleStats, categoryCount, tagCount] = await Promise.all([
-        this.getArticleStats().catch(() => ({ total: 0, published: 0, draft: 0, pending: 0 })),
+        this.getArticleStats().catch(() => ({ total_posts: 0, total: 0, published: 0, draft: 0, pending: 0 })),
         this.getCategoryCount().catch(() => 0),
         this.getTagCount().catch(() => 0),
       ]);
@@ -201,9 +201,11 @@ export const contentStatsApi = {
         // 评论统计接口可能不存在，忽略错误
       }
 
+      const totalArticles = articleStats.total_posts ?? articleStats.total ?? 0;
+
       return {
-        total_articles: articleStats.total ?? 0,
-        published_articles: articleStats.published ?? 0,
+        total_articles: totalArticles,
+        published_articles: articleStats.published ?? totalArticles,
         draft_articles: articleStats.draft ?? 0,
         total_comments: commentStats.total ?? 0,
         pending_comments: commentStats.pending ?? 0,

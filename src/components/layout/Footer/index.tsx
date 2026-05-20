@@ -332,10 +332,23 @@ export function Footer() {
     return list;
   }, [footerConfig.badge]);
 
+  const visibleProjectList = useMemo(() => {
+    return footerConfig.projectList
+      .map((group: LinkGroup) => ({
+        ...group,
+        links: Array.isArray(group.links)
+          ? group.links.filter(link => link.title?.trim() && link.link?.trim())
+          : [],
+      }))
+      .filter(group => group.links.length > 0);
+  }, [footerConfig.projectList]);
+
+  const hasFooterLinkGrid = visibleProjectList.length > 0 || footerConfig.randomFriendsCount > 0;
+
   // 如果没有配置则不显示
   const hasContent =
     footerConfig.socialBar ||
-    footerConfig.projectList.length > 0 ||
+    hasFooterLinkGrid ||
     footerConfig.bar ||
     badgeList.length > 0 ||
     runtimeEnabled;
@@ -398,10 +411,10 @@ export function Footer() {
         )}
 
         {/* 链接分组区域 */}
-        {(footerConfig.projectList.length > 0 || footerConfig.randomFriendsCount > 0) && (
+        {hasFooterLinkGrid && (
           <div className={styles.footerLinkGrid}>
             {/* 项目链接分组 */}
-            {footerConfig.projectList.map((group: LinkGroup) => (
+            {visibleProjectList.map((group: LinkGroup) => (
               <div key={group.title} className={styles.footerGroup}>
                 <div className={styles.footerTitle}>{group.title}</div>
                 <div className={styles.footerLinks}>

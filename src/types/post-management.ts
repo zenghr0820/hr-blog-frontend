@@ -187,6 +187,7 @@ export interface CreateArticleRequest {
   ai_summary?: string;
   abbrlink?: string;
   keywords?: string;
+  ip_location?: string;
   // 显示与排序
   show_on_home?: boolean;
   home_sort?: number;

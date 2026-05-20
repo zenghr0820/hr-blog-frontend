@@ -114,10 +114,14 @@ export interface ContentStats {
 
 /** 文章统计响应 */
 export interface ArticleStatsResponse {
-  total: number;
-  published: number;
-  draft: number;
-  pending: number;
+  total?: number;
+  published?: number;
+  draft?: number;
+  pending?: number;
+  total_posts?: number;
+  total_words?: number;
+  avg_words?: number;
+  total_views?: number;
 }
 
 /** 评论统计响应 */

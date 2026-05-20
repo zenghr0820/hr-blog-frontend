@@ -176,6 +176,7 @@ export function useArticleMeta(
       summaries: summariesForSubmit.length > 0 ? summariesForSubmit : undefined,
       ai_summary: meta.ai_summary || undefined,
       keywords: meta.keywords || undefined,
+      ip_location: meta.ip_location.trim() || undefined,
       abbrlink: meta.abbrlink || undefined,
       show_on_home: meta.show_on_home,
       home_sort: meta.home_sort,
