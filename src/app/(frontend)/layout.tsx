@@ -19,7 +19,6 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
         <ScrollInitializer />
         <ConsolePrinter />
         <ExternalLinkInterceptor />
-        <KeyboardShortcutsProvider />
         <Header />
         <OneImageBanner />
         <main id="frontend-main" className="flex-1">
@@ -29,7 +28,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
         <MusicPlayer />
         <RightMenu />
         <GlobalSidebar />
-
+        <KeyboardShortcutsProvider />
         <ReadingModeExit />
       </div>
     </>

@@ -27,7 +27,7 @@
   background-color: var(--anzhiyu-head-maskbg);
   opacity: 1;
   transition: 0s;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(3px);
 }
 
 /* 文章信息外层容器 - 只处理滚动缩放动画 */

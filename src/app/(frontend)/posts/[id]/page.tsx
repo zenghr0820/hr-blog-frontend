@@ -130,7 +130,7 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
 
   const articlePath = article.url || `/posts/${encodeURIComponent(String(article.abbrlink || id))}`;
   return buildPageMetadata({
-    title: article.title,
+    title: article.title + " - Zenghr's blog",
     absoluteTitle: true,
     description: article.summaries?.[0] || article.title,
     keywords: article.keywords || article.post_tags?.map((tag: { name: string }) => tag.name),

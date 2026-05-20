@@ -12,6 +12,7 @@ import { buildPageMetadata } from "@/lib/seo";
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata({
     title: "首页",
+    description: "Zenghr的温暖小窝| 在这里，写下日常琐碎、山河风月、成长感悟，把普通的日子，过成有温度的文字",
     path: "/",
   });
 }
