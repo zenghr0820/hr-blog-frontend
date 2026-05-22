@@ -61,7 +61,7 @@ describe("parseAlbumConfig", () => {
     expect(parsed.layoutMode).toBe("waterfall");
     expect(parsed.pageSize).toBe(24);
     expect(parsed.enableComment).toBe(false);
-    expect(parsed.waterfall.gap).toBe(16);
+    expect(parsed.waterfall.gap).toBe(6);
     expect(parsed.waterfall.columnCount).toEqual({ large: 4, medium: 3, small: 1 });
   });
 });

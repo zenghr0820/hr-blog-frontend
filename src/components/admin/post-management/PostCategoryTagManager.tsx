@@ -149,6 +149,7 @@ export default function PostCategoryTagManager({ isOpen, onClose }: PostCategory
       isOpen={isOpen}
       onClose={onClose}
       size="2xl"
+      scrollBehavior="inside"
       header={{ title: "管理分类与标签", description: "编辑分类/标签的名称和 Slug", icon: Tags }}
     >
       <ModalBody className="pb-6">

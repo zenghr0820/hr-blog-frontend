@@ -20,6 +20,7 @@ const loadGsap = async () => {
 
 interface SearchResult {
   id: string;
+  type?: "post" | "doc" | "album" | "essay" | string;
   url?: string;
   title: string;
   snippet: string;
@@ -32,6 +33,20 @@ interface SearchResult {
   is_doc?: boolean;
   doc_series_id?: string;
 }
+
+const resultTypeMeta: Record<string, { label: string; icon: string }> = {
+  post: { label: "文章", icon: "ri:article-line" },
+  doc: { label: "文档", icon: "ri:book-line" },
+  album: { label: "相册", icon: "ri:image-line" },
+  essay: { label: "即刻", icon: "ri:chat-smile-2-line" },
+};
+
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const getResultType = (result: SearchResult) => {
+  if (result.type) return result.type;
+  return result.is_doc ? "doc" : "post";
+};
 
 interface SearchResponse {
   code: number;
@@ -105,7 +120,7 @@ export function SearchModal({ isOpen, onClose, initialKeyword = "" }: SearchModa
         const data: SearchResponse = await response.json();
 
         if (data.code === 200 && data.data) {
-          const regex = new RegExp(searchKeyword, "gi");
+          const regex = new RegExp(escapeRegExp(searchKeyword), "gi");
           const hits = data.data.hits ?? [];
           setSearchResults(
             hits.map(hit => ({
@@ -259,6 +274,12 @@ export function SearchModal({ isOpen, onClose, initialKeyword = "" }: SearchModa
 
   const handleResultClick = useCallback(
     (result: SearchResult) => {
+      if (result.url) {
+        router.push(result.url);
+        onClose();
+        return;
+      }
+
       // if (result.is_doc) {
       //   router.push(`/doc/${result.id}`);
       // } else {
@@ -410,51 +431,54 @@ export function SearchModal({ isOpen, onClose, initialKeyword = "" }: SearchModa
               )}
 
               <div className={styles.resultsList}>
-                {searchResults.map(result => (
-                  <div key={result.id} className={styles.resultItem} onClick={() => handleResultClick(result)}>
-                    <div className={styles.resultThumbnail}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={result.cover_url || configuredDefaultCover}
-                        alt={stripHtmlTag(result.title) || "文章封面"}
-                        onError={handleCoverImageError}
-                      />
-                    </div>
-                    <div className={styles.resultDetails}>
-                      <div className={styles.resultContent}>
-                        <div className={styles.resultTitleWrapper}>
-                          <div className={styles.resultTitle} dangerouslySetInnerHTML={{ __html: result.title }} />
-                          {result.is_doc && (
-                            <span className={styles.resultDocBadge}>
-                              <Icon icon="ri:book-line" width="0.7rem" height="0.7rem" />
-                              文档
-                            </span>
-                          )}
-                        </div>
-                        <div className={styles.resultSnippet} dangerouslySetInnerHTML={{ __html: result.snippet }} />
-                      </div>
+                {searchResults.map(result => {
+                  const type = getResultType(result);
+                  const typeMeta = resultTypeMeta[type] ?? resultTypeMeta.post;
 
-                      <div className={styles.resultFooter}>
-                        <div className={styles.resultMeta}>
-                          <span className={styles.resultAuthor}>{result.author}</span>
-                          <span className={styles.resultDate}>{formatDate(result.publish_date)}</span>
-                          {result.tags && result.tags.length > 0 && (
-                            <span className={styles.resultTags}>
-                              {result.tags.slice(0, 3).map(tag => (
-                                <span key={tag} className={styles.tag}>
-                                  {tag}
-                                </span>
-                              ))}
+                  return (
+                    <div key={`${type}-${result.id}`} className={styles.resultItem} onClick={() => handleResultClick(result)}>
+                      <div className={styles.resultThumbnail}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={result.cover_url || configuredDefaultCover}
+                          alt={stripHtmlTag(result.title) || "搜索结果封面"}
+                          onError={handleCoverImageError}
+                        />
+                      </div>
+                      <div className={styles.resultDetails}>
+                        <div className={styles.resultContent}>
+                          <div className={styles.resultTitleWrapper}>
+                            <div className={styles.resultTitle} dangerouslySetInnerHTML={{ __html: result.title }} />
+                            <span className={styles.resultTypeBadge}>
+                              <Icon icon={typeMeta.icon} width="0.7rem" height="0.7rem" />
+                              {typeMeta.label}
                             </span>
-                          )}
+                          </div>
+                          <div className={styles.resultSnippet} dangerouslySetInnerHTML={{ __html: result.snippet }} />
                         </div>
-                        <div className={styles.resultArrow}>
-                          <Icon icon="ri:arrow-right-s-line" width="1.25rem" height="1.25rem" />
+
+                        <div className={styles.resultFooter}>
+                          <div className={styles.resultMeta}>
+                            <span className={styles.resultAuthor}>{result.author}</span>
+                            <span className={styles.resultDate}>{formatDate(result.publish_date)}</span>
+                            {result.tags && result.tags.length > 0 && (
+                              <span className={styles.resultTags}>
+                                {result.tags.slice(0, 3).map(tag => (
+                                  <span key={tag} className={styles.tag}>
+                                    {tag}
+                                  </span>
+                                ))}
+                              </span>
+                            )}
+                          </div>
+                          <div className={styles.resultArrow}>
+                            <Icon icon="ri:arrow-right-s-line" width="1.25rem" height="1.25rem" />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {totalPages > 1 && (

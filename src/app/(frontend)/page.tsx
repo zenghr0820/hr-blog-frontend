@@ -7,13 +7,19 @@
  */
 import type { Metadata } from "next";
 import { HomePageContent } from "@/components/home";
-import { buildPageMetadata } from "@/lib/seo";
+import { buildPageMetadata, fetchSiteConfigForSeo, resolveSeoSiteInfo } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
+  const siteConfig = await fetchSiteConfigForSeo();
+  const site = resolveSeoSiteInfo(siteConfig);
+  const homepageTitle = site.description ? `${site.siteName} - ${site.description}` : site.siteName;
+
   return buildPageMetadata({
-    title: "首页",
+    title: homepageTitle,
     description: "Zenghr的温暖小窝| 在这里，写下日常琐碎、山河风月、成长感悟，把普通的日子，过成有温度的文字",
     path: "/",
+    absoluteTitle: true,
+    siteConfig,
   });
 }
 

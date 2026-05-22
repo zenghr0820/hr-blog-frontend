@@ -188,7 +188,7 @@ describe("albumApi admin endpoints", () => {
     axiosInstance.defaults.adapter = async config => {
       expect(config.method).toBe("post");
       expect(config.url).toBe("/api/albums/import");
-      expect(String(config.headers?.["Content-Type"])).toContain("multipart/form-data");
+      expect(config.data).toBeInstanceOf(FormData);
 
       const sentData = config.data as FormData;
       expect(sentData.get("skip_existing")).toBe("true");

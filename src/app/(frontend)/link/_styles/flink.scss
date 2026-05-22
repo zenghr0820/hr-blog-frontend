@@ -461,6 +461,7 @@
 
 .tags-group-all {
   display: flex;
+  min-height: 420px;
   padding-bottom: 2.5rem;
   transform: rotate(0deg);
 
@@ -468,6 +469,10 @@
     display: flex;
     margin-top: 8.75rem;
     animation: 120s linear 0s infinite normal none running rowleft;
+  }
+
+  .tags-group-wrapper-skeleton {
+    animation: none;
   }
 }
 
@@ -489,6 +494,18 @@
   border-radius: 50%;
   box-shadow: var(--anzhiyu-shadow-blackdeep);
   transition: 0.3s;
+
+  &.tags-group-icon-skeleton {
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      var(--anzhiyu-secondbg) 25%,
+      var(--anzhiyu-card-bg-grey) 37%,
+      var(--anzhiyu-secondbg) 63%
+    );
+    background-size: 400% 100%;
+    animation: flinkSkeletonPulse 1.6s ease-in-out infinite;
+  }
 
   &:nth-child(2n) {
     margin-top: 1rem;
@@ -720,6 +737,41 @@
       padding: 12px 0;
       font-size: 0.85rem;
     }
+  }
+
+  .link-title-skeleton,
+  .link-desc-skeleton,
+  .site-card-skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--anzhiyu-secondbg) 25%,
+      var(--anzhiyu-card-bg-grey) 37%,
+      var(--anzhiyu-secondbg) 63%
+    );
+    background-size: 400% 100%;
+    animation: flinkSkeletonPulse 1.6s ease-in-out infinite;
+  }
+
+  .link-title-skeleton {
+    display: block;
+    width: 180px;
+    height: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .link-desc-skeleton {
+    width: min(360px, 80%);
+    height: 1rem;
+    border-radius: 8px;
+  }
+}
+
+@keyframes flinkSkeletonPulse {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
   }
 }
 
@@ -1009,6 +1061,23 @@
     );
     animation: 4s ease 0s infinite normal both running light_tag;
   }
+}
+
+.site-card-skeleton {
+  pointer-events: none;
+}
+
+.flink-list-skeleton .flink-list-item,
+.flink-list-item-skeleton {
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--anzhiyu-secondbg) 25%,
+    var(--anzhiyu-card-bg-grey) 37%,
+    var(--anzhiyu-secondbg) 63%
+  );
+  background-size: 400% 100%;
+  animation: flinkSkeletonPulse 1.6s ease-in-out infinite;
 }
 
 // ---- FlinkList (list 样式) ----

@@ -11,18 +11,13 @@ vi.mock("next-themes", () => ({
   useTheme: () => ({ resolvedTheme: "light" }),
 }));
 
-vi.mock("next/link", () => ({
-  __esModule: true,
-  default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  ),
+vi.mock("@/components/auth", () => ({
+  LoginForm: ({ initialStep }: { initialStep?: string }) => <div>initial-step:{initialStep ?? "check-email"}</div>,
 }));
 
 describe("LoginPage", () => {
   it("register=1 时默认进入注册流程", async () => {
     render(<LoginPageWrapper />);
-    expect(await screen.findByText("创建新账号")).toBeInTheDocument();
+    expect(await screen.findByText("initial-step:register")).toBeInTheDocument();
   });
 });

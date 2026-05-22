@@ -208,6 +208,7 @@ export function AlbumList({
                       item={item}
                       index={index}
                       enableComment={enableComment}
+                      eager={index < waterfallColumnCount}
                       onPreview={handlePreview}
                       onComment={handleComment}
                     />

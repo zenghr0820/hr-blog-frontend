@@ -39,3 +39,21 @@ describe("buildPageMetadata canonical policy", () => {
     });
   });
 });
+
+describe("buildPageMetadata homepage title", () => {
+  it("首页使用站点名称和副标题作为绝对 title", async () => {
+    const metadata = await buildPageMetadata({
+      title: "安和鱼 - 生活明朗，万物可爱",
+      path: "/",
+      absoluteTitle: true,
+      siteConfig: {
+        APP_NAME: "安和鱼",
+        SUB_TITLE: "生活明朗，万物可爱",
+      },
+    });
+
+    expect(metadata.title).toEqual({ absolute: "安和鱼 - 生活明朗，万物可爱" });
+    expect(metadata.openGraph?.title).toBe("安和鱼 - 生活明朗，万物可爱");
+    expect(metadata.twitter?.title).toBe("安和鱼 - 生活明朗，万物可爱");
+  });
+});

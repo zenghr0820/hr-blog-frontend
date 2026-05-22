@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { Icon } from "@iconify/react";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import type { SkillsTips } from "@/types/about";
 import styles from "../about.module.css";
@@ -13,6 +14,27 @@ interface CreativityItem {
 
 interface SkillsCardProps {
   skillsTips: SkillsTips;
+}
+
+function isImageUrl(icon?: string): boolean {
+  return !!icon && (icon.startsWith("http://") || icon.startsWith("https://") || icon.startsWith("/"));
+}
+
+function isIconifyIcon(icon?: string): boolean {
+  return !!icon && icon.includes(":") && !isImageUrl(icon);
+}
+
+function CreativityIcon({ item }: { item: CreativityItem }) {
+  if (isIconifyIcon(item.icon)) {
+    return <Icon icon={item.icon} className={styles.skillIconGraphic} aria-hidden="true" />;
+  }
+
+  if (isImageUrl(item.icon)) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={item.icon} alt={item.name} className={styles.skillIconGraphic} />;
+  }
+
+  return null;
 }
 
 export function SkillsCard({ skillsTips }: SkillsCardProps) {
@@ -52,8 +74,7 @@ export function SkillsCard({ skillsTips }: SkillsCardProps) {
                         style={{ background: item.color }}
                         title={item.name}
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={item.icon} alt={item.name} />
+                        <CreativityIcon item={item} />
                       </div>
                     ))}
                   </div>
@@ -66,8 +87,7 @@ export function SkillsCard({ skillsTips }: SkillsCardProps) {
             {creativity.map((item, index) => (
               <div key={index} className={styles.skillInfo}>
                 <div className={styles.skillIcon} style={{ background: item.color }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.icon} alt={item.name} />
+                  <CreativityIcon item={item} />
                 </div>
                 <span>{item.name}</span>
               </div>

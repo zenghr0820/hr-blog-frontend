@@ -7,6 +7,10 @@
   will-change: auto;
 }
 
+.feedArticleListStable {
+  min-height: 720px;
+}
+
 .articleList {
   display: flex;
   flex-direction: column;

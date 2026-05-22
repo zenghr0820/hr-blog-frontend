@@ -367,7 +367,8 @@
   border-radius: 30px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
-.tagsGroupIcon img {
+.tagsGroupIcon img,
+.tagsGroupIcon .skillIconGraphic {
   width: 60px;
   height: 60px;
   object-fit: contain;
@@ -408,7 +409,8 @@
   margin-right: 8px;
   border-radius: 32px;
 }
-.skillIcon img {
+.skillIcon img,
+.skillIcon .skillIconGraphic {
   width: 18px;
   height: 18px;
   margin: 0 auto;

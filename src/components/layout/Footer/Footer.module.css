@@ -1,20 +1,29 @@
 /* Footer - 页脚组件 */
 
 .footerContainer {
-  /* position: relative;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
   margin-top: 1rem;
+  overflow-x: hidden;
   color: var(--anzhiyu-fontcolor);
-  background: linear-gradient(180deg, transparent 0, var(--anzhiyu-card-bg) 25%); */
-
-  animation: bottom-top 1s;
+  background: linear-gradient(180deg, transparent 0, var(--anzhiyu-card-bg) 25%);
 }
 
 .footerWrap {
-  /* position: relative;
-  max-width: 1200px;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
   min-height: 17.875rem;
-  margin: 0 auto; */
-  background:var(--footer-wrap-bg);
+}
+
+.footerSocialBar,
+.footerLinkGrid,
+.footerRuntimeBoard,
+.footerBottom {
+  max-width: 1200px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 /* 社交图标栏 */
@@ -180,7 +189,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 2rem;
-  margin: 1rem 0;
+  margin: 1rem auto;
   font-size: 12px;
   color: var(--anzhiyu-fontcolor);
 }

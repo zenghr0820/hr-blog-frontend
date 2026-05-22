@@ -375,7 +375,7 @@ export function OneImageBanner() {
           loop={effectiveVideoLoop}
           muted={isVideoMuted}
           playsInline
-          preload="auto"
+          preload="metadata"
           disablePictureInPicture
           disableRemotePlayback
           controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"

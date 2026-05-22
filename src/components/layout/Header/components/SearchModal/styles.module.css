@@ -228,7 +228,7 @@
   -webkit-box-orient: vertical;
 }
 
-.resultDocBadge {
+.resultTypeBadge {
   display: inline-flex;
   flex-shrink: 0;
   gap: 0.25rem;

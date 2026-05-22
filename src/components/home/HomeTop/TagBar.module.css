@@ -80,6 +80,29 @@
   transition: all 0.2s ease-in-out;
 }
 
+.tagSkeleton {
+  width: 92px;
+  height: 31px;
+  background: linear-gradient(
+    90deg,
+    var(--anzhiyu-secondbg) 25%,
+    var(--anzhiyu-card-bg-grey) 37%,
+    var(--anzhiyu-secondbg) 63%
+  );
+  background-size: 400% 100%;
+  border-radius: 8px;
+  animation: tagSkeletonPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes tagSkeletonPulse {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

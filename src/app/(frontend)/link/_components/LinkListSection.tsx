@@ -22,9 +22,17 @@ function CategorySection({ category }: { category: LinkCategory }) {
         {category.description && <div className="flink-desc">{category.description}</div>}
       </div>
 
-      {category.style === "card" ? <SiteCardGroup links={links} /> : <FlinkList links={links} />}
+      {isPending && links.length === 0 && (
+        <div className="site-card-group site-card-group-skeleton" aria-busy="true">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="site-card site-card-skeleton" />
+          ))}
+        </div>
+      )}
 
-      {isPending && (
+      {links.length > 0 && (category.style === "card" ? <SiteCardGroup links={links} /> : <FlinkList links={links} />)}
+
+      {isPending && links.length > 0 && (
         <div className="loading-tip">
           <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
           正在加载...
@@ -39,9 +47,22 @@ export function LinkListSection() {
 
   if (isPending) {
     return (
-      <div className="loading-tip" style={{ padding: "40px 0" }}>
-        <Loader2 className="w-5 h-5 animate-spin inline mr-2" />
-        加载中...
+      <div id="article-container" className="flink flink-loading" aria-busy="true">
+        {Array.from({ length: 2 }).map((_, groupIndex) => (
+          <div key={groupIndex} className="link-group link-group-placeholder">
+            <div className="power_title_bar">
+              <h2>
+                <span className="link-title-skeleton" />
+              </h2>
+              <div className="flink-desc link-desc-skeleton" />
+            </div>
+            <div className="site-card-group site-card-group-skeleton">
+              {Array.from({ length: 6 }).map((__, itemIndex) => (
+                <div key={itemIndex} className="site-card site-card-skeleton" />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

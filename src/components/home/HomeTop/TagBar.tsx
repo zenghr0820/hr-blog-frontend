@@ -20,9 +20,15 @@ export function TagBar({ selectedTag, onTagChange }: TagBarProps) {
   const { data: tags = [], isLoading } = useTags("count");
   const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  // 服务端渲染和首次 hydration 时渲染空占位符，避免 hydration mismatch
+  // 服务端渲染和首次 hydration 时渲染稳定占位，避免标签云加载后挤压文章列表
   if (!mounted || isLoading) {
-    return <div className={styles.tagBarContainer} />;
+    return (
+      <div className={styles.tagBarContainer} aria-busy="true">
+        {Array.from({ length: 12 }).map((_, index) => (
+          <span key={index} className={styles.tagSkeleton} />
+        ))}
+      </div>
+    );
   }
 
   if (tags.length === 0) return null;

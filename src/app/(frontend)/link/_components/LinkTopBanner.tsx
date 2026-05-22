@@ -14,7 +14,7 @@ export function LinkTopBanner({ onScrollToApply }: LinkTopBannerProps) {
   const [isVisitingRandom, setIsVisitingRandom] = useState(false);
 
   // 获取前100个友链用于横幅展示
-  const { data } = usePublicLinks({ page: 1, pageSize: 100 });
+  const { data, isPending } = usePublicLinks({ page: 1, pageSize: 100 });
 
   const bannerLinks = useMemo(() => {
     if (!data?.list) return [];
@@ -91,25 +91,32 @@ export function LinkTopBanner({ onScrollToApply }: LinkTopBannerProps) {
         </a>
       </div>
       <div className="tags-group-all">
-        <div className="tags-group-wrapper">
-          {pairedLinkList.map((pair, index) => (
-            <div key={index} className="tags-group-icon-pair">
-              {pair.map((item, j) => (
-                <a
-                  key={`${index}-${j}`}
-                  className="tags-group-icon"
-                  href={item.url}
-                  rel="external nofollow"
-                  target="_blank"
-                  title={item.name}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.logo} alt={item.name} />
-                  <span className="tags-group-title">{item.name}</span>
-                </a>
+        <div className={`tags-group-wrapper ${isPending && pairedLinkList.length === 0 ? "tags-group-wrapper-skeleton" : ""}`}>
+          {isPending && pairedLinkList.length === 0
+            ? Array.from({ length: 12 }).map((_, index) => (
+                <div key={index} className="tags-group-icon-pair" aria-hidden="true">
+                  <span className="tags-group-icon tags-group-icon-skeleton" />
+                  <span className="tags-group-icon tags-group-icon-skeleton" />
+                </div>
+              ))
+            : pairedLinkList.map((pair, index) => (
+                <div key={index} className="tags-group-icon-pair">
+                  {pair.map((item, j) => (
+                    <a
+                      key={`${index}-${j}`}
+                      className="tags-group-icon"
+                      href={item.url}
+                      rel="external nofollow"
+                      target="_blank"
+                      title={item.name}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.logo} alt={item.name} />
+                      <span className="tags-group-title">{item.name}</span>
+                    </a>
+                  ))}
+                </div>
               ))}
-            </div>
-          ))}
         </div>
       </div>
     </div>

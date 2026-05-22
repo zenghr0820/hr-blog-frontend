@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import { Header, Footer, OneImageBanner, KeyboardShortcutsProvider } from "@/components/layout";
+import { IdleMount } from "@/components/common/IdleMount";
 import { ScrollInitializer } from "@/providers/scroll-initializer";
 import { ExternalLinkInterceptor } from "@/providers/external-link-interceptor";
 import { ConsolePrinter } from "@/providers/console-printer";
@@ -25,8 +26,10 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
           {children}
         </main>
         <Footer />
-        <MusicPlayer />
         <RightMenu />
+        <IdleMount>
+          <MusicPlayer />
+        </IdleMount>
         <GlobalSidebar />
         <KeyboardShortcutsProvider />
         <ReadingModeExit />

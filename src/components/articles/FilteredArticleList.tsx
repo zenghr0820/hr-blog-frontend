@@ -63,6 +63,10 @@ export function FilteredArticleList({ filterType, filterValue, page = 1, onPageC
     });
     return cols;
   }, [feedItems, isDoubleColumn]);
+  const listStateClassName = cn(
+    styles.feedArticleList,
+    (isLoading || isError || feedItems.length === 0) && styles.feedArticleListStable
+  );
 
   const handlePageChange = useCallback(
     (nextPage: number) => {
@@ -82,7 +86,7 @@ export function FilteredArticleList({ filterType, filterValue, page = 1, onPageC
 
   if (isLoading) {
     return (
-      <div className={styles.feedArticleList}>
+      <div className={listStateClassName}>
         {isDoubleColumn ? (
           <div className={styles.doubleColumnContainer}>
             {Array.from({ length: COLUMN_COUNT }, (_, colIndex) => (
@@ -106,7 +110,7 @@ export function FilteredArticleList({ filterType, filterValue, page = 1, onPageC
 
   if (isError) {
     return (
-      <div className={styles.feedArticleList}>
+      <div className={listStateClassName}>
         <div className={styles.errorState}>
           <FaTriangleExclamation aria-hidden="true" />
           <p>加载文章列表失败，请稍后重试</p>
@@ -117,7 +121,7 @@ export function FilteredArticleList({ filterType, filterValue, page = 1, onPageC
 
   if (feedItems.length === 0) {
     return (
-      <div className={styles.feedArticleList}>
+      <div className={listStateClassName}>
         <div className={styles.emptyState}>
           <FaFileLines aria-hidden="true" />
           <p>暂无文章</p>
