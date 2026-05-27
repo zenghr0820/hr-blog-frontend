@@ -6,6 +6,7 @@ import {
   useLinkCategories,
   useLinkTags,
   useDeleteLink,
+  useBatchDeleteLinks,
   useReviewLink,
   useExportLinks,
 } from "@/hooks/queries/use-friends";
@@ -39,6 +40,7 @@ export function useFriendsPage() {
   const importModal = useDisclosure();
   const healthCheckModal = useDisclosure();
   const deleteModal = useDisclosure();
+  const bulkDeleteModal = useDisclosure();
   const reviewModal = useDisclosure();
 
   // ---- API ----
@@ -58,6 +60,7 @@ export function useFriendsPage() {
   const { data: categories = [] } = useLinkCategories();
   const { data: tags = [] } = useLinkTags();
   const deleteLink = useDeleteLink();
+  const batchDeleteLinks = useBatchDeleteLinks();
   const reviewLink = useReviewLink();
   const exportLinks = useExportLinks();
 
@@ -130,6 +133,45 @@ export function useFriendsPage() {
     deleteModal.onClose();
     setDeleteTarget(null);
   }, [deleteTarget, deleteLink, deleteModal]);
+
+  const handleBulkDeleteClick = useCallback(() => {
+    if (selectedIds.size === 0) {
+      addToast({ title: "请先选择要删除的友链", color: "warning", timeout: 3000 });
+      return;
+    }
+    bulkDeleteModal.onOpen();
+  }, [selectedIds.size, bulkDeleteModal]);
+
+  const handleBulkDeleteConfirm = useCallback(async () => {
+    const ids = Array.from(selectedIds)
+      .map(id => Number(id))
+      .filter(id => Number.isInteger(id) && id > 0);
+    if (ids.length === 0) {
+      addToast({ title: "请选择有效的友链", color: "warning", timeout: 3000 });
+      return;
+    }
+
+    try {
+      const result = await batchDeleteLinks.mutateAsync(ids);
+      const failedIds = new Set(result.failed_list.map(item => String(item.id)));
+      setSelectedIds(prev => new Set(Array.from(prev).filter(id => failedIds.has(id))));
+      addToast({
+        title:
+          result.failed > 0
+            ? `已删除 ${result.success} 条，${result.failed} 条失败`
+            : `已删除 ${result.success} 条友链`,
+        color: result.failed > 0 ? "warning" : "success",
+        timeout: 3000,
+      });
+    } catch (error) {
+      addToast({
+        title: error instanceof Error ? error.message : "批量删除失败",
+        color: "danger",
+        timeout: 3000,
+      });
+    }
+    bulkDeleteModal.onClose();
+  }, [selectedIds, batchDeleteLinks, bulkDeleteModal]);
 
   const handleReviewClick = useCallback(
     (item: LinkItem, action: "APPROVED" | "REJECTED") => {
@@ -223,6 +265,7 @@ export function useFriendsPage() {
     importModal,
     healthCheckModal,
     deleteModal,
+    bulkDeleteModal,
     reviewModal,
 
     // 查询数据
@@ -236,6 +279,7 @@ export function useFriendsPage() {
 
     // mutations
     deleteLink,
+    batchDeleteLinks,
     reviewLink,
     exportLinks,
 
@@ -245,6 +289,8 @@ export function useFriendsPage() {
     handleOpenEdit,
     handleDeleteClick,
     handleDeleteConfirm,
+    handleBulkDeleteClick,
+    handleBulkDeleteConfirm,
     handleReviewClick,
     handleReviewConfirm,
     handleExport,

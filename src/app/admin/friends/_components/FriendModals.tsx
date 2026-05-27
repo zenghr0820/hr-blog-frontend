@@ -58,6 +58,31 @@ export function FriendModals({ cm }: FriendModalsProps) {
         </ModalFooter>
       </AdminDialog>
 
+      {/* 批量删除确认弹窗 */}
+      <AdminDialog
+        isOpen={cm.bulkDeleteModal.isOpen}
+        onClose={cm.bulkDeleteModal.onClose}
+        size="sm"
+        header={{
+          title: "批量删除",
+          description: "删除后不可恢复，请谨慎操作",
+          icon: Trash2,
+          tone: "danger",
+        }}
+      >
+        <ModalBody>
+          <p className="text-sm">确定要删除已选的 {cm.selectedIds.size} 个友链吗？此操作不可撤销。</p>
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="flat" onPress={cm.bulkDeleteModal.onClose}>
+            取消
+          </Button>
+          <Button color="danger" onPress={cm.handleBulkDeleteConfirm} isLoading={cm.batchDeleteLinks.isPending}>
+            删除
+          </Button>
+        </ModalFooter>
+      </AdminDialog>
+
       {/* 审核弹窗 */}
       <AdminDialog
         isOpen={cm.reviewModal.isOpen}

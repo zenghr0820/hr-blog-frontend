@@ -23,6 +23,7 @@ import type {
   ExportLinksResponse,
   LinkHealthCheckResponse,
   BatchUpdateLinkSortRequest,
+  BatchDeleteLinksResponse,
   PublicLinksParams,
   PublicLinkListResponse,
   ApplyLinkRequest,
@@ -97,6 +98,22 @@ export const friendsApi = {
     if (response.code < 200 || response.code >= 300) {
       throw new Error(response.message || "删除友链失败");
     }
+  },
+
+  /**
+   * 批量删除友链
+   * DELETE /api/links/batch-delete
+   */
+  async batchDeleteLinks(ids: number[]): Promise<BatchDeleteLinksResponse> {
+    const response = await apiClient.delete<BatchDeleteLinksResponse>("/api/links/batch-delete", {
+      data: { ids },
+    });
+
+    if (response.code >= 200 && response.code < 300 && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || "批量删除友链失败");
   },
 
   /**

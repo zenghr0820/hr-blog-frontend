@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { addToast, Button, Checkbox, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react";
 import { Send, Loader2, AlertTriangle, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui";
+import { CaptchaWidget, type CaptchaWidgetRef } from "@/components/auth/CaptchaWidget";
 import { useApplyLink, useApplications } from "@/hooks/queries/use-friends";
 import { friendsApi } from "@/lib/api/friends";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -22,6 +23,8 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 export function ApplyLink() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
   const applyLink = useApplyLink();
+  const captchaRef = useRef<CaptchaWidgetRef>(null);
+  const [captchaRequired, setCaptchaRequired] = useState(false);
 
   // 从配置获取
   const rawConditions = siteConfig?.FRIEND_LINK_APPLY_CONDITION;
@@ -129,6 +132,12 @@ export function ApplyLink() {
       return;
     }
 
+    const captchaParams = captchaRequired ? await captchaRef.current?.verify() : {};
+    if (captchaRequired && captchaParams === null) {
+      addToast({ title: "请先完成验证码", color: "warning", timeout: 3000 });
+      return;
+    }
+
     try {
       await applyLink.mutateAsync({
         type,
@@ -140,6 +149,7 @@ export function ApplyLink() {
         email: email.trim(),
         original_url: type === "UPDATE" ? originalUrl.trim() || undefined : undefined,
         update_reason: type === "UPDATE" ? updateReason.trim() : undefined,
+        ...(captchaParams || {}),
       });
       addToast({ title: "申请提交成功，请等待博主审核！", color: "success", timeout: 3000 });
       // 重置表单
@@ -152,8 +162,20 @@ export function ApplyLink() {
       setOriginalUrl("");
       setUpdateReason("");
       setType("NEW");
+      setCaptchaRequired(false);
+      captchaRef.current?.refresh();
     } catch (err) {
-      addToast({ title: err instanceof Error ? err.message : "申请失败，请稍后再试", color: "danger", timeout: 3000 });
+      const message = err instanceof Error ? err.message : "申请失败，请稍后再试";
+      if (
+        message.includes("人机验证") ||
+        message.includes("验证码") ||
+        message.includes("Turnstile") ||
+        message.includes("极验")
+      ) {
+        setCaptchaRequired(true);
+        captchaRef.current?.refresh();
+      }
+      addToast({ title: message, color: "danger", timeout: 3000 });
     }
   };
 
@@ -291,6 +313,8 @@ export function ApplyLink() {
               />
             </div>
           )}
+
+          {captchaRequired && <CaptchaWidget ref={captchaRef} className="max-w-sm" />}
 
           <button
             type="button"

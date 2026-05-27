@@ -137,6 +137,18 @@ export function useDeleteLink() {
   });
 }
 
+/** 批量删除友链 */
+export function useBatchDeleteLinks() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (ids: number[]) => friendsApi.batchDeleteLinks(ids),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: friendsKeys.lists(), refetchType: "all" });
+    },
+  });
+}
+
 /** 审核友链 */
 export function useReviewLink() {
   const queryClient = useQueryClient();

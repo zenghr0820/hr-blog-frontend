@@ -228,6 +228,19 @@ export function FriendsContent({ cm }: FriendsContentProps) {
               <span className="text-small text-primary font-medium whitespace-nowrap">
                 已选 {cm.selectedIds.size} 项
               </span>
+              <Tooltip content="批量删除" placement="top" size="sm" color="danger">
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="flat"
+                  color="danger"
+                  className="h-7 w-7 min-w-7"
+                  onPress={cm.handleBulkDeleteClick}
+                  isLoading={cm.batchDeleteLinks.isPending}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </Tooltip>
             </>
           )}
         </div>

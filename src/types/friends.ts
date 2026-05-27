@@ -232,6 +232,25 @@ export interface BatchUpdateLinkSortRequest {
   items: LinkSortItem[];
 }
 
+/** 批量删除友链请求 */
+export interface BatchDeleteLinksRequest {
+  ids: number[];
+}
+
+/** 批量删除友链失败项 */
+export interface BatchDeleteLinkFailure {
+  id: number;
+  reason: string;
+}
+
+/** 批量删除友链响应 */
+export interface BatchDeleteLinksResponse {
+  total: number;
+  success: number;
+  failed: number;
+  failed_list: BatchDeleteLinkFailure[];
+}
+
 // ===================================
 //        公开接口类型
 // ===================================
@@ -262,6 +281,13 @@ export interface ApplyLinkRequest {
   email: string;
   original_url?: string;
   update_reason?: string;
+  turnstile_token?: string;
+  geetest_lot_number?: string;
+  geetest_captcha_output?: string;
+  geetest_pass_token?: string;
+  geetest_gen_time?: string;
+  image_captcha_id?: string;
+  image_captcha_answer?: string;
 }
 
 /** 检查友链 URL 是否存在响应 */
