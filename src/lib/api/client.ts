@@ -9,7 +9,7 @@ import type { RefreshTokenResponseData } from "@/types/auth";
  * - 客户端请求使用相对路径（/api/xxx），由 Next.js 代理到后端
  * - 服务端请求需要完整 URL
  */
-const API_TIMEOUT = 30000; // 30 秒超时
+const API_TIMEOUT = 120000; // 120 秒超时（文件上传后后端需转发到七牛云，处理时间较长）
 
 /**
  * Token 管理器

@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
       dynamic: 30,
       static: 180,
     },
+    // 代理请求体大小限制，默认 10MB，文件上传需要更大的限制
+    proxyClientMaxBodySize: "100mb",
+    // 代理超时时间，默认 30s，文件上传后后端需要转发到七牛云，处理时间可能超过 30s
+    // 超时后 Next.js 代理会关闭连接，导致前端收到 ERR_CONNECTION_CLOSED
+    proxyTimeout: 300000,
   },
 
   // 代理配置 - 客户端请求代理到 Go 后端
