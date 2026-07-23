@@ -123,6 +123,7 @@ function FriendFormContent({ editItem, onClose }: { editItem?: LinkItem | null; 
 
   const [name, setName] = useState(editItem?.name ?? "");
   const [url, setUrl] = useState(editItem?.url ?? "");
+  const [rssUrl, setRssUrl] = useState(editItem?.rss_url ?? "");
   const [logo, setLogo] = useState(editItem?.logo ?? "");
   const [description, setDescription] = useState(editItem?.description ?? "");
   const [siteshot, setSiteshot] = useState(editItem?.siteshot ?? "");
@@ -198,10 +199,20 @@ function FriendFormContent({ editItem, onClose }: { editItem?: LinkItem | null; 
       addToast({ title: "请选择分类", color: "warning", timeout: 3000 });
       return;
     }
+    const trimmedRssUrl = rssUrl.trim();
+    if (trimmedRssUrl) {
+      try {
+        new URL(trimmedRssUrl);
+      } catch {
+        addToast({ title: "请输入有效的 RSS 地址", color: "warning", timeout: 3000 });
+        return;
+      }
+    }
 
     const data: CreateLinkRequest = {
       name: name.trim(),
       url: url.trim(),
+      rss_url: trimmedRssUrl,
       logo: logo.trim(),
       description: description.trim(),
       siteshot: siteshot.trim(),
@@ -228,6 +239,7 @@ function FriendFormContent({ editItem, onClose }: { editItem?: LinkItem | null; 
   }, [
     name,
     url,
+    rssUrl,
     logo,
     description,
     siteshot,
@@ -289,6 +301,14 @@ function FriendFormContent({ editItem, onClose }: { editItem?: LinkItem | null; 
                 labelPlacement="outside"
               />
             </div>
+            <Input
+              label="RSS 地址（可选）"
+              placeholder="https://example.com/feed.xml"
+              value={rssUrl}
+              onValueChange={setRssUrl}
+              description="如果 RSS 不在常见路径，可填写完整 RSS/Atom 地址；未填写时系统自动发现。"
+              labelPlacement="outside"
+            />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
                 label="网站 Logo"

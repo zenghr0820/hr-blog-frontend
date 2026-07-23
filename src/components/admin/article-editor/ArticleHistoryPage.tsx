@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button, Spinner, Tabs, Tab, Checkbox, Select, SelectItem } from "@heroui/react";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { postManagementApi } from "@/lib/api/post-management";
+import { renderKatexInElement } from "@/lib/katex-render";
 import type { ArticleHistoryListItem, ArticleHistoryDetail } from "@/types/post-management";
 
 interface ArticleHistoryPageProps {
@@ -291,10 +292,7 @@ function ContentPreview({
               版本 {compareDetail.version} - {formatHistoryTime(compareDetail.created_at)}
             </div>
             <div className="border border-border rounded-xl p-6 bg-card">
-              <div
-                className="prose prose-sm max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: compareDetail.content_html || "" }}
-              />
+              <HistoryHtmlPreview html={compareDetail.content_html || ""} />
             </div>
           </div>
           <div>
@@ -302,22 +300,33 @@ function ContentPreview({
               版本 {detail.version} - {formatHistoryTime(detail.created_at)}
             </div>
             <div className="border border-border rounded-xl p-6 bg-card">
-              <div
-                className="prose prose-sm max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: detail.content_html || "" }}
-              />
+              <HistoryHtmlPreview html={detail.content_html || ""} />
             </div>
           </div>
         </div>
       ) : (
         // 单版本预览
         <div className="border border-border rounded-xl p-6 bg-card">
-          <div
-            className="prose prose-sm max-w-none dark:prose-invert"
-            dangerouslySetInnerHTML={{ __html: detail.content_html || "" }}
-          />
+          <HistoryHtmlPreview html={detail.content_html || ""} />
         </div>
       )}
     </div>
+  );
+}
+
+function HistoryHtmlPreview({ html }: { html: string }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    void renderKatexInElement(contentRef.current);
+  }, [html]);
+
+  return (
+    <div
+      ref={contentRef}
+      className="prose prose-sm max-w-none dark:prose-invert"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }

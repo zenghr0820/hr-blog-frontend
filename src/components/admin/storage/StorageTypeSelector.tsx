@@ -1,7 +1,7 @@
 "use client";
 
 import { ModalBody } from "@heroui/react";
-import { HardDrive, CloudCog, Globe, CloudUpload, Server, Warehouse, Database } from "lucide-react";
+import { Cloud, HardDrive, CloudCog, Globe, CloudUpload, Server, Warehouse, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { STORAGE_TYPES, STORAGE_TYPE_LABELS, type StoragePolicyType } from "@/types/storage-policy";
 import { AdminDialog } from "@/components/admin/AdminDialog";
@@ -13,6 +13,7 @@ const TYPE_ICONS: Record<StoragePolicyType, typeof Server> = {
   aliyun_oss: CloudUpload,
   aws_s3: Server,
   qiniu_kodo: Warehouse,
+  upyun: Cloud,
 };
 
 interface StorageTypeSelectorProps {

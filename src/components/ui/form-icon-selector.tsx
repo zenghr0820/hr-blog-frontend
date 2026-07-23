@@ -5,6 +5,7 @@ import { Input, Button, Popover, PopoverTrigger, PopoverContent, Tooltip } from 
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { Search, Link2, Image as ImageIcon, Grid3X3, Check, X } from "lucide-react";
+import { isCreativityIconifyIcon, isCreativityImageUrl } from "@/components/ui/creativity-icon";
 
 // ─── 常量 ─────────────────────────────────────────────────────────
 
@@ -112,11 +113,11 @@ const DEFAULT_REMIX_ICONS = [
 // ─── 工具函数 ───────────────────────────────────────────────────────
 
 function isImageUrl(value?: string): boolean {
-  return !!value && (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/"));
+  return isCreativityImageUrl(value);
 }
 
 function isIconifyIcon(value?: string): boolean {
-  return !!value && value.includes(":") && !isImageUrl(value);
+  return isCreativityIconifyIcon(value);
 }
 
 /** 提取图标短名（去掉前缀），如 "ri:home-fill" → "home-fill" */

@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { Icon } from "@iconify/react";
 import { Fancybox } from "@fancyapps/ui";
 import { addToast } from "@heroui/react";
-import hljs from "highlight.js";
 import { cn } from "@/lib/utils";
 import { Spinner, Tooltip } from "@/components/ui";
 import { useSiteConfigStore } from "@/store/site-config-store";
@@ -157,12 +156,18 @@ export function CommentSection({ targetTitle, targetPath, className }: CommentSe
       }
     });
 
-    // 代码高亮
-    container.querySelectorAll("pre code").forEach(block => {
-      if ((block as HTMLElement).dataset.highlighted === "yes") return;
-      hljs.highlightElement(block as HTMLElement);
-      (block as HTMLElement).dataset.highlighted = "yes";
-    });
+    // 代码高亮（懒加载 highlight.js，避免阻塞初始渲染）
+    const codeBlocks = container.querySelectorAll("pre code");
+    if (codeBlocks.length > 0) {
+      import("highlight.js").then(mod => {
+        const hljs = mod.default;
+        codeBlocks.forEach(block => {
+          if ((block as HTMLElement).dataset.highlighted === "yes") return;
+          hljs.highlightElement(block as HTMLElement);
+          (block as HTMLElement).dataset.highlighted = "yes";
+        });
+      });
+    }
 
     // Fancybox 绑定（排除表情）
     Fancybox.bind(container, "img:not(a img):not(.anzhiyu-owo-emotion)", {

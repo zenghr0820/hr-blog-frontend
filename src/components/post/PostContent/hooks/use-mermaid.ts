@@ -23,6 +23,8 @@ export function useMermaid() {
   const mermaidGenRef = useRef(0);
   // 主题 useEffect 首挂时与主渲染 useEffect 会同时触发渲染，用此 ref 跳过首次执行
   const lastIsDarkRef = useRef<boolean | null>(null);
+  // Mermaid 缩放清理函数（hook 内部管理，调用方无需传入）
+  const mermaidCleanupRef = useRef<MermaidCleanupFn>(null);
 
   useEffect(() => {
     isDarkRef.current = isDark;
@@ -286,10 +288,8 @@ export function useMermaid() {
   }, []);
 
   // 渲染 Mermaid 图表并初始化缩放功能
-  const renderAndInitMermaid = useCallback(async (
-    container: HTMLElement,
-    mermaidCleanupRef: React.MutableRefObject<MermaidCleanupFn>
-  ) => {
+  // mermaidCleanupRef 由 hook 内部管理，调用方只需传入 container
+  const renderAndInitMermaid = useCallback(async (container: HTMLElement) => {
     const gen = ++mermaidGenRef.current;
     if (mermaidCleanupRef.current) {
       mermaidCleanupRef.current();

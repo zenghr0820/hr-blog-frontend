@@ -15,7 +15,7 @@ export function HeroUIProviderWrapper({ children }: { children: React.ReactNode 
 
   return (
     <HeroUIProvider navigate={router.push}>
-      <ToastProvider placement="top-center" toastOffset={16} />
+      <ToastProvider placement="top-center" toastOffset={16} regionProps={{ className: "anheyu-toast-region" }} />
       {children}
     </HeroUIProvider>
   );

@@ -33,6 +33,7 @@ export interface LinkItem {
   id: number;
   name: string;
   url: string;
+  rss_url?: string;
   logo: string;
   description: string;
   status: LinkStatus;
@@ -83,6 +84,7 @@ export interface LinkListResponse {
 export interface CreateLinkRequest {
   name: string;
   url: string;
+  rss_url?: string;
   logo: string;
   description: string;
   siteshot: string;
@@ -134,6 +136,7 @@ export type UpdateTagRequest = CreateTagRequest;
 export interface ImportLinkItem {
   name: string;
   url: string;
+  rss_url?: string;
   logo?: string;
   description?: string;
   siteshot?: string;
@@ -275,6 +278,7 @@ export interface ApplyLinkRequest {
   type: LinkApplyType;
   name: string;
   url: string;
+  rss_url?: string;
   logo: string;
   description: string;
   siteshot?: string;

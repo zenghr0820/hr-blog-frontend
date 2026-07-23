@@ -1,11 +1,16 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { Button, addToast } from "@heroui/react";
+import { Send } from "lucide-react";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSwitch } from "@/components/ui/form-switch";
 import { FormMonacoEditor } from "@/components/ui/form-monaco-editor";
 import { PlaceholderHelpPanel } from "@/components/ui/placeholder-help-panel";
 import { SettingsSection, SettingsFieldGroup } from "./SettingsSection";
 import { Spinner } from "@/components/ui/spinner";
+import { getErrorMessage } from "@/lib/api/client";
+import { settingsApi } from "@/lib/api/settings";
 import {
   KEY_SMTP_HOST,
   KEY_SMTP_PORT,
@@ -29,6 +34,17 @@ interface EmailSettingsFormProps {
 }
 
 export function EmailSettingsForm({ values, onChange, loading }: EmailSettingsFormProps) {
+  const [testEmail, setTestEmail] = useState(values[KEY_SMTP_SENDER_EMAIL] || values[KEY_SMTP_USERNAME] || "");
+  const [testEmailTouched, setTestEmailTouched] = useState(false);
+  const [testingEmail, setTestingEmail] = useState(false);
+  const defaultTestEmail = values[KEY_SMTP_SENDER_EMAIL] || values[KEY_SMTP_USERNAME] || "";
+
+  useEffect(() => {
+    if (!testEmailTouched && defaultTestEmail && testEmail !== defaultTestEmail) {
+      setTestEmail(defaultTestEmail);
+    }
+  }, [defaultTestEmail, testEmail, testEmailTouched]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -36,6 +52,35 @@ export function EmailSettingsForm({ values, onChange, loading }: EmailSettingsFo
       </div>
     );
   }
+
+  const handleSendTestEmail = async () => {
+    const toEmail = testEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(toEmail)) {
+      addToast({
+        title: "请输入有效的测试收件邮箱",
+        color: "warning",
+      });
+      return;
+    }
+
+    try {
+      setTestingEmail(true);
+      const res = await settingsApi.testEmail(toEmail);
+      addToast({
+        title: res.message || "测试邮件已发送",
+        description: "请检查收件箱或垃圾邮件文件夹。",
+        color: "success",
+      });
+    } catch (error) {
+      addToast({
+        title: "发送测试邮件失败",
+        description: getErrorMessage(error),
+        color: "danger",
+      });
+    } finally {
+      setTestingEmail(false);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -66,6 +111,38 @@ export function EmailSettingsForm({ values, onChange, loading }: EmailSettingsFo
               <span>发件人邮箱建议与 SMTP 用户一致，避免被拦截</span>
             </li>
           </ol>
+        </div>
+
+        <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
+          <div className="mb-4">
+            <p className="text-sm font-medium text-foreground/80">测试邮件发送</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              保存 SMTP 配置后，向指定邮箱发送一封测试邮件，用于确认主机、端口、授权码和发件人配置是否可用。
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 md:flex-row md:items-end">
+            <FormInput
+              className="flex-1"
+              label="测试收件邮箱"
+              placeholder="admin@example.com"
+              value={testEmail}
+              onValueChange={value => {
+                setTestEmailTouched(true);
+                setTestEmail(value);
+              }}
+              description="建议填写你能立即查收的邮箱，便于确认是否进入垃圾邮件。"
+            />
+            <Button
+              color="primary"
+              variant="flat"
+              isLoading={testingEmail}
+              isDisabled={testingEmail}
+              startContent={!testingEmail ? <Send className="h-4 w-4" /> : undefined}
+              onPress={handleSendTestEmail}
+            >
+              发送测试邮件
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-5 rounded-xl border border-border/60 bg-muted/30 p-4 shadow-[0_0_0_0.5px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-[0_0_0_0.5px_rgba(255,255,255,0.06),0_2px_8px_rgba(0,0,0,0.3)]">

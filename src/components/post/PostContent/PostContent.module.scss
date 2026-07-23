@@ -118,7 +118,14 @@
   margin-bottom: 0;
 }
 
-.postContent :global(.article-image) {
+/* ================================
+   编辑器输出的图片样式
+   article-image / image-align-* / image-style-* / image-figure
+   ================================ */
+
+/* 文章图片基础 - 覆盖默认 img 的 box-shadow */
+/* 用 [class*=] 匹配，兼容历史数据中 class 粘连的图片（如 article-imageimage-align-center） */
+.postContent :global(img[class*="article-image"]) {
   display: block;
   max-width: 100%;
   height: auto;
@@ -132,17 +139,18 @@
   border-radius: 8px;
 }
 
-.postContent :global(.image-align-left) {
+/* 图片对齐（用 [class*=] 同时兼容规范 class 与历史粘连 class，仅作用于 img 避免影响 figure） */
+.postContent :global(img[class*="image-align-left"]) {
   margin-left: 0;
   margin-right: auto;
 }
 
-.postContent :global(.image-align-center) {
+.postContent :global(img[class*="image-align-center"]) {
   margin-left: auto;
   margin-right: auto;
 }
 
-.postContent :global(.image-align-right) {
+.postContent :global(img[class*="image-align-right"]) {
   margin-left: auto;
   margin-right: 0;
 }
@@ -1070,17 +1078,127 @@
   margin: 1.5rem 0;
 }
 
+.postContent :global(.video-gallery-container.video-gallery-cols-1),
+.postContent :global(.video-gallery-container.video-cols-1) {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.postContent :global(.video-gallery-container.video-gallery-cols-2),
+.postContent :global(.video-gallery-container.video-cols-2) {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.postContent :global(.video-gallery-container.video-gallery-cols-3),
+.postContent :global(.video-gallery-container.video-cols-3) {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.postContent :global(.video-gallery-container.video-gallery-cols-4) {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.postContent :global(.video-gallery-container.video-gallery-count-1) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.postContent :global(.video-gallery-container.video-gallery-count-2:not(.video-gallery-cols-1):not(.video-cols-1)) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.postContent :global(.video-gallery-container.video-gallery-count-3.video-gallery-cols-4) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.postContent :global(.video-gallery-container:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-gallery-item:only-child)),
+.postContent :global(.video-gallery-container:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-item:only-child)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.postContent :global(.video-gallery-container:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):not(.video-gallery-cols-1):not(.video-cols-1):has(> .video-gallery-item:nth-child(2):last-child)),
+.postContent :global(.video-gallery-container:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):not(.video-gallery-cols-1):not(.video-cols-1):has(> .video-item:nth-child(2):last-child)) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.postContent :global(.video-gallery-container.video-gallery-cols-4:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-gallery-item:nth-child(3):last-child)),
+.postContent :global(.video-gallery-container.video-gallery-cols-4:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-item:nth-child(3):last-child)) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item),
+.postContent :global(.video-gallery-container .video-item) {
+  position: relative;
+  overflow: visible;
+  border-radius: 12px;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item:hover),
+.postContent :global(.video-gallery-container .video-item:hover) {
+  box-shadow: none;
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item:hover .video-gallery-play-overlay) {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item:hover .video-gallery-play-overlay .play-icon) {
+  transform: scale(1.1);
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item:hover .video-gallery-caption) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .postContent :global(.video-gallery-container .video-gallery-video-wrapper),
 .postContent :global(.video-gallery-container .video-wrapper) {
   padding-bottom: var(--video-gallery-ratio);
   background: var(--card);
-  border-radius: 12px 12px 0 0;
+  border-radius: 12px;
 }
 
 .postContent :global(.video-gallery-container .video-gallery-video),
 .postContent :global(.video-gallery-container .video-wrapper video),
 .postContent :global(.video-gallery-container .video-wrapper iframe) {
-  border-radius: 12px 12px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 12px;
+  border: none;
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item > video),
+.postContent :global(.video-gallery-container .video-item > video) {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  cursor: pointer;
+  background: #000;
+  border: none;
+  border-radius: 12px;
+}
+
+/* 播放覆盖层 */
+.postContent :global(.video-gallery-container .video-gallery-play-overlay) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
 }
 
 .postContent :global(.video-gallery-container .video-gallery-play-overlay .play-icon) {
@@ -1090,27 +1208,89 @@
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
 }
 
+/* 视频标题/描述：发布页按图片说明样式展示 */
 .postContent :global(.video-gallery-container .video-gallery-caption) {
-  padding: 12px 16px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4), transparent);
-  transform: translateY(10px);
-  pointer-events: none;
+  position: static;
+  padding: 10px 8px 0;
+  color: var(--anzhiyu-secondtext, var(--muted-foreground, #6b7280));
+  text-align: center;
+  background: transparent;
+  opacity: 1;
+  transform: none;
+  transition: color 0.3s ease;
+  pointer-events: auto;
 }
 
-.postContent :global(.video-gallery-container .video-gallery-title) {
-  font-size: 14px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+.postContent :global(.video-gallery-container .video-gallery-title),
+.postContent :global(.video-gallery-container .video-gallery-item-title) {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: inherit;
+  text-shadow: none;
 }
 
-.postContent :global(.video-gallery-container .video-gallery-desc) {
-  font-size: 12px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+.postContent :global(.video-gallery-container .video-gallery-desc),
+.postContent :global(.video-gallery-container .video-gallery-item-desc) {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: inherit;
+  opacity: 0.9;
+  text-shadow: none;
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item > .video-gallery-title),
+.postContent :global(.video-gallery-container .video-item > .video-gallery-title),
+.postContent :global(.video-gallery-container .video-gallery-item > .video-gallery-item-title),
+.postContent :global(.video-gallery-container .video-item > .video-gallery-item-title),
+.postContent :global(.video-gallery-container .video-gallery-item > .video-gallery-desc),
+.postContent :global(.video-gallery-container .video-item > .video-gallery-desc),
+.postContent :global(.video-gallery-container .video-gallery-item > .video-gallery-item-desc),
+.postContent :global(.video-gallery-container .video-item > .video-gallery-item-desc) {
+  position: static;
+  z-index: auto;
+  color: var(--anzhiyu-secondtext, var(--muted-foreground, #6b7280));
+  text-align: center;
+  opacity: 1;
+  transform: none;
+  transition: color 0.3s ease;
+  pointer-events: auto;
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item > .video-gallery-title),
+.postContent :global(.video-gallery-container .video-item > .video-gallery-title),
+.postContent :global(.video-gallery-container .video-gallery-item > .video-gallery-item-title),
+.postContent :global(.video-gallery-container .video-item > .video-gallery-item-title) {
+  margin: 10px 8px 0;
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item > .video-gallery-desc),
+.postContent :global(.video-gallery-container .video-item > .video-gallery-desc),
+.postContent :global(.video-gallery-container .video-gallery-item > .video-gallery-item-desc),
+.postContent :global(.video-gallery-container .video-item > .video-gallery-item-desc) {
+  margin: 4px 8px 0;
+}
+
+.postContent :global(.video-gallery-container .video-gallery-item:hover > .video-gallery-title),
+.postContent :global(.video-gallery-container .video-item:hover > .video-gallery-title),
+.postContent :global(.video-gallery-container .video-gallery-item:hover > .video-gallery-item-title),
+.postContent :global(.video-gallery-container .video-item:hover > .video-gallery-item-title),
+.postContent :global(.video-gallery-container .video-gallery-item:hover > .video-gallery-desc),
+.postContent :global(.video-gallery-container .video-item:hover > .video-gallery-desc),
+.postContent :global(.video-gallery-container .video-gallery-item:hover > .video-gallery-item-desc),
+.postContent :global(.video-gallery-container .video-item:hover > .video-gallery-item-desc) {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .postContent :global(.video-gallery-container .video-caption) {
-  padding: 12px;
-  background: var(--card);
-  font-size: 14px;
+  padding: 10px 8px 0;
+  color: var(--anzhiyu-secondtext, var(--muted-foreground, #6b7280));
+  background: transparent;
+  font-size: 0.95rem;
+  line-height: 1.6;
   text-align: center;
 }
 
@@ -1903,10 +2083,39 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
+  /* Video Gallery 响应式 */
+  .postContent :global(.video-gallery-container) {
+    --video-gallery-gap: 18px;
+    margin: 1rem 0 1.25rem;
+  }
+
+  .postContent :global(.video-gallery-container.video-gallery-cols-2),
   .postContent :global(.video-gallery-container.video-gallery-cols-3),
   .postContent :global(.video-gallery-container.video-gallery-cols-4),
-  .postContent :global(.video-gallery-container.video-cols-3) {
-    grid-template-columns: repeat(2, 1fr);
+  .postContent :global(.video-gallery-container.video-cols-2),
+  .postContent :global(.video-gallery-container.video-cols-3),
+  .postContent :global(.video-gallery-container.video-gallery-count-2:not(.video-gallery-cols-1):not(.video-cols-1)),
+  .postContent :global(.video-gallery-container.video-gallery-count-3.video-gallery-cols-4),
+  .postContent :global(.video-gallery-container:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):not(.video-gallery-cols-1):not(.video-cols-1):has(> .video-gallery-item:nth-child(2):last-child)),
+  .postContent :global(.video-gallery-container:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):not(.video-gallery-cols-1):not(.video-cols-1):has(> .video-item:nth-child(2):last-child)),
+  .postContent :global(.video-gallery-container.video-gallery-cols-4:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-gallery-item:nth-child(3):last-child)),
+  .postContent :global(.video-gallery-container.video-gallery-cols-4:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-item:nth-child(3):last-child)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .postContent :global(.video-gallery-container .video-gallery-caption),
+  .postContent :global(.video-gallery-container .video-caption) {
+    padding-top: 8px;
+  }
+
+  .postContent :global(.video-gallery-container .video-gallery-title),
+  .postContent :global(.video-gallery-container .video-gallery-item-title) {
+    font-size: 0.9rem;
+  }
+
+  .postContent :global(.video-gallery-container .video-gallery-desc),
+  .postContent :global(.video-gallery-container .video-gallery-item-desc) {
+    font-size: 0.82rem;
   }
 
   .postContent :global(.markdown-music-player .music-player-container) {
@@ -2040,6 +2249,12 @@
     flex-basis: 100%;
     width: 100%;
   }
+}
+
+.postContent :global(.video-gallery-container.video-gallery-count-1),
+.postContent :global(.video-gallery-container:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-gallery-item:only-child)),
+.postContent :global(.video-gallery-container:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-item:only-child)) {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 /* ===================== 打印样式 ===================== */

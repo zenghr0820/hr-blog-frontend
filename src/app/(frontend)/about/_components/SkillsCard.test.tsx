@@ -48,4 +48,21 @@ describe("SkillsCard", () => {
 
     expect(container.querySelectorAll('img[src="https://example.com/icon.png"]')).toHaveLength(3);
   });
+
+  it("keeps rendering creativity data image URLs as img elements", () => {
+    const dataIcon = "data:image/svg+xml;base64,PHN2Zy8+";
+
+    useSiteConfigStore.setState({
+      siteConfig: {
+        CREATIVITY: {
+          creativity_list: [{ name: "React", icon: dataIcon, color: "#222222" }],
+        },
+      },
+    });
+
+    const { container } = render(<SkillsCard skillsTips={{ tips: "技能", title: "创意模块" }} />);
+
+    expect(container.querySelectorAll(`img[src="${dataIcon}"]`)).toHaveLength(3);
+    expect(container.querySelectorAll(`[data-icon="${dataIcon}"]`)).toHaveLength(0);
+  });
 });

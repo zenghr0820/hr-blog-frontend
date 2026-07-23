@@ -6,6 +6,7 @@ import {
   buildWebSiteJsonLd,
   createRobotsMetadata,
   fetchSiteConfigForSeo,
+  getFaviconContentType,
   resolveMetadataBase,
   resolveSeoSiteInfo,
 } from "@/lib/seo";
@@ -48,10 +49,7 @@ function createMetadata(config: {
 }): Metadata {
   const iconUrl = config.iconUrl || "/favicon.ico";
   const logoUrl = config.logoUrl || "/static/img/logo-192x192.png";
-
-  const isSvg = iconUrl.endsWith(".svg");
-  const isIco = iconUrl.endsWith(".ico");
-  const iconType = isSvg ? "image/svg+xml" : isIco ? "image/x-icon" : "image/png";
+  const iconType = getFaviconContentType(iconUrl);
   const metadataBase = resolveMetadataBase(config.siteUrl);
 
   return {
@@ -67,8 +65,8 @@ function createMetadata(config: {
     },
     robots: createRobotsMetadata(true),
     icons: {
-      icon: [{ url: iconUrl, type: iconType }],
-      shortcut: [{ url: iconUrl, type: iconType }],
+      icon: [{ url: iconUrl, type: iconType, sizes: "any" }],
+      shortcut: [{ url: iconUrl, type: iconType, sizes: "any" }],
       apple: logoUrl,
     },
     manifest: "/manifest.json",

@@ -24,6 +24,7 @@ import {
   HardDrive,
   CloudCog,
   Globe,
+  Cloud,
   CloudUpload,
   Warehouse,
   Layers,
@@ -51,6 +52,7 @@ import { TencentCosForm } from "@/components/admin/storage/TencentCosForm";
 import { AliyunOssForm } from "@/components/admin/storage/AliyunOssForm";
 import { AwsS3Form } from "@/components/admin/storage/AwsS3Form";
 import { QiniuKodoForm } from "@/components/admin/storage/QiniuKodoForm";
+import { UpyunForm } from "@/components/admin/storage/UpyunForm";
 
 // ===================================
 // 存储类型图标 & 配色
@@ -63,6 +65,7 @@ const TYPE_ICONS: Record<StoragePolicyType, typeof Server> = {
   aliyun_oss: CloudUpload,
   aws_s3: Server,
   qiniu_kodo: Warehouse,
+  upyun: Cloud,
 };
 
 const TYPE_ICON_COLORS: Record<StoragePolicyType, string> = {
@@ -72,6 +75,7 @@ const TYPE_ICON_COLORS: Record<StoragePolicyType, string> = {
   aliyun_oss: "text-orange-500 bg-orange-500/10",
   aws_s3: "text-amber-600 bg-amber-500/10",
   qiniu_kodo: "text-cyan-600 bg-cyan-500/10",
+  upyun: "text-violet-500 bg-violet-500/10",
 };
 
 // ===================================
@@ -323,6 +327,14 @@ const CREATE_DEFAULTS: Record<StoragePolicyType, Partial<StoragePolicy>> = {
     max_size: 10485760,
     settings: { upload_method: "client" },
   },
+  upyun: {
+    type: "upyun",
+    name: "",
+    virtual_path: "/upyun",
+    server: "https://v0.api.upyun.com",
+    max_size: 10485760,
+    settings: { upload_method: "server" },
+  },
 };
 
 /** 动态表单映射 */
@@ -333,6 +345,7 @@ const CREATE_FORM_MAP: Record<StoragePolicyType, typeof LocalForm> = {
   aliyun_oss: AliyunOssForm,
   aws_s3: AwsS3Form,
   qiniu_kodo: QiniuKodoForm,
+  upyun: UpyunForm,
 };
 
 /** 表单主体（通过 key 强制重新挂载，确保 useState 初始化器每次打开都执行） */

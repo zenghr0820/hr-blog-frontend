@@ -20,6 +20,10 @@ import type {
 } from "@/types/post-management";
 import { toSameOriginMediaUrl } from "@/utils/same-origin-media-url";
 
+interface UploadArticleImageOptions {
+  disableImageStyle?: boolean;
+}
+
 export const postManagementApi = {
   /**
    * 获取管理端文章列表（服务端分页 + 筛选 + 搜索）
@@ -125,9 +129,12 @@ export const postManagementApi = {
    * 上传文章图片
    * POST /api/articles/upload
    */
-  async uploadArticleImage(file: File): Promise<string> {
+  async uploadArticleImage(file: File, options: UploadArticleImageOptions = {}): Promise<string> {
     const formData = new FormData();
     formData.append("file", file);
+    if (options.disableImageStyle) {
+      formData.append("skip_image_style", "true");
+    }
 
     const response = await apiClient.post<{ url: string; file_id: string }>("/api/articles/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },

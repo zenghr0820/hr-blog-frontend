@@ -16,9 +16,9 @@ import {
   Pagination,
 } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, lazy, Suspense } from "react";
+import { useCallback, useMemo, useState, lazy, Suspense } from "react";
 import { Plus, Upload, Download, Trash2, ShieldAlert, ChevronDown, FileText, Tags } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const PostCategoryTagManager = lazy(() => import("@/components/admin/post-management/PostCategoryTagManager"));
 import { adminContainerVariants, adminItemVariants } from "@/lib/motion";
@@ -35,8 +35,26 @@ import { TableEmptyState } from "@/components/admin/TableEmptyState";
 
 export default function PostManagementPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const pm = usePostManagementPage();
   const [showCategoryTagManager, setShowCategoryTagManager] = useState(false);
+  const taxonomyManagerRequested = searchParams.get("manage") === "taxonomy";
+  const isCategoryTagManagerOpen = showCategoryTagManager || taxonomyManagerRequested;
+  const initialTaxonomyTab = useMemo(() => {
+    return searchParams.get("tab") === "tags" ? "tags" : "categories";
+  }, [searchParams]);
+
+  const handleCloseCategoryTagManager = useCallback(() => {
+    setShowCategoryTagManager(false);
+    if (taxonomyManagerRequested) {
+      const nextParams = new URLSearchParams(searchParams.toString());
+      nextParams.delete("manage");
+      nextParams.delete("tab");
+      const nextQuery = nextParams.toString();
+      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
+    }
+  }, [pathname, router, searchParams, taxonomyManagerRequested]);
 
   const renderCell = usePostRenderCell({
     defaultCover: pm.defaultCover,
@@ -330,8 +348,13 @@ export default function PostManagementPage() {
       />
 
       <Suspense fallback={null}>
-        {showCategoryTagManager && (
-          <PostCategoryTagManager isOpen={showCategoryTagManager} onClose={() => setShowCategoryTagManager(false)} />
+        {isCategoryTagManagerOpen && (
+          <PostCategoryTagManager
+            key={initialTaxonomyTab}
+            isOpen={isCategoryTagManagerOpen}
+            onClose={handleCloseCategoryTagManager}
+            initialTab={initialTaxonomyTab}
+          />
         )}
       </Suspense>
     </motion.div>

@@ -22,7 +22,12 @@ export function toSameOriginMediaUrl(url: string): string {
   try {
     const u = new URL(trimmed);
     const path = u.pathname + u.search;
-    if (path.startsWith("/api/f/") || path.startsWith("/static/") || path.startsWith("/needcache/")) {
+    if (
+      path.startsWith("/api/f/") ||
+      path.startsWith("/api/pro/images/") ||
+      path.startsWith("/static/") ||
+      path.startsWith("/needcache/")
+    ) {
       return path;
     }
   } catch {

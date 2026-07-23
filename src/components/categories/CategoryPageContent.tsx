@@ -12,10 +12,6 @@ export function CategoryPageContent() {
   const siteConfig = useSiteConfigStore(state => state.siteConfig);
   const { data: categories = [], isLoading, isError } = useCategories();
 
-  const homeTopCategories = useMemo(() => {
-    return siteConfig?.HOME_TOP?.category || [];
-  }, [siteConfig]);
-
   const isOneImageEnabled = useMemo(() => {
     const pageConfig = siteConfig?.page?.one_image?.config || siteConfig?.page?.oneImageConfig;
     return pageConfig?.categories?.enable || false;
@@ -23,33 +19,9 @@ export function CategoryPageContent() {
 
   const goToCategory = useCallback(
     (categoryName: string) => {
-      const homeCategory = homeTopCategories.find(category => category.name === categoryName);
-      if (homeCategory?.path) {
-        const path = homeCategory.path;
-        const isExternal = homeCategory.isExternal ?? false;
-        const isExternalUrl = /^https?:\/\//.test(path);
-
-        if (isExternalUrl) {
-          if (isExternal) {
-            window.open(path, "_blank");
-          } else {
-            window.location.href = path;
-          }
-          return;
-        }
-
-        if (isExternal) {
-          window.open(path, "_blank");
-          return;
-        }
-
-        router.push(path);
-        return;
-      }
-
       router.push(`/categories/${encodeURIComponent(categoryName)}/`);
     },
-    [homeTopCategories, router]
+    [router]
   );
 
   return (

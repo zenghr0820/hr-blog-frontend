@@ -50,6 +50,7 @@ interface SiteConfigState {
   getSiteUrl: () => string | null;
   getApiUrl: () => string | null;
   enableRegistration: () => boolean;
+  isRightMenuDisabled: () => boolean;
   userPanelConfig: () => {
     showUserCenter: boolean;
     showNotifications: boolean;
@@ -217,6 +218,10 @@ export const useSiteConfigStore = create<SiteConfigState>((set, get) => ({
       showPublishArticle: isSettingEnabled(userPanel.show_publish_article),
       showAdminDashboard: isSettingEnabled(userPanel.show_admin_dashboard),
     };
+  },
+
+  isRightMenuDisabled: () => {
+    return isSettingEnabled(get().siteConfig.DISABLE_RIGHT_MENU, false);
   },
 
   enableRegistration: () => {

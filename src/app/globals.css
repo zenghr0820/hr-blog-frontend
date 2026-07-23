@@ -1397,6 +1397,11 @@ html.minimal-theme {
 /* ===================== HeroUI Toast - ElementUI Message 风格 ===================== */
 /* 紧凑居中、类型着色、无关闭按钮、自动消失 */
 
+/* Toast 容器层级，高于文件管理器弹窗（2200）和其他自定义弹窗 */
+.anheyu-toast-region {
+  z-index: 99999;
+}
+
 /* Toast 基础样式 */
 [data-toast] {
   width: auto !important;

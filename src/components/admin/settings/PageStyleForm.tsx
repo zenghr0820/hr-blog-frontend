@@ -9,6 +9,7 @@ import { SettingsSection, SettingsFieldGroup } from "./SettingsSection";
 import { Spinner } from "@/components/ui/spinner";
 import {
   KEY_ENABLE_EXTERNAL_LINK_WARNING,
+  KEY_DISABLE_RIGHT_MENU,
   KEY_CUSTOM_HEADER_HTML,
   KEY_CUSTOM_FOOTER_HTML,
   KEY_CUSTOM_CSS,
@@ -48,6 +49,13 @@ export function PageStyleForm({ values, onChange, loading }: PageStyleFormProps)
           description="开启后，点击外部链接时会显示中间提示页面，提醒用户即将跳转到外部网站，倒计时 5 秒后自动跳转。支持「本次会话不再提示」选项。"
           checked={values[KEY_ENABLE_EXTERNAL_LINK_WARNING] === "true"}
           onCheckedChange={v => onChange(KEY_ENABLE_EXTERNAL_LINK_WARNING, String(v))}
+        />
+
+        <FormSwitch
+          label="关闭右键菜单"
+          description="开启后，全站不再显示本站自定义右键菜单，访客右键时使用浏览器原生菜单。关闭后保留本站右键菜单和访客本地快捷键偏好。"
+          checked={values[KEY_DISABLE_RIGHT_MENU] === "true"}
+          onCheckedChange={v => onChange(KEY_DISABLE_RIGHT_MENU, String(v))}
         />
       </SettingsSection>
 

@@ -100,7 +100,7 @@ export function useKeyboardShortcuts() {
         keys: ["Shift", "L"],
         description: "友链页面",
         action: () => {
-          router.push("/links");
+          router.push("/link");
           setShowShortcutsPanel(false);
           setIsShiftPressed(false);
           pressedKeysRef.current.clear();

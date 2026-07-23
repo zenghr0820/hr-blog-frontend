@@ -5,6 +5,7 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { DocDetailContent } from "@/components/doc/DocDetailContent";
+import { buildArticleSeoKeywords } from "@/lib/article-seo-keywords";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const viewport: Viewport = {
@@ -74,7 +75,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     title: pageTitle,
     absoluteTitle: true,
     description: article.summaries?.[0] || article.title,
-    keywords: article.keywords || article.post_tags?.map((tag: { name: string }) => tag.name),
+    keywords: buildArticleSeoKeywords(article.keywords, article.post_tags),
     path: `/doc/${encodeURIComponent(id)}`,
     type: "article",
     image: article.cover_url,

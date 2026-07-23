@@ -28,11 +28,14 @@ interface LinkDialogProps {
   currentUrl?: string;
   /** 当前链接的 target 属性 */
   currentTarget?: string | null;
-  onConfirm: (url: string, target: string) => void;
+  /** 当前链接或选区的可见文本 */
+  currentText?: string;
+  onConfirm: (url: string, target: string, text: string) => void;
   onRemove: () => void;
 }
 
-export function LinkDialog({ isOpen, onOpenChange, currentUrl, currentTarget, onConfirm, onRemove }: LinkDialogProps) {
+export function LinkDialog({ isOpen, onOpenChange, currentUrl, currentTarget, currentText, onConfirm, onRemove }: LinkDialogProps) {
+  const [text, setText] = useState("");
   const [url, setUrl] = useState("");
   const [openInNewTab, setOpenInNewTab] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,6 +43,7 @@ export function LinkDialog({ isOpen, onOpenChange, currentUrl, currentTarget, on
 
   // 打开时重置状态（渲染阶段调整状态，React 推荐模式）
   if (isOpen && !prevIsOpen) {
+    setText(currentText || "");
     setUrl(currentUrl || "");
     // 编辑模式：保留当前 target；新建模式：默认新标签页打开
     setOpenInNewTab(currentUrl ? currentTarget === "_blank" : true);
@@ -62,13 +66,14 @@ export function LinkDialog({ isOpen, onOpenChange, currentUrl, currentTarget, on
     if (!urlTrimmed) return "";
     return isValidUrl(urlTrimmed) ? "" : "请输入有效的链接地址";
   }, [urlTrimmed]);
-  const canConfirm = urlTrimmed.length > 0 && !urlError;
+  const textTrimmed = text.trim();
+  const canConfirm = textTrimmed.length > 0 && urlTrimmed.length > 0 && !urlError;
 
   const handleConfirm = useCallback(() => {
     if (!canConfirm) return;
-    onConfirm(urlTrimmed, openInNewTab ? "_blank" : "_self");
+    onConfirm(urlTrimmed, openInNewTab ? "_blank" : "_self", textTrimmed);
     onOpenChange(false);
-  }, [canConfirm, urlTrimmed, openInNewTab, onConfirm, onOpenChange]);
+  }, [canConfirm, urlTrimmed, openInNewTab, textTrimmed, onConfirm, onOpenChange]);
 
   const handleRemove = useCallback(() => {
     onRemove();
@@ -101,6 +106,17 @@ export function LinkDialog({ isOpen, onOpenChange, currentUrl, currentTarget, on
             </ModalHeader>
 
             <ModalBody className="gap-3">
+              <Input
+                label="链接文本"
+                placeholder="显示在文章中的文字"
+                value={text}
+                onValueChange={setText}
+                onKeyDown={handleKeyDown}
+                variant="bordered"
+                autoComplete="off"
+                startContent={<Link2 className="w-4 h-4 text-muted-foreground shrink-0" />}
+              />
+
               <Input
                 ref={inputRef}
                 label="链接地址"

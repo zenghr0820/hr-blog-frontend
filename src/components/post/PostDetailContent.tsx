@@ -57,6 +57,10 @@ function buildArticleContentWithCustomJS(contentHTML: string, customJS?: string)
   return `${contentHTML}\n<script data-article-custom-js="true">\n${escapedCustomJS}\n</script>`;
 }
 
+function hasCustomPostHTML(value: unknown): value is string {
+  return typeof value === "string" && value.trim() !== "";
+}
+
 export function PostDetailContent({ article, recentArticles = [] }: PostDetailContentProps) {
   const router = useRouter();
   const commentConfig = useSiteConfigStore(useShallow(state => state.siteConfig?.comment));
@@ -64,6 +68,8 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
   const siteOwnerName = useSiteConfigStore(state => state.siteConfig?.frontDesk?.siteOwner?.name);
   const postDefaultCover = useSiteConfigStore(state => state.siteConfig?.post?.default?.default_cover);
   const articleShowRelated = useSiteConfigStore(state => state.siteConfig?.article?.showRelated);
+  const customPostTopHTML = useSiteConfigStore(state => state.siteConfig?.CUSTOM_POST_TOP_HTML);
+  const customPostBottomHTML = useSiteConfigStore(state => state.siteConfig?.CUSTOM_POST_BOTTOM_HTML);
   const gravatarUrl = useSiteConfigStore(state => state.siteConfig?.GRAVATAR_URL);
   const defaultGravatarType = useSiteConfigStore(state => state.siteConfig?.DEFAULT_GRAVATAR_TYPE);
   const setPageTitle = usePageStore(state => state.setPageTitle);
@@ -321,6 +327,15 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
               )
             ) : (
             <>
+            {hasCustomPostHTML(customPostTopHTML) && (
+              <div
+                className={styles.customPostHtml}
+                data-custom-post-html="top"
+                dangerouslySetInnerHTML={{ __html: customPostTopHTML }}
+              />
+            )}
+
+
             {/* 文章内容 */}
             <PostContent
               content={contentWithCustomJS}
@@ -328,6 +343,14 @@ export function PostDetailContent({ article, recentArticles = [] }: PostDetailCo
               articleInfo={articleCopyInfo}
               articleId={article.id}
             />
+
+            {hasCustomPostHTML(customPostBottomHTML) && (
+              <div
+                className={styles.customPostHtml}
+                data-custom-post-html="bottom"
+                dangerouslySetInnerHTML={{ __html: customPostBottomHTML }}
+              />
+            )}
 
             {/* 版权信息 */}
             <PostCopyright article={article} />

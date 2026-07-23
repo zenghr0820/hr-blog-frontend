@@ -15,7 +15,7 @@
  */
 "use client";
 
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useCallback } from "react";
 import styles from "./PostContent.module.scss";
 import "./content-blocks-frontend.scss";
 import "./code-highlight.css";
@@ -25,7 +25,6 @@ import { useHiddenEvents } from "./hooks/use-hidden-events";
 import { useTabsEvents } from "./hooks/use-tabs-events";
 import { useInlinePasswordEvents } from "./hooks/use-inline-password-events";
 import { useLinkCardNormalize } from "./hooks/use-link-card-normalize";
-import { useIconifyNormalize } from "./hooks/use-iconify-normalize";
 import { usePaidContentEvents } from "./hooks/use-paid-content-events";
 import { usePasswordContentEvents } from "./hooks/use-password-content-events";
 import { useLoginRequiredEvents } from "./hooks/use-login-required-events";
@@ -37,6 +36,9 @@ import { useCodeHighlight } from "./hooks/use-code-highlight";
 import { useKatex } from "./hooks/use-katex";
 import { useMusicPlayer } from "./hooks/use-music-player";
 import { useMermaid } from "./hooks/use-mermaid";
+// 上游新增功能所需的导入（尚未提取到独立 Hook）
+import { enhanceVideoGalleryFirstFrames } from "@/lib/video-gallery";
+import { parseMusicPlayerData, renderMusicPlayerHtml } from "@/lib/marked-extensions";
 
 interface ArticleCopyInfo {
   isReprint?: boolean;
@@ -64,9 +66,6 @@ function restoreLazyImages(html: string): string {
   return out;
 }
 
-/** Mermaid 缩放清理函数类型 */
-type MermaidCleanupFn = (() => void) | null;
-
 declare global {
   interface Window {
     __musicPlayerToggle?: (playerId: string) => Promise<void>;
@@ -76,9 +75,11 @@ declare global {
 
 export function PostContent({ content, articleInfo, enableScripts = false, articleId = "" }: PostContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
-  const mermaidCleanupRef = useRef<MermaidCleanupFn>(null);
   const eventCleanupRef = useRef<(() => void) | null>(null);
-  const imageObserverRef = useRef<IntersectionObserver | null>(null);
+  // 代码复制事件清理 ref（独立管理，避免与 eventCleanupRef 混合）
+  const codeCopyCleanupRef = useRef<(() => void) | null>(null);
+  // Safari 滚轮修复清理 ref
+  const codeWheelCleanupRef = useRef<(() => void) | null>(null);
 
   const innerHtml = useMemo(
     () => ({ __html: restoreLazyImages(content) }),
@@ -93,22 +94,91 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
   const { initCodeCopyEvents } = useCodeCopyEvents();
   const { initCodeHighlight } = useCodeHighlight();
   const { initKatex } = useKatex();
-  const { initTipEvents, cleanupTipEvents } = useTipEvents();
+  const { initTipEvents } = useTipEvents();
   const { initHiddenEvents } = useHiddenEvents();
   const { initTabsEvents } = useTabsEvents();
   const { initInlinePasswordEvents } = useInlinePasswordEvents();
   const { normalizeLinkCardStructure } = useLinkCardNormalize();
-  const { normalizeIconifyIcons } = useIconifyNormalize();
   const { initPaidContentEvents } = usePaidContentEvents();
   const { initPasswordContentEvents } = usePasswordContentEvents(articleId);
   const { initLoginRequiredContentEvents } = useLoginRequiredEvents();
   const { initMusicPlayers, handleMusicPlayerToggle, handleMusicPlayerSeek } = useMusicPlayer();
   const { renderAndInitMermaid, shouldRerenderOnThemeChange, isDark } = useMermaid();
 
+  // 规范化音乐播放器 DOM 结构：将 .markdown-music-player 替换为完整播放器 HTML
+  // TODO: 后续提取到 useMusicPlayer Hook 中
+  const normalizeMusicPlayerStructure = useCallback((container: HTMLElement) => {
+    let musicPlayerIndex = 0;
+    container.querySelectorAll<HTMLElement>(".markdown-music-player").forEach(player => {
+      if (player.querySelector(".music-player-container .music-audio-element")) {
+        return;
+      }
+
+      const musicData = parseMusicPlayerData(player.getAttribute("data-music-data") || "");
+      const neteaseId = player.getAttribute("data-music-id") || musicData.neteaseId || "";
+      const name = musicData.name || player.getAttribute("data-music-name") || "";
+      const artist = musicData.artist || player.getAttribute("data-music-artist") || "";
+      const pic = musicData.pic || player.getAttribute("data-music-pic") || "";
+      const color = musicData.color || "";
+      const template = document.createElement("template");
+      template.innerHTML = renderMusicPlayerHtml({
+        neteaseId,
+        name,
+        artist,
+        pic,
+        color,
+        playerId: player.id || undefined,
+        instanceKey: musicPlayerIndex,
+      });
+      musicPlayerIndex += 1;
+
+      const nextPlayer = template.content.firstElementChild;
+      if (nextPlayer) {
+        player.replaceWith(nextPlayer);
+      }
+    });
+  }, []);
+
+  // 代码块展开/收起事件已通过内联 onclick 处理，无需额外事件委托
+  // TODO: 后续提取到独立 Hook 中
+  const initCodeExpandEvents = useCallback((_container: HTMLElement) => {
+    // 事件处理已在 initCodeBlockIcons 中通过内联 onclick 实现
+  }, []);
+
+  // 修复 Safari/WebKit 下代码块吞掉鼠标垂直滚轮、导致整页无法滚动的问题。
+  // 代码块内 .md-editor-code-block 是横向滚动容器(overflow-x:auto)，Safari 会把落在其上的
+  // 垂直滚轮"锁定"在该容器却不向页面冒泡。此处仅在 Safari 手动把垂直滚轮转发给页面，
+  // 横向(deltaX 主导，如 shift+滚轮/触控板横向)仍交给代码块，保留横向滚动能力。
+  // TODO: 后续提取到独立 Hook 中
+  const initCodeBlockWheelFix = useCallback((container: HTMLElement): (() => void) | undefined => {
+    const isAppleSafari =
+      typeof navigator !== "undefined" &&
+      /Apple/.test(navigator.vendor) &&
+      /Safari/.test(navigator.userAgent) &&
+      !/Chrome|CriOS|Chromium|Android/.test(navigator.userAgent);
+    if (!isAppleSafari) return;
+
+    // 事件委托绑定在内容容器上（该元素由 React 通过 ref 管理，稳定存在，
+    // 不会随代码块内部 DOM 被 dangerouslySetInnerHTML 重建而失效）：
+    // 当鼠标落在代码块内且以垂直滚动为主时，手动把滚动转发给页面。
+    const onWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest?.(".md-editor-code")) return;
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        window.scrollBy(0, e.deltaY);
+      }
+    };
+    container.addEventListener("wheel", onWheel, { passive: false });
+    return () => container.removeEventListener("wheel", onWheel);
+  }, []);
+
   // 处理文章内容中的链接、标签插件等
   useEffect(() => {
     if (!contentRef.current) return;
     const currentContent = contentRef.current;
+    // 增强视频画廊首帧：为视频元素添加首帧封面
+    enhanceVideoGalleryFirstFrames(currentContent);
 
     const links = currentContent.querySelectorAll('a[href^="http"]');
     links.forEach(link => {
@@ -119,7 +189,6 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
     });
 
     normalizeLinkCardStructure(currentContent);
-    normalizeIconifyIcons(currentContent);
 
     const loadImage = (img: HTMLImageElement) => {
       const dataSrc = img.getAttribute("data-src");
@@ -131,6 +200,8 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
     };
 
     const images = currentContent.querySelectorAll<HTMLImageElement>("img[data-src]");
+    // 使用局部变量管理 IntersectionObserver，不需要跨渲染持久化
+    let lazyImageObserver: IntersectionObserver | null = null;
     if (images.length > 0) {
       const hasPlaceholder = (el: HTMLImageElement) => (el.getAttribute("src") || "").startsWith("data:image/svg+xml;base64,");
       images.forEach(img => {
@@ -147,25 +218,23 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
 
         const stillRemaining = currentContent.querySelectorAll<HTMLImageElement>("img[data-src]");
         if (stillRemaining.length > 0 && "IntersectionObserver" in window) {
-          if (imageObserverRef.current) {
-            imageObserverRef.current.disconnect();
-          }
-          imageObserverRef.current = new IntersectionObserver(
+          lazyImageObserver = new IntersectionObserver(
             entries => {
               entries.forEach(entry => {
                 if (entry.isIntersecting) {
                   loadImage(entry.target as HTMLImageElement);
-                  imageObserverRef.current?.unobserve(entry.target);
+                  lazyImageObserver?.unobserve(entry.target);
                 }
               });
             },
             { rootMargin: "300px" }
           );
-          stillRemaining.forEach(img => imageObserverRef.current?.observe(img));
+          stillRemaining.forEach(img => lazyImageObserver?.observe(img));
         }
       }
     }
 
+    // 初始化标签插件事件
     initTipEvents(currentContent);
 
     if (eventCleanupRef.current) {
@@ -193,25 +262,37 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
 
     normalizeCodeBlocks(currentContent);
     initCodeBlockIcons(currentContent);
+    initCodeExpandEvents(currentContent);
 
-    const codeCopyCleanup = initCodeCopyEvents(currentContent);
-    if (codeCopyCleanup) cleanups.push(codeCopyCleanup);
+    // 代码复制事件使用独立 ref 管理，避免与 eventCleanupRef 混合
+    if (codeCopyCleanupRef.current) {
+      codeCopyCleanupRef.current();
+    }
+    codeCopyCleanupRef.current = initCodeCopyEvents(currentContent) ?? null;
 
-    eventCleanupRef.current = () => cleanups.forEach(fn => fn());
+    // Safari 滚轮修复使用独立 ref 管理
+    if (codeWheelCleanupRef.current) {
+      codeWheelCleanupRef.current();
+    }
+    codeWheelCleanupRef.current = initCodeBlockWheelFix(currentContent) ?? null;
 
     initCodeHighlight(currentContent);
     initKatex(currentContent);
 
     window.__musicPlayerToggle = handleMusicPlayerToggle;
     window.__musicPlayerSeek = handleMusicPlayerSeek;
+    normalizeMusicPlayerStructure(currentContent);
     initMusicPlayers(currentContent);
 
     // 渲染 Mermaid 图表并初始化缩放功能
-    renderAndInitMermaid(currentContent, mermaidCleanupRef);
+    renderAndInitMermaid(currentContent);
 
+    // Fancybox 图片灯箱：异步加载，cancelled 标记防止卸载后回调操作已分离的 DOM
+    let cancelled = false;
     let fancyboxModule: typeof import("@fancyapps/ui") | null = null;
     import("@fancyapps/ui/dist/fancybox/fancybox.css");
     import("@fancyapps/ui").then(mod => {
+      if (cancelled) return;
       fancyboxModule = mod;
       mod.Fancybox.bind(currentContent, "img:not(a img)", {
         groupAll: true,
@@ -219,19 +300,20 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
     });
 
     return () => {
+      cancelled = true;
       if (eventCleanupRef.current) {
         eventCleanupRef.current();
         eventCleanupRef.current = null;
       }
-      if (mermaidCleanupRef.current) {
-        mermaidCleanupRef.current();
-        mermaidCleanupRef.current = null;
+      if (codeCopyCleanupRef.current) {
+        codeCopyCleanupRef.current();
+        codeCopyCleanupRef.current = null;
       }
-      if (imageObserverRef.current) {
-        imageObserverRef.current.disconnect();
-        imageObserverRef.current = null;
+      if (codeWheelCleanupRef.current) {
+        codeWheelCleanupRef.current();
+        codeWheelCleanupRef.current = null;
       }
-      cleanupTipEvents();
+      lazyImageObserver?.disconnect();
       delete window.__musicPlayerToggle;
       delete window.__musicPlayerSeek;
       if (fancyboxModule) {
@@ -242,7 +324,6 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
   }, [
     content,
     normalizeLinkCardStructure,
-    normalizeIconifyIcons,
     normalizeCodeBlocks,
     initTipEvents,
     initHiddenEvents,
@@ -253,13 +334,15 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
     initLoginRequiredContentEvents,
     initCodeBlockIcons,
     initCodeCopyEvents,
+    initCodeExpandEvents,
+    initCodeBlockWheelFix,
     initCodeHighlight,
     initKatex,
     initMusicPlayers,
     handleMusicPlayerToggle,
     handleMusicPlayerSeek,
+    normalizeMusicPlayerStructure,
     renderAndInitMermaid,
-    cleanupTipEvents,
   ]);
 
   // 主题切换时重新渲染 Mermaid 图表以适配深/浅模式
@@ -267,7 +350,7 @@ export function PostContent({ content, articleInfo, enableScripts = false, artic
   useEffect(() => {
     // 首挂时主渲染 useEffect 已经按当前主题渲染过一次，跳过避免重复
     if (!shouldRerenderOnThemeChange(contentRef.current)) return;
-    renderAndInitMermaid(contentRef.current!, mermaidCleanupRef);
+    renderAndInitMermaid(contentRef.current!);
   }, [isDark, renderAndInitMermaid, shouldRerenderOnThemeChange]);
 
   // 浏览器不会执行通过 innerHTML 插入的 <script>，需手动重建节点

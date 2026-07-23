@@ -5,8 +5,9 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer, NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { useState, useRef } from "react";
-import { Pencil, ImageIcon, Upload } from "lucide-react";
+import { ImageIcon, Pencil, Upload, Video } from "lucide-react";
 import { postManagementApi } from "@/lib/api/post-management";
+import { stripVideoFirstFrameFragment, withVideoFirstFrameFragment } from "@/lib/video-gallery";
 
 // ---- 类型定义 ----
 interface VideoGalleryItem {
@@ -17,16 +18,54 @@ interface VideoGalleryItem {
   type?: string;
 }
 
+const FALLBACK_VIDEO_TYPE = "video/mp4";
+const MOBILE_VIDEO_PLAYBACK_PROPS = {
+  "webkit-playsinline": "true",
+  "x5-playsinline": "true",
+  "x5-video-player-type": "h5",
+} as const;
+const VIDEO_TYPE_BY_EXTENSION: Record<string, string> = {
+  mp4: "video/mp4",
+  m4v: "video/mp4",
+  webm: "video/webm",
+  ogg: "video/ogg",
+  ogv: "video/ogg",
+  mov: "video/quicktime",
+};
+
+const getFileExtension = (file: File) => file.name.split(".").pop()?.toLowerCase() ?? "";
+const hasKnownVideoExtension = (file: File) =>
+  Object.prototype.hasOwnProperty.call(VIDEO_TYPE_BY_EXTENSION, getFileExtension(file));
+const isVideoFile = (file: File) => file.type.startsWith("video/") || hasKnownVideoExtension(file);
+const getVideoType = (file: File) =>
+  file.type.startsWith("video/") ? file.type : VIDEO_TYPE_BY_EXTENSION[getFileExtension(file)] || FALLBACK_VIDEO_TYPE;
+const normalizeVideoGalleryRatio = (ratio: string) => {
+  const trimmed = ratio.trim();
+  const match = trimmed.match(/^(\d+(?:\.\d+)?)\s*[:/]\s*(\d+(?:\.\d+)?)$/);
+  if (!match) return trimmed;
+
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+    return trimmed;
+  }
+
+  return `${Number(((height / width) * 100).toFixed(4))}%`;
+};
+
 // ---- React NodeView 组件 ----
 function VideoGalleryBlockView({ node, updateAttributes }: NodeViewProps) {
   const [editing, setEditing] = useState(false);
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPosterIndex, setUploadingPosterIndex] = useState<number | null>(null);
+  const [uploadingVideoIndex, setUploadingVideoIndex] = useState<number | null>(null);
+  const posterFileInputRef = useRef<HTMLInputElement>(null);
+  const videoFileInputRef = useRef<HTMLInputElement>(null);
   const [uploadTarget, setUploadTarget] = useState<number>(0);
 
   const cols = parseInt((node.attrs.cols as string) || "2", 10);
   const gap = (node.attrs.gap as string) || "10px";
   const ratio = (node.attrs.ratio as string) || "";
+  const normalizedRatio = normalizeVideoGalleryRatio(ratio);
   const itemsRaw = (node.attrs.items as string) || "[]";
 
   let items: VideoGalleryItem[] = [];
@@ -35,25 +74,74 @@ function VideoGalleryBlockView({ node, updateAttributes }: NodeViewProps) {
   } catch {
     items = [];
   }
+  const countClass = items.length > 0 ? ` video-gallery-count-${Math.min(items.length, 4)}` : "";
 
   const handleUploadPoster = async (file: File, index: number) => {
-    setUploadingIndex(index);
+    setUploadingPosterIndex(index);
     try {
       const url = await postManagementApi.uploadArticleImage(file);
       const newItems = [...items];
       newItems[index] = { ...newItems[index], poster: url };
       updateAttributes({ items: JSON.stringify(newItems) });
     } catch (err) {
-      console.error("上传失败", err);
+      console.error("上传封面失败", err);
     } finally {
-      setUploadingIndex(null);
+      setUploadingPosterIndex(null);
     }
   };
+
+  const handleUploadVideo = async (file: File, index: number) => {
+    if (!isVideoFile(file)) {
+      console.error("请选择视频文件");
+      return;
+    }
+
+    setUploadingVideoIndex(index);
+    try {
+      const url = await postManagementApi.uploadArticleImage(file, { disableImageStyle: true });
+      const newItems = [...items];
+      const currentItem = newItems[index] ?? { src: "", poster: "", title: "", desc: "", type: FALLBACK_VIDEO_TYPE };
+      newItems[index] = { ...currentItem, src: url, type: getVideoType(file) };
+      updateAttributes({ items: JSON.stringify(newItems) });
+    } catch (err) {
+      console.error("上传视频失败", err);
+    } finally {
+      setUploadingVideoIndex(null);
+    }
+  };
+
+  const uploadInputs = (
+    <>
+      <input
+        ref={posterFileInputRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={e => {
+          const file = e.target.files?.[0];
+          if (file) handleUploadPoster(file, uploadTarget);
+          e.target.value = "";
+        }}
+      />
+      <input
+        ref={videoFileInputRef}
+        type="file"
+        accept="video/*,.mp4,.m4v,.webm,.ogg,.ogv,.mov"
+        hidden
+        onChange={e => {
+          const file = e.target.files?.[0];
+          if (file) handleUploadVideo(file, uploadTarget);
+          e.target.value = "";
+        }}
+      />
+    </>
+  );
 
   // ---- 编辑模式 ----
   if (editing) {
     return (
       <NodeViewWrapper className="video-gallery-block-wrapper my-3">
+        {uploadInputs}
         <div className="editor-btn-edit-panel" contentEditable={false}>
           <div className="editor-btn-header">
             <span className="editor-btn-title">编辑视频画廊</span>
@@ -129,19 +217,33 @@ function VideoGalleryBlockView({ node, updateAttributes }: NodeViewProps) {
                       </button>
                     </div>
                     <div className="editor-btngroup-item-fields">
-                      <label className="editor-btn-field">
-                        <span className="editor-btn-label">视频 URL</span>
-                        <input
-                          value={item.src}
-                          onChange={e => {
-                            const newItems = [...items];
-                            newItems[i] = { ...newItems[i], src: e.target.value };
-                            updateAttributes({ items: JSON.stringify(newItems) });
+                      <div className="editor-video-upload-row">
+                        <label className="editor-btn-field">
+                          <span className="editor-btn-label">视频 URL</span>
+                          <input
+                            value={item.src}
+                            onChange={e => {
+                              const newItems = [...items];
+                              newItems[i] = { ...newItems[i], src: e.target.value };
+                              updateAttributes({ items: JSON.stringify(newItems) });
+                            }}
+                            className="editor-btn-input"
+                            placeholder="视频 URL"
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          className="editor-video-upload-btn"
+                          disabled={uploadingVideoIndex === i}
+                          onClick={() => {
+                            setUploadTarget(i);
+                            videoFileInputRef.current?.click();
                           }}
-                          className="editor-btn-input"
-                          placeholder="视频 URL"
-                        />
-                      </label>
+                        >
+                          <Video />
+                          {uploadingVideoIndex === i ? "上传中..." : "上传视频"}
+                        </button>
+                      </div>
                       <div className="editor-btn-row">
                         <label className="editor-btn-field">
                           <span className="editor-btn-label">封面图 URL</span>
@@ -198,6 +300,7 @@ function VideoGalleryBlockView({ node, updateAttributes }: NodeViewProps) {
                             <option value="video/mp4">MP4</option>
                             <option value="video/webm">WebM</option>
                             <option value="video/ogg">OGG</option>
+                            <option value="video/quicktime">MOV</option>
                           </select>
                         </label>
                       </div>
@@ -238,17 +341,7 @@ function VideoGalleryBlockView({ node, updateAttributes }: NodeViewProps) {
   // ---- 预览模式 ----
   return (
     <NodeViewWrapper className="video-gallery-block-wrapper my-3">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={e => {
-          const file = e.target.files?.[0];
-          if (file) handleUploadPoster(file, uploadTarget);
-          e.target.value = "";
-        }}
-      />
+      {uploadInputs}
       <div className="editor-node-hover-wrap" contentEditable={false}>
         <div
           className="editor-node-edit-btn"
@@ -262,26 +355,52 @@ function VideoGalleryBlockView({ node, updateAttributes }: NodeViewProps) {
         </div>
         {items.length > 0 ? (
           <div
-            className={`video-gallery-container video-gallery-cols-${cols}`}
+            className={`video-gallery-container video-gallery-cols-${cols}${countClass}`}
             style={{
               gap,
-              ...(ratio ? ({ "--video-gallery-ratio": ratio } as React.CSSProperties) : {}),
+              ...(normalizedRatio ? ({ "--video-gallery-ratio": normalizedRatio } as React.CSSProperties) : {}),
             }}
           >
-            {items.map((item, i) =>
-              item.poster ? (
+            {items.map((item, i) => {
+              const playbackSrc = withVideoFirstFrameFragment(item.src, item.poster);
+
+              return item.poster || item.src ? (
                 <div key={i} className="video-gallery-item">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.poster} alt={item.title || ""} className="video-gallery-poster" />
-                  <div className="video-gallery-play-overlay">
-                    <div className="video-gallery-play-btn">
-                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
+                  {item.src ? (
+                    <div className="video-gallery-video-wrapper">
+                      <video
+                        className="video-gallery-video"
+                        controls
+                        preload="metadata"
+                        playsInline
+                        {...MOBILE_VIDEO_PLAYBACK_PROPS}
+                        src={playbackSrc}
+                        poster={item.poster || undefined}
+                      >
+                        <source src={playbackSrc} type={item.type || FALLBACK_VIDEO_TYPE} />
+                      </video>
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.poster} alt={item.title || ""} className="video-gallery-poster" />
+                      <div className="video-gallery-play-overlay">
+                        <div className="video-gallery-play-btn">
+                          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {(item.title || item.desc) && (
+                    <div className="video-gallery-caption">
+                      {item.title && <div className="video-gallery-title">{item.title}</div>}
+                      {item.desc && <div className="video-gallery-desc">{item.desc}</div>}
+                    </div>
+                  )}
                 </div>
-              ) : uploadingIndex === i ? (
+              ) : uploadingPosterIndex === i || uploadingVideoIndex === i ? (
                 <div key={i} className="editor-gallery-uploading">
                   <div className="editor-gallery-spinner" />
                   <span>上传中...</span>
@@ -292,7 +411,7 @@ function VideoGalleryBlockView({ node, updateAttributes }: NodeViewProps) {
                   className="editor-gallery-empty-item"
                   onClick={() => {
                     setUploadTarget(i);
-                    fileInputRef.current?.click();
+                    videoFileInputRef.current?.click();
                   }}
                   onDragOver={e => {
                     e.preventDefault();
@@ -303,17 +422,40 @@ function VideoGalleryBlockView({ node, updateAttributes }: NodeViewProps) {
                     e.preventDefault();
                     e.currentTarget.classList.remove("is-dragover");
                     const file = e.dataTransfer.files[0];
-                    if (file && file.type.startsWith("image/")) handleUploadPoster(file, i);
+                    if (!file) return;
+                    if (isVideoFile(file)) handleUploadVideo(file, i);
+                    else if (file.type.startsWith("image/")) handleUploadPoster(file, i);
                   }}
                 >
-                  <ImageIcon />
-                  <span className="editor-gallery-empty-text">上传封面图</span>
-                  <span className="editor-gallery-upload-btn">
-                    <Upload className="w-3 h-3" /> 上传图片
+                  <Video />
+                  <span className="editor-gallery-empty-text">上传视频或封面图</span>
+                  <span className="editor-gallery-upload-actions">
+                    <button
+                      type="button"
+                      className="editor-gallery-upload-btn"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setUploadTarget(i);
+                        videoFileInputRef.current?.click();
+                      }}
+                    >
+                      <Upload className="w-3 h-3" /> 上传视频
+                    </button>
+                    <button
+                      type="button"
+                      className="editor-gallery-upload-btn"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setUploadTarget(i);
+                        posterFileInputRef.current?.click();
+                      }}
+                    >
+                      <ImageIcon className="w-3 h-3" /> 上传封面
+                    </button>
                   </span>
                 </div>
-              )
-            )}
+              );
+            })}
           </div>
         ) : (
           <div
@@ -378,10 +520,16 @@ export const VideoGalleryBlock = Node.create({
             const video = itemEl.querySelector("video");
             const source = video?.querySelector("source");
             videoItems.push({
-              src: source?.getAttribute("src") || video?.getAttribute("src") || "",
+              src: stripVideoFirstFrameFragment(source?.getAttribute("src") || video?.getAttribute("src") || ""),
               poster: video?.getAttribute("poster") || "",
-              title: itemEl.querySelector(".video-gallery-title")?.textContent || "",
-              desc: itemEl.querySelector(".video-gallery-desc")?.textContent || "",
+              title:
+                itemEl.querySelector(".video-gallery-title")?.textContent ||
+                itemEl.querySelector(".video-gallery-item-title")?.textContent ||
+                "",
+              desc:
+                itemEl.querySelector(".video-gallery-desc")?.textContent ||
+                itemEl.querySelector(".video-gallery-item-desc")?.textContent ||
+                "",
               type: source?.getAttribute("type") || "video/mp4",
             });
           });
@@ -401,6 +549,7 @@ export const VideoGalleryBlock = Node.create({
     const cols = (node.attrs.cols as string) || "2";
     const gap = (node.attrs.gap as string) || "10px";
     const ratio = (node.attrs.ratio as string) || "";
+    const normalizedRatio = normalizeVideoGalleryRatio(ratio);
 
     let items: VideoGalleryItem[] = [];
     try {
@@ -409,34 +558,43 @@ export const VideoGalleryBlock = Node.create({
       items = [];
     }
 
-    const containerClass = `video-gallery-container video-gallery-cols-${cols}`;
-    const containerStyle = [`--video-gallery-gap: ${gap}`, ratio ? `--video-gallery-ratio: ${ratio}` : ""].filter(Boolean).join("; ");
+    const countClass = items.length > 0 ? ` video-gallery-count-${Math.min(items.length, 4)}` : "";
+    const containerClass = `video-gallery-container video-gallery-cols-${cols}${countClass}`;
+    const containerStyle = [`gap: ${gap}`, normalizedRatio ? `--video-gallery-ratio: ${normalizedRatio}` : ""]
+      .filter(Boolean)
+      .join("; ");
 
     const children = items.map(item => {
+      const playbackSrc = withVideoFirstFrameFragment(item.src || "", item.poster);
       const videoAttrs: Record<string, string> = {
         class: "video-gallery-video",
-        controls: "",
+        controls: "true",
         preload: "metadata",
-        playsinline: "",
+        playsinline: "true",
+        "webkit-playsinline": "true",
+        "x5-playsinline": "true",
+        "x5-video-player-type": "h5",
+        src: playbackSrc,
       };
       if (item.poster) videoAttrs.poster = item.poster;
 
       const sourceAttrs: Record<string, string> = {
-        src: item.src || "",
+        src: playbackSrc,
         type: item.type || "video/mp4",
       };
 
-      const captionChildren: (string | (string | Record<string, string>)[])[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const itemChildren: any[] = [
+        ["div", { class: "video-gallery-video-wrapper" }, ["video", videoAttrs, ["source", sourceAttrs]]],
+      ];
+      const captionChildren: typeof itemChildren = [];
+
       if (item.title) {
         captionChildren.push(["div", { class: "video-gallery-title" }, item.title]);
       }
       if (item.desc) {
         captionChildren.push(["div", { class: "video-gallery-desc" }, item.desc]);
       }
-
-      const itemChildren: unknown[] = [
-        ["div", { class: "video-gallery-video-wrapper" }, ["video", videoAttrs, ["source", sourceAttrs]]],
-      ];
       if (captionChildren.length > 0) {
         itemChildren.push(["div", { class: "video-gallery-caption" }, ...captionChildren]);
       }

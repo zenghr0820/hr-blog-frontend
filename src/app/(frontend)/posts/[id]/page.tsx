@@ -6,6 +6,7 @@ import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { PostDetailContent } from "@/components/post";
+import { buildArticleSeoKeywords } from "@/lib/article-seo-keywords";
 import { buildArticleJsonLd, buildPageMetadata, fetchSiteConfigForSeo, resolveSeoSiteInfo } from "@/lib/seo";
 
 /**
@@ -133,7 +134,7 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     title: article.title + " - Zenghr's blog",
     absoluteTitle: true,
     description: article.summaries?.[0] || article.title,
-    keywords: article.keywords || article.post_tags?.map((tag: { name: string }) => tag.name),
+    keywords: buildArticleSeoKeywords(article.keywords, article.post_tags),
     path: articlePath,
     type: "article",
     image: article.cover_url,

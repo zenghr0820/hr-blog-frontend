@@ -30,6 +30,18 @@ const nextConfig: NextConfig = {
     // 代理超时时间，默认 30s，文件上传后后端需要转发到七牛云，处理时间可能超过 30s
     // 超时后 Next.js 代理会关闭连接，导致前端收到 ERR_CONNECTION_CLOSED
     proxyTimeout: 300000,
+    // 将多模块包合并为单一 chunk，减少细碎 JS 请求数量
+    optimizePackageImports: [
+      "lucide-react",
+      "@heroui/react",
+      "@iconify/react",
+      "framer-motion",
+      "date-fns",
+      "react-icons",
+      "react-aria-components",
+      "clsx",
+      "tailwind-merge",
+    ],
   },
 
   // 代理配置 - 客户端请求代理到 Go 后端

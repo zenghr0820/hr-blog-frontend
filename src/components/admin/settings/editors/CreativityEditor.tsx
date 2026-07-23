@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence, Reorder, useDragControls } from "framer-motion";
 import { Input } from "@heroui/react";
 import { Plus, Palette, ImageIcon, GripVertical } from "lucide-react";
-import Image from "next/image";
+import { CreativityIcon } from "@/components/ui/creativity-icon";
 import { FormIconSelector } from "@/components/ui/form-icon-selector";
 
 // ─── 类型 ──────────────────────────────────────────────────────────
@@ -208,13 +208,11 @@ function CreativityRow({
           }}
         >
           {item.icon ? (
-            <Image
-              src={item.icon}
+            <CreativityIcon
+              icon={item.icon}
               alt={item.name || "icon"}
-              width={20}
-              height={20}
+              size={20}
               className="object-contain"
-              unoptimized
             />
           ) : (
             <ImageIcon className="w-3.5 h-3.5 text-white/50" />

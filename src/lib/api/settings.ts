@@ -24,4 +24,12 @@ export const settingsApi = {
   update(settings: SettingsMap): Promise<ApiResponse<void>> {
     return apiClient.post<void>("/api/settings/update", settings);
   },
+
+  /**
+   * 发送测试邮件
+   * @param toEmail - 接收测试邮件的邮箱地址
+   */
+  testEmail(toEmail: string): Promise<ApiResponse<void>> {
+    return apiClient.post<void>("/api/settings/test-email", { to_email: toEmail });
+  },
 };

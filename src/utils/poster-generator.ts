@@ -44,47 +44,52 @@ function isInlineImageUrl(url: string): boolean {
   return url.startsWith("data:") || url.startsWith("blob:");
 }
 
-function shouldSetCrossOriginForImageLoad(url: string): boolean {
-  if (typeof window === "undefined") {
-    return true;
-  }
-  if (isInlineImageUrl(url)) {
-    return false;
-  }
-  try {
-    const resolved = new URL(url, window.location.href);
-    return resolved.origin !== window.location.origin;
-  } catch {
-    return true;
-  }
-}
+type ImageFetchCandidate = {
+  url: string;
+  mode: RequestMode;
+  credentials: RequestCredentials;
+};
 
 /**
- * 将跨域 HTTP(S) 图片改走本站 /api/proxy/download，避免第三方未返回 CORS 头导致 Canvas 污染、头像/封面无法绘制。
- * data:、blob:、同源 URL 保持原样；已是代理地址时不重复包装。
+ * 为海报图片构造 fetch 候选。
+ * 跨域图片和可能 302 到对象存储的同源直链优先走本站代理，避免跳转到未开放 CORS 的图床时被浏览器拦截。
+ * 代理不可用时再按原 URL 的同源性直取，兼容需要当前登录态的同源资源和已开放 CORS 的图床。
  */
-function rewriteCrossOriginImageUrlForPosterCanvas(imageUrl: string): string {
-  if (typeof window === "undefined") {
-    return imageUrl;
-  }
+function getImageFetchCandidates(imageUrl: string): ImageFetchCandidate[] {
   const trimmed = imageUrl.trim();
   if (trimmed === "" || isInlineImageUrl(trimmed)) {
-    return imageUrl;
+    return [];
   }
-  if (trimmed.includes("/api/proxy/download?")) {
-    return imageUrl;
+  if (typeof window === "undefined") {
+    return [{ url: trimmed, mode: "cors", credentials: "omit" }];
   }
+
   try {
-    const resolved = new URL(imageUrl, window.location.href);
-    if (resolved.origin === window.location.origin) {
-      return imageUrl;
-    }
+    const resolved = new URL(trimmed, window.location.href);
     if (resolved.protocol !== "http:" && resolved.protocol !== "https:") {
-      return imageUrl;
+      return [{ url: trimmed, mode: "cors", credentials: "omit" }];
     }
-    return `/api/proxy/download?url=${encodeURIComponent(resolved.href)}`;
+
+    const candidates: ImageFetchCandidate[] = [];
+    const isCrossOrigin = resolved.origin !== window.location.origin;
+    const isRedirectingMediaPath = ["/api/f/", "/api/pro/f/", "/f/", "/needcache/"].some(prefix =>
+      resolved.pathname.startsWith(prefix)
+    );
+    if (resolved.pathname !== "/api/proxy/download" && (isCrossOrigin || isRedirectingMediaPath)) {
+      candidates.push({
+        url: `/api/proxy/download?url=${encodeURIComponent(resolved.href)}`,
+        mode: "same-origin",
+        credentials: "same-origin",
+      });
+    }
+    if (!isCrossOrigin) {
+      candidates.push({ url: trimmed, mode: "same-origin", credentials: "same-origin" });
+    } else {
+      candidates.push({ url: resolved.href, mode: "cors", credentials: "omit" });
+    }
+    return candidates;
   } catch {
-    return imageUrl;
+    return [{ url: trimmed, mode: "cors", credentials: "omit" }];
   }
 }
 
@@ -101,35 +106,45 @@ function loadImageElement(url: string, crossOrigin: boolean): Promise<HTMLImageE
 }
 
 /**
- * 加载图片时统一转为 Blob URL 后绘制，避免复用无 CORS 图片缓存或代理链路差异导致 Canvas 被污染。
+ * 加载图片时统一转为 Blob URL 后绘制。
+ * 代理与 CORS 直取都失败时交给调用方降级占位，避免回退到远程 img 后污染 Canvas。
  */
 async function loadImage(url: string): Promise<HTMLImageElement> {
-  const resolvedUrl = rewriteCrossOriginImageUrlForPosterCanvas(url);
+  const trimmed = url.trim();
 
-  if (!isInlineImageUrl(resolvedUrl)) {
-    try {
-      const fetchMode: RequestMode = shouldSetCrossOriginForImageLoad(resolvedUrl) ? "cors" : "same-origin";
-      const res = await fetch(resolvedUrl, {
-        mode: fetchMode,
-        credentials: "same-origin",
-        cache: "no-store",
-      });
-      if (!res.ok) {
-        throw new Error(`Image fetch failed: ${res.status}`);
-      }
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
+  if (!isInlineImageUrl(trimmed)) {
+    const candidates = getImageFetchCandidates(trimmed);
+    let lastError: unknown;
+
+    for (const candidate of candidates) {
       try {
-        return await loadImageElement(blobUrl, false);
-      } finally {
-        URL.revokeObjectURL(blobUrl);
+        const res = await fetch(candidate.url, {
+          mode: candidate.mode,
+          credentials: candidate.credentials,
+          cache: "no-store",
+        });
+        if (!res.ok) {
+          throw new Error(`Image fetch failed: ${res.status}`);
+        }
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        try {
+          return await loadImageElement(blobUrl, false);
+        } finally {
+          URL.revokeObjectURL(blobUrl);
+        }
+      } catch (error) {
+        lastError = error;
       }
-    } catch {
-      // 兜底保留原 img 加载路径；正常代理路径应优先走上面的 Blob 绘制。
     }
+
+    if (lastError instanceof Error) {
+      throw lastError;
+    }
+    throw new Error(`Image load failed: ${trimmed}`);
   }
 
-  return loadImageElement(resolvedUrl, shouldSetCrossOriginForImageLoad(resolvedUrl));
+  return loadImageElement(trimmed, false);
 }
 
 /**
@@ -214,6 +229,29 @@ function wrapText(
     ctx.fillText(line, x, currentY);
   }
   return currentY;
+}
+
+function truncateText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
+  const normalized = text.trim();
+  if (normalized === "" || maxWidth <= 0) {
+    return "";
+  }
+
+  if (ctx.measureText(normalized).width <= maxWidth) {
+    return normalized;
+  }
+
+  const ellipsis = "...";
+  if (ctx.measureText(ellipsis).width > maxWidth) {
+    return "";
+  }
+
+  let end = normalized.length;
+  while (end > 0 && ctx.measureText(`${normalized.slice(0, end)}${ellipsis}`).width > maxWidth) {
+    end--;
+  }
+
+  return end > 0 ? `${normalized.slice(0, end)}${ellipsis}` : "";
 }
 
 /**
@@ -340,16 +378,24 @@ export async function generatePoster(config: PosterConfig): Promise<string> {
   const bottomAvatarSize = 50;
   const bottomTextSpacing = 14;
   const bottomSectionSpacing = 40;
+  const bottomSectionPadding = padding;
+  const bottomSectionMaxWidth = width - bottomSectionPadding * 2;
 
   ctx.font = "bold 26px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  const siteNameWidth = ctx.measureText(config.siteName || config.author).width;
+  const siteNameText = config.siteName || config.author;
+  const siteNameWidth = ctx.measureText(siteNameText).width;
   ctx.font = "18px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-  const subtitleWidth = config.siteSubtitle ? ctx.measureText(config.siteSubtitle).width : 0;
-  const leftTextWidth = Math.max(siteNameWidth, subtitleWidth);
+  const subtitleText = config.siteSubtitle?.trim() || "";
+  const subtitleWidth = subtitleText ? ctx.measureText(subtitleText).width : 0;
+  const leftTextMaxWidth = Math.max(
+    0,
+    bottomSectionMaxWidth - bottomAvatarSize - bottomTextSpacing - bottomSectionSpacing - qrCodeSize
+  );
+  const leftTextWidth = Math.min(Math.max(siteNameWidth, subtitleWidth), leftTextMaxWidth);
 
   const bottomSectionWidth = bottomAvatarSize + bottomTextSpacing + leftTextWidth + bottomSectionSpacing + qrCodeSize;
 
-  const bottomSectionStartX = (width - bottomSectionWidth) / 2;
+  const bottomSectionStartX = Math.max(bottomSectionPadding, (width - bottomSectionWidth) / 2);
   const qrCodeY = lineY + 20;
 
   const bottomAvatarX = bottomSectionStartX;
@@ -393,12 +439,12 @@ export async function generatePoster(config: PosterConfig): Promise<string> {
   ctx.fillStyle = textColor;
   ctx.font = "bold 26px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
   ctx.textAlign = "left";
-  ctx.fillText(config.siteName || config.author, bottomTextX, siteNameY);
+  ctx.fillText(truncateText(ctx, siteNameText, leftTextWidth), bottomTextX, siteNameY);
 
-  if (config.siteSubtitle) {
+  if (subtitleText) {
     ctx.fillStyle = secondaryTextColor;
     ctx.font = "18px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-    ctx.fillText(config.siteSubtitle, bottomTextX, subtitleY);
+    ctx.fillText(truncateText(ctx, subtitleText, leftTextWidth), bottomTextX, subtitleY);
   }
 
   // 生成二维码

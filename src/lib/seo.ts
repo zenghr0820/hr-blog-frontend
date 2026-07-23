@@ -6,6 +6,8 @@ const DEFAULT_SITE_DESCRIPTION = "生活明朗，万物可爱";
 const DEFAULT_ICON_URL = "/favicon.ico";
 const DEFAULT_LOGO_URL = "/static/img/logo-192x192.png";
 const DEV_SITE_URL = "http://localhost:3000";
+const FAVICON_CACHE_PARAM = "v";
+const URL_PARSE_BASE = "https://anheyu.local";
 
 export interface SeoSiteInfo {
   siteName: string;
@@ -71,6 +73,51 @@ export function normalizePath(path: string): string {
   return withLeadingSlash.replace(/\/$/, "");
 }
 
+function stripLegacyFaviconImageStyleSuffix(pathname: string): string {
+  return pathname.replace(/\/ArticleImage$/i, "");
+}
+
+function getFaviconVersion(pathname: string): string | undefined {
+  const filename = pathname.split("/").pop() || "";
+  const match = filename.match(/^(.+?)\.(png|svg|ico|jpe?g|webp|gif)$/i);
+  return match?.[1] || undefined;
+}
+
+function normalizeFaviconUrl(rawUrl?: string): string {
+  const value = rawUrl?.trim();
+  if (!value) return DEFAULT_ICON_URL;
+  if (value === DEFAULT_ICON_URL || /^(data|blob):/i.test(value)) return value;
+
+  try {
+    const isAbsolute = /^https?:\/\//i.test(value);
+    const parsed = new URL(value, isAbsolute ? undefined : URL_PARSE_BASE);
+    parsed.pathname = stripLegacyFaviconImageStyleSuffix(parsed.pathname);
+
+    const version = getFaviconVersion(parsed.pathname);
+    if (version && !parsed.searchParams.has(FAVICON_CACHE_PARAM)) {
+      parsed.searchParams.set(FAVICON_CACHE_PARAM, version);
+    }
+
+    return isAbsolute ? parsed.toString() : `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return value.replace(/\/ArticleImage(?=([?#]|$))/i, "");
+  }
+}
+
+export function getFaviconContentType(iconUrl: string): string {
+  try {
+    const parsed = new URL(iconUrl, URL_PARSE_BASE);
+    const pathname = parsed.pathname.toLowerCase();
+    if (pathname.endsWith(".svg")) return "image/svg+xml";
+    if (pathname.endsWith(".ico")) return "image/x-icon";
+  } catch {
+    const pathOnly = iconUrl.split(/[?#]/)[0].toLowerCase();
+    if (pathOnly.endsWith(".svg")) return "image/svg+xml";
+    if (pathOnly.endsWith(".ico")) return "image/x-icon";
+  }
+  return "image/png";
+}
+
 export function getSeoBackendUrl(): string {
   return process.env.API_URL || process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8091";
 }
@@ -94,14 +141,14 @@ export async function fetchSiteConfigForSeo(): Promise<SiteConfigData | null> {
 
 export function resolveSeoSiteInfo(siteConfig?: SiteConfigData | null): SeoSiteInfo {
   const siteName = siteConfig?.APP_NAME || DEFAULT_SITE_NAME;
-  const description = siteConfig?.SUB_TITLE || DEFAULT_SITE_DESCRIPTION;
+  const description = siteConfig?.SITE_DESCRIPTION || siteConfig?.SUB_TITLE || DEFAULT_SITE_DESCRIPTION;
   const siteUrl = normalizeSiteUrl(siteConfig?.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL);
 
   return {
     siteName,
     description,
     siteUrl,
-    iconUrl: siteConfig?.ICON_URL || DEFAULT_ICON_URL,
+    iconUrl: normalizeFaviconUrl(siteConfig?.ICON_URL),
     logoUrl: siteConfig?.LOGO_URL || siteConfig?.LOGO_URL_192x192 || DEFAULT_LOGO_URL,
   };
 }

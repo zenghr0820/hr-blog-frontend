@@ -43,6 +43,7 @@ import {
 import { useCallback, useState, useEffect } from "react";
 import { MathFormulaDialog, type MathFormulaType } from "./MathFormulaDialog";
 import { LinkDialog, ImageDialog } from "./EditorDialogs";
+import { applyLinkUpdate, getCurrentLinkText } from "./editor-link-utils";
 import { MATH_INLINE_EDIT_EVENT, type MathInlineEditDetail } from "./extensions/math-inline";
 
 export type EditorMode = "visual" | "html" | "markdown";
@@ -296,28 +297,21 @@ export function EditorToolbar({ editor, onAIWriting, editorMode = "visual", onMo
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [linkCurrentUrl, setLinkCurrentUrl] = useState("");
   const [linkCurrentTarget, setLinkCurrentTarget] = useState<string | null>(null);
+  const [linkCurrentText, setLinkCurrentText] = useState("");
 
   const openLinkDialog = useCallback(() => {
     if (!editor) return;
     const attrs = editor.getAttributes("link");
     setLinkCurrentUrl(attrs.href || "");
     setLinkCurrentTarget(attrs.target ?? null);
+    setLinkCurrentText(getCurrentLinkText(editor));
     setLinkDialogOpen(true);
   }, [editor]);
 
   const handleLinkConfirm = useCallback(
-    (url: string, target: string) => {
+    (url: string, target: string, text: string) => {
       if (!editor) return;
-      if (!url) {
-        editor.chain().focus().extendMarkRange("link").unsetLink().run();
-      } else {
-        editor
-          .chain()
-          .focus()
-          .extendMarkRange("link")
-          .setLink({ href: url, target, rel: target === "_blank" ? "noopener noreferrer" : null })
-          .run();
-      }
+      applyLinkUpdate(editor, { url, target, text });
     },
     [editor]
   );
@@ -743,6 +737,7 @@ export function EditorToolbar({ editor, onAIWriting, editorMode = "visual", onMo
         onOpenChange={setLinkDialogOpen}
         currentUrl={linkCurrentUrl}
         currentTarget={linkCurrentTarget}
+        currentText={linkCurrentText}
         onConfirm={handleLinkConfirm}
         onRemove={handleLinkRemove}
       />

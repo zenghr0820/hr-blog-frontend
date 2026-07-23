@@ -13,6 +13,14 @@ import { useUiStore } from "@/store/ui-store";
 import { useSiteConfigStore } from "@/store/site-config-store";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
+import { shouldUseSiteRightMenu } from "./right-menu-policy";
+import {
+  RIGHT_MENU_RANDOM_PATH,
+  getRightMenuSections,
+  resolveImageContext,
+  type RightMenuImageContext,
+  type RightMenuItem,
+} from "./right-menu-model";
 import styles from "./styles.module.css";
 
 // Ctrl 键提示相关常量
@@ -56,6 +64,7 @@ export function RightMenu() {
   const isCommentBarrageVisible = useUiStore(s => s.isCommentBarrageVisible);
   const toggleCommentBarrage = useUiStore(s => s.toggleCommentBarrage);
   const siteConfig = useSiteConfigStore(s => s.siteConfig);
+  const isRightMenuDisabled = useSiteConfigStore(s => s.isRightMenuDisabled());
 
   const [isVisible, setIsVisible] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
@@ -64,6 +73,7 @@ export function RightMenu() {
   const [isTextSelected, setIsTextSelected] = useState(false);
   const [capturedText, setCapturedText] = useState("");
   const [isTextInPostDetail, setIsTextInPostDetail] = useState(false);
+  const [imageContext, setImageContext] = useState<RightMenuImageContext | null>(null);
   const [hasCommentSection, setHasCommentSection] = useState(false);
   const [isClickOnMusicPlayer, setIsClickOnMusicPlayer] = useState(false);
   const [musicIsPlaying, setMusicIsPlaying] = useState(false);
@@ -78,6 +88,7 @@ export function RightMenu() {
     useCustomContextMenu,
     pathname,
     siteConfig,
+    isRightMenuDisabled,
   });
 
   // 同步 ref（放在 useEffect 中避免 lint 警告）
@@ -86,8 +97,8 @@ export function RightMenu() {
   }, [isVisible]);
 
   useEffect(() => {
-    stateRef.current = { useCustomContextMenu, pathname, siteConfig };
-  }, [useCustomContextMenu, pathname, siteConfig]);
+    stateRef.current = { useCustomContextMenu, pathname, siteConfig, isRightMenuDisabled };
+  }, [useCustomContextMenu, pathname, siteConfig, isRightMenuDisabled]);
 
   // 隐藏菜单（用 ref 读取 isVisible，避免 stale closure）
   const hideMenu = useCallback(() => {
@@ -143,10 +154,17 @@ export function RightMenu() {
   // 全局事件监听 - 注册一次，通过 ref 读取最新状态
   useEffect(() => {
     const handleContextMenu = (event: MouseEvent) => {
-      const { useCustomContextMenu: enabled, pathname: path } = stateRef.current;
-      if (!enabled) return;
-      if (path.startsWith("/doc/")) return;
-      if (window.innerWidth < 768) return;
+      const { useCustomContextMenu: enabled, pathname: path, isRightMenuDisabled: disabled } = stateRef.current;
+      if (
+        !shouldUseSiteRightMenu({
+          localEnabled: enabled,
+          siteDisabled: disabled,
+          pathname: path,
+          viewportWidth: window.innerWidth,
+        })
+      ) {
+        return;
+      }
 
       // 如果按住Ctrl键，显示原生右键菜单
       if (event.ctrlKey) {
@@ -167,6 +185,7 @@ export function RightMenu() {
       const target = event.target as HTMLElement;
       const musicPlayer = target.closest("#nav-music");
       setIsClickOnMusicPlayer(!!musicPlayer);
+      setImageContext(resolveImageContext(target));
 
       if (musicPlayer) {
         window.dispatchEvent(new CustomEvent("music-player-get-play-status"));
@@ -275,6 +294,7 @@ export function RightMenu() {
   };
 
   const refreshPage = () => {
+    hideMenu();
     window.location.reload();
   };
 
@@ -313,7 +333,7 @@ export function RightMenu() {
   };
 
   const randomNavigate = () => {
-    router.push("/random");
+    router.push(RIGHT_MENU_RANDOM_PATH);
     hideMenu();
   };
 
@@ -329,6 +349,33 @@ export function RightMenu() {
 
   const copyUrl = () => {
     safeClipboardWrite(window.location.href, "复制本页链接地址成功");
+    hideMenu();
+  };
+
+  const openImage = () => {
+    if (imageContext?.src) {
+      window.open(imageContext.src, "_blank", "noopener,noreferrer");
+    }
+    hideMenu();
+  };
+
+  const copyImageUrl = () => {
+    if (imageContext?.src) {
+      safeClipboardWrite(imageContext.src, "复制图片地址成功");
+    }
+    hideMenu();
+  };
+
+  const downloadImage = () => {
+    if (imageContext?.src) {
+      const link = document.createElement("a");
+      link.href = imageContext.src;
+      link.download = imageContext.filename || "";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
     hideMenu();
   };
 
@@ -364,8 +411,86 @@ export function RightMenu() {
     hideMenu();
   };
 
+  const handleMenuItemClick = (id: RightMenuItem["id"]) => {
+    switch (id) {
+      case "history-back":
+        goBack();
+        break;
+      case "history-forward":
+        goForward();
+        break;
+      case "refresh-page":
+        refreshPage();
+        break;
+      case "scroll-top":
+        scrollToTop();
+        break;
+      case "copy-selected-text":
+        copySelectedText();
+        break;
+      case "quote-to-comment":
+        quoteToComment();
+        break;
+      case "search-local":
+        searchLocal();
+        break;
+      case "search-baidu":
+        searchBaidu();
+        break;
+      case "open-image":
+        openImage();
+        break;
+      case "copy-image-url":
+        copyImageUrl();
+        break;
+      case "download-image":
+        downloadImage();
+        break;
+      case "random-post":
+        randomNavigate();
+        break;
+      case "categories":
+        gotoCategories();
+        break;
+      case "tags":
+        gotoTags();
+        break;
+      case "toggle-play-pause":
+        togglePlayPause();
+        break;
+      case "previous-song":
+        previousSong();
+        break;
+      case "next-song":
+        nextSong();
+        break;
+      case "copy-song-name":
+        copySongName();
+        break;
+      case "copy-url":
+        copyUrl();
+        break;
+      case "toggle-theme":
+        handleThemeToggle();
+        break;
+      case "toggle-comment-barrage":
+        handleToggleCommentBarrage();
+        break;
+    }
+  };
+
   // ===== 渲染 =====
   const menuClasses = cn(styles.rightMenu, "right-menu", isVisible && styles.visible, isHiding && styles.hiding);
+  const menuSections = getRightMenuSections({
+    textSelected: isTextSelected,
+    textInPostDetail: isTextInPostDetail,
+    image: imageContext,
+    clickOnMusicPlayer: isClickOnMusicPlayer,
+    musicIsPlaying,
+    hasCommentSection,
+    commentBarrageVisible: isCommentBarrageVisible,
+    darkMode: isDarkMode,
+  });
 
   return (
     <div
@@ -379,100 +504,24 @@ export function RightMenu() {
         transformOrigin,
       }}
     >
-      {/* 导航栏 - 小图标行 */}
-      <div className={`${styles.menuGroup} ${styles.menuSmall}`}>
-        <div className={styles.menuItem} onClick={goBack}>
-          <Icon icon="ri:arrow-left-s-line" />
-        </div>
-        <div className={styles.menuItem} onClick={goForward}>
-          <Icon icon="ri:arrow-right-s-line" />
-        </div>
-        <div className={styles.menuItem} onClick={refreshPage}>
-          <Icon icon="ri:refresh-line" style={{ fontSize: "0.9rem" }} />
-        </div>
-        <div className={styles.menuItem} onClick={scrollToTop}>
-          <Icon icon="ri:arrow-up-line" />
-        </div>
-      </div>
-
-      {/* 文本选中时的操作 */}
-      {isTextSelected ? (
-        <div className={`${styles.menuGroup} ${styles.menuGroupLine}`}>
-          <div className={styles.menuItem} onClick={copySelectedText}>
-            <Icon icon="ri:file-copy-line" />
-            <span>复制选中文本</span>
-          </div>
-          {isTextInPostDetail && (
-            <div className={styles.menuItem} onClick={quoteToComment}>
-              <Icon icon="ri:chat-1-fill" />
-              <span>引用到评论</span>
+      {menuSections.map(section => (
+        <div
+          key={section.id}
+          className={[
+            styles.menuGroup,
+            section.compact ? styles.menuSmall : styles.menuGroupLine,
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {section.items.map(item => (
+            <div key={item.id} className={styles.menuItem} onClick={() => handleMenuItemClick(item.id)}>
+              <Icon icon={item.icon} />
+              {item.label && <span>{item.label}</span>}
             </div>
-          )}
-          <div className={styles.menuItem} onClick={searchLocal}>
-            <Icon icon="ri:search-line" />
-            <span>站内搜索</span>
-          </div>
-          <div className={styles.menuItem} onClick={searchBaidu}>
-            <Icon icon="ri:search-line" />
-            <span>百度搜索</span>
-          </div>
+          ))}
         </div>
-      ) : (
-        <div className={`${styles.menuGroup} ${styles.menuGroupLine}`}>
-          <div className={styles.menuItem} onClick={randomNavigate}>
-            <Icon icon="ri:shuffle-line" />
-            <span>随便逛逛</span>
-          </div>
-          <div className={styles.menuItem} onClick={gotoCategories}>
-            <Icon icon="ri:folder-line" />
-            <span>博客分类</span>
-          </div>
-          <div className={styles.menuItem} onClick={gotoTags}>
-            <Icon icon="ri:price-tag-3-line" />
-            <span>文章标签</span>
-          </div>
-        </div>
-      )}
-
-      {/* 音乐播放器控制 - 仅在右键音乐播放器时显示 */}
-      {isClickOnMusicPlayer && (
-        <div className={`${styles.menuGroup} ${styles.menuGroupLine}`}>
-          <div className={styles.menuItem} onClick={togglePlayPause}>
-            <Icon icon={musicIsPlaying ? "ri:pause-fill" : "ri:play-fill"} />
-            <span>{musicIsPlaying ? "暂停" : "播放"}</span>
-          </div>
-          <div className={styles.menuItem} onClick={previousSong}>
-            <Icon icon="ri:skip-back-fill" />
-            <span>上一首</span>
-          </div>
-          <div className={styles.menuItem} onClick={nextSong}>
-            <Icon icon="ri:skip-forward-fill" />
-            <span>下一首</span>
-          </div>
-          <div className={styles.menuItem} onClick={copySongName}>
-            <Icon icon="ri:file-copy-line" />
-            <span>复制歌名</span>
-          </div>
-        </div>
-      )}
-
-      {/* 通用操作 */}
-      <div className={`${styles.menuGroup} ${styles.menuGroupLine}`}>
-        <div className={styles.menuItem} onClick={copyUrl}>
-          <Icon icon="ri:file-copy-line" />
-          <span>复制地址</span>
-        </div>
-        <div className={styles.menuItem} onClick={handleThemeToggle}>
-          <Icon icon="ri:contrast-2-line" />
-          <span>{isDarkMode ? "浅色模式" : "深色模式"}</span>
-        </div>
-        {hasCommentSection && (
-          <div className={styles.menuItem} onClick={handleToggleCommentBarrage}>
-            <Icon icon="ri:chat-3-line" />
-            <span>{isCommentBarrageVisible ? "隐藏热评" : "显示热评"}</span>
-          </div>
-        )}
-      </div>
+      ))}
     </div>
   );
 }

@@ -24,10 +24,11 @@ export const STORAGE_TYPE_CONFIGS: StorageTypeConfig[] = [
   { type: "aliyun_oss", name: "阿里云OSS", dialogTitle: "添加阿里云OSS存储策略" },
   { type: "aws_s3", name: "AWS S3", dialogTitle: "添加AWS S3存储策略" },
   { type: "qiniu_kodo", name: "七牛云存储", dialogTitle: "添加七牛云存储策略" },
+  { type: "upyun", name: "又拍云存储", dialogTitle: "添加又拍云存储策略" },
 ];
 
 /** 云存储类型（创建后显示 CORS 成功弹窗） */
-const CLOUD_STORAGE_TYPES: StoragePolicyType[] = ["tencent_cos", "aliyun_oss", "aws_s3", "qiniu_kodo"];
+const CLOUD_STORAGE_TYPES: StoragePolicyType[] = ["tencent_cos", "aliyun_oss", "aws_s3", "qiniu_kodo", "upyun"];
 
 export function useStoragePage() {
   const router = useRouter();

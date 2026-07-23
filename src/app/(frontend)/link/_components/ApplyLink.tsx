@@ -61,6 +61,7 @@ export function ApplyLink() {
   const [type, setType] = useState<LinkApplyType>("NEW");
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
+  const [rssUrl, setRssUrl] = useState("");
   const [logo, setLogo] = useState("");
   const [description, setDescription] = useState("");
   const [siteshot, setSiteshot] = useState("");
@@ -131,6 +132,15 @@ export function ApplyLink() {
       addToast({ title: "请说明修改原因", color: "warning", timeout: 3000 });
       return;
     }
+    const trimmedRssUrl = rssUrl.trim();
+    if (trimmedRssUrl) {
+      try {
+        new URL(trimmedRssUrl);
+      } catch {
+        addToast({ title: "请输入有效的 RSS 地址", color: "warning", timeout: 3000 });
+        return;
+      }
+    }
 
     const captchaParams = captchaRequired ? await captchaRef.current?.verify() : {};
     if (captchaRequired && captchaParams === null) {
@@ -143,6 +153,7 @@ export function ApplyLink() {
         type,
         name: name.trim(),
         url: url.trim(),
+        rss_url: trimmedRssUrl || undefined,
         logo: logo.trim(),
         description: description.trim(),
         siteshot: siteshot.trim() || undefined,
@@ -155,6 +166,7 @@ export function ApplyLink() {
       // 重置表单
       setName("");
       setUrl("");
+      setRssUrl("");
       setLogo("");
       setDescription("");
       setSiteshot("");
@@ -295,6 +307,18 @@ export function ApplyLink() {
               onChange={e => setEmail(e.target.value)}
               label="联系邮箱"
             />
+          </div>
+
+          <div className="space-y-1.5">
+            <Input
+              placeholder="https://example.com/feed.xml"
+              value={rssUrl}
+              onChange={e => setRssUrl(e.target.value)}
+              label="RSS 地址（可选）"
+            />
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              如果你的 RSS 不在常见路径，可填写完整 RSS/Atom 地址；未填写时系统自动发现。
+            </p>
           </div>
 
           {type === "UPDATE" && (

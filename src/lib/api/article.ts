@@ -12,6 +12,7 @@ import type {
   Archive,
   ArticleListResponse,
   GetArticleListParams,
+  HomeArticle,
 } from "@/types/article";
 
 // ===================================
@@ -223,6 +224,19 @@ export const articleApi = {
     throw new Error(response.message || "密码验证失败");
   },
 
+  /**
+   * 获取首页推荐文章（按 home_sort 排序，最多 6 篇）
+   */
+  async getHomeArticles(): Promise<HomeArticle[]> {
+    const response = await apiClient.get<HomeArticle[]>(`/api/public/articles/home`);
+
+    if (response.code === 200 && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || "获取首页推荐文章失败");
+  },
+
   async getArticleWithToken(articleId: string, token: string, blocks?: string): Promise<{ content_html?: string; encrypted?: boolean }> {
     const params: Record<string, string> = { token };
     if (blocks) {
@@ -249,4 +263,5 @@ export type {
   GetFeedListParams,
   ArticleListResponse,
   GetArticleListParams,
+  HomeArticle,
 };

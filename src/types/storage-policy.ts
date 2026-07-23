@@ -6,7 +6,7 @@
 //          存储类型
 // ===================================
 
-export const STORAGE_TYPES = ["local", "onedrive", "tencent_cos", "aliyun_oss", "aws_s3", "qiniu_kodo"] as const;
+export const STORAGE_TYPES = ["local", "onedrive", "tencent_cos", "aliyun_oss", "aws_s3", "qiniu_kodo", "upyun"] as const;
 
 export type StoragePolicyType = (typeof STORAGE_TYPES)[number];
 
@@ -18,6 +18,7 @@ export const STORAGE_TYPE_LABELS: Record<StoragePolicyType, string> = {
   aliyun_oss: "阿里云 OSS",
   aws_s3: "AWS S3",
   qiniu_kodo: "七牛云存储",
+  upyun: "又拍云存储",
 };
 
 /** 策略标志类型 */

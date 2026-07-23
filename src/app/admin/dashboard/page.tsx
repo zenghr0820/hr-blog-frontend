@@ -8,6 +8,7 @@ import { DashboardHeader } from "./_components/DashboardHeader";
 import { DashboardStats } from "./_components/DashboardStats";
 import { DashboardCharts } from "./_components/DashboardCharts";
 import { DashboardRecent } from "./_components/DashboardRecent";
+import { AdminVersionCard } from "./_components/AdminVersionCard";
 
 // ==================== 动画配置 ====================
 const containerVariants = {
@@ -63,6 +64,10 @@ export default function AdminDashboard() {
 
       <motion.div variants={itemVariants}>
         <QuickActions />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <AdminVersionCard />
       </motion.div>
 
       <DashboardCharts

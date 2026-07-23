@@ -556,6 +556,7 @@ const categoryDescriptors: Record<SettingCategoryId, SettingDescriptor[]> = {
   ],
   "appearance-page": [
     { backendKey: K.KEY_ENABLE_EXTERNAL_LINK_WARNING, type: "boolean" },
+    { backendKey: K.KEY_DISABLE_RIGHT_MENU, type: "boolean", defaultValue: "false" },
     { backendKey: K.KEY_RESPECT_REDUCED_MOTION, type: "boolean", defaultValue: "false" },
     { backendKey: K.KEY_CUSTOM_HEADER_HTML, type: "code" },
     { backendKey: K.KEY_CUSTOM_FOOTER_HTML, type: "code" },

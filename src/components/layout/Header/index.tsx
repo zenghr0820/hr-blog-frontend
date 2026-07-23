@@ -130,7 +130,7 @@ export function Header() {
     if (pathname?.startsWith("/tags")) return "标签";
     if (pathname === "/about") return "关于";
     if (pathname === "/music") return "音乐";
-    if (pathname === "/links") return "友链";
+    if (pathname === "/link") return "友链";
     return fullSiteTitle;
   }, [pathname, fullSiteTitle, pageTitle]);
 

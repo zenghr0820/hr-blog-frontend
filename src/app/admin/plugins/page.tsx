@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { adminContainerVariants, adminItemVariants } from "@/lib/motion";
-import { toast } from "sonner";
+import { addToast } from "@heroui/react";
 
 interface PluginMetadata {
   id: string;
@@ -58,7 +58,7 @@ export default function PluginsPage() {
         setPlugins(data.data || []);
       }
     } catch {
-      toast.error("获取插件列表失败");
+      addToast({ title: "获取插件列表失败", color: "danger" });
     } finally {
       setLoading(false);
     }
@@ -79,13 +79,13 @@ export default function PluginsPage() {
       });
       const data = await res.json();
       if (data.code === 200) {
-        toast.success(data.message || "操作成功");
+        addToast({ title: data.message || "操作成功", color: "success" });
         await fetchPlugins();
       } else {
-        toast.error(data.message || "操作失败");
+        addToast({ title: data.message || "操作失败", color: "danger" });
       }
     } catch {
-      toast.error("操作失败");
+      addToast({ title: "操作失败", color: "danger" });
     } finally {
       setActionLoading(null);
     }

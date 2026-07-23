@@ -33,3 +33,23 @@ describe("site-config-store userPanelConfig", () => {
     });
   });
 });
+
+describe("site-config-store rightMenuConfig", () => {
+  afterEach(() => {
+    useSiteConfigStore.setState(resetState);
+  });
+
+  it("未配置时默认不关闭右键菜单", () => {
+    expect(useSiteConfigStore.getState().isRightMenuDisabled()).toBe(false);
+  });
+
+  it("从公共站点配置读取全站右键菜单关闭状态", () => {
+    useSiteConfigStore.setState({
+      siteConfig: {
+        DISABLE_RIGHT_MENU: "true",
+      },
+    });
+
+    expect(useSiteConfigStore.getState().isRightMenuDisabled()).toBe(true);
+  });
+});

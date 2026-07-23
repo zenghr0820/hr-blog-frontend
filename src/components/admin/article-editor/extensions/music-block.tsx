@@ -5,8 +5,9 @@
  */
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer, NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, type MouseEvent as ReactMouseEvent } from "react";
 import { Pencil } from "lucide-react";
+import { apiClient } from "@/lib/api/client";
 
 /** 网易云音乐装饰图 */
 const NETEASE_DECORATION_IMG =
@@ -19,6 +20,27 @@ const DEFAULT_MUSIC_API = "https://metings.qjqq.cn";
 function ensureHttps(url: string): string {
   if (!url) return url;
   return url.startsWith("http://") ? url.replace("http://", "https://") : url;
+}
+
+function formatAudioTime(seconds: number): string {
+  if (!Number.isFinite(seconds)) return "00:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+}
+
+async function fetchMusicAudioUrl(neteaseId: string): Promise<string | null> {
+  if (!neteaseId || !/^\d+$/.test(neteaseId)) return null;
+  try {
+    const result = await apiClient.post<{ audioUrl?: string }>("/api/public/music/song-resources", { neteaseId });
+    if (result.code === 200 && result.data?.audioUrl) {
+      return ensureHttps(result.data.audioUrl);
+    }
+    return null;
+  } catch (error) {
+    console.error("[音乐播放器] 获取音频资源失败:", error);
+    return null;
+  }
 }
 
 /**
@@ -91,9 +113,15 @@ async function fetchMusicDetail(neteaseId: string): Promise<{ name: string; arti
 function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [audioLoading, setAudioLoading] = useState(false);
+  const [audioError, setAudioError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const helpRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const neteaseId = (node.attrs.neteaseId as string) || "";
   const name = (node.attrs.name as string) || "";
   const artist = (node.attrs.artist as string) || "";
@@ -102,6 +130,7 @@ function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
   const displayName = name || (neteaseId ? "加载中..." : "未设置歌曲");
   const displayArtist = artist || (neteaseId ? "..." : "请双击编辑");
   const displayPic = pic || "/static/img/music-vinyl-background.png";
+  const progressPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
 
   // 根据 neteaseId 加载歌曲信息
   const loadSongInfo = useCallback(
@@ -129,6 +158,117 @@ function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [neteaseId]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    }
+    setAudioLoading(false);
+    setAudioError(false);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+  }, [neteaseId]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleLoadedMetadata = () => setDuration(audio.duration || 0);
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime || 0);
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+    const handleError = () => {
+      if (audio.src) setAudioError(true);
+      setAudioLoading(false);
+      setIsPlaying(false);
+    };
+
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("play", handlePlay);
+    audio.addEventListener("pause", handlePause);
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
+
+    return () => {
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("play", handlePlay);
+      audio.removeEventListener("pause", handlePause);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
+    };
+  }, []);
+
+  const ensureAudioLoaded = useCallback(async () => {
+    const audio = audioRef.current;
+    if (!audio || !neteaseId) return false;
+    if (audio.src && audio.readyState >= 1) return true;
+
+    setAudioLoading(true);
+    setAudioError(false);
+    try {
+      const audioUrl = await fetchMusicAudioUrl(neteaseId);
+      if (!audioUrl) {
+        setAudioError(true);
+        return false;
+      }
+      audio.src = audioUrl;
+      audio.preload = "metadata";
+      audio.load();
+      return true;
+    } finally {
+      setAudioLoading(false);
+    }
+  }, [neteaseId]);
+
+  const handleTogglePlay = useCallback(
+    async (event?: ReactMouseEvent) => {
+      event?.stopPropagation();
+      const audio = audioRef.current;
+      if (!audio || editing) return;
+
+      if (audio.paused) {
+        const ready = audio.src ? true : await ensureAudioLoaded();
+        if (!ready) return;
+        try {
+          await audio.play();
+        } catch (error) {
+          console.error("[音乐播放器] 播放失败:", error);
+          setAudioError(true);
+        }
+      } else {
+        audio.pause();
+      }
+    },
+    [editing, ensureAudioLoaded]
+  );
+
+  const handleSeek = useCallback(
+    async (event: ReactMouseEvent<HTMLDivElement>) => {
+      event.stopPropagation();
+      const audio = audioRef.current;
+      if (!audio) return;
+      if (!audio.src) {
+        const ready = await ensureAudioLoaded();
+        if (!ready) return;
+      }
+      if (!audio.duration) return;
+
+      const rect = event.currentTarget.getBoundingClientRect();
+      const percent = (event.clientX - rect.left) / rect.width;
+      audio.currentTime = Math.max(0, Math.min(1, percent)) * audio.duration;
+    },
+    [ensureAudioLoaded]
+  );
 
   // 点击外部关闭编辑 / 帮助提示
   useEffect(() => {
@@ -247,7 +387,7 @@ function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
         <div className="markdown-music-player">
           <div className="music-player-container">
             {/* 加载中遮罩 */}
-            {loading && (
+            {(loading || audioLoading) && (
               <div className="music-loading">
                 <svg className="animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <circle
@@ -263,10 +403,15 @@ function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
                 <span>加载中...</span>
               </div>
             )}
+            {audioError && (
+              <div className="music-error">
+                <span>音乐加载失败</span>
+              </div>
+            )}
 
             {/* 唱片机 artwork 区域 */}
             <div className="music-artwork-container">
-              <div className="music-artwork-wrapper">
+              <div className={`music-artwork-wrapper${isPlaying ? " is-playing" : ""}`} onClick={handleTogglePlay}>
                 {/* eslint-disable @next/next/no-img-element */}
                 <img src="/static/img/music-vinyl-background.png" alt="唱片背景" className="vinyl-background" />
                 <img
@@ -279,7 +424,11 @@ function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
                   alt="唱片内圈"
                   className="artwork-image-vinyl-inner-background"
                 />
-                <img src="/static/img/music-vinyl-needle.png" alt="撞针" className="artwork-image-needle-background" />
+                <img
+                  src="/static/img/music-vinyl-needle.png"
+                  alt="撞针"
+                  className={`artwork-image-needle-background${isPlaying ? " needle-playing" : ""}`}
+                />
                 <img
                   src="/static/img/music-vinyl-groove.png"
                   alt="凹槽背景"
@@ -291,12 +440,28 @@ function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
                   <div className="artwork-border-ring" />
                 </div>
                 {/* eslint-enable @next/next/no-img-element */}
-                {/* 播放/暂停覆盖层（编辑器中仅作装饰） */}
+                {/* 播放/暂停覆盖层 */}
                 <div className="music-play-overlay">
                   <div className="music-play-button-overlay">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
+                    {isPlaying ? (
+                      <svg
+                        className="music-pause-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="music-play-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    )}
                   </div>
                 </div>
               </div>
@@ -309,7 +474,8 @@ function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
                 <div className="music-artist">{displayArtist}</div>
               </div>
               <span className="nmsingle-playtime">
-                <span className="current-time">00:00</span> / <span className="duration">00:00</span>
+                <span className="current-time">{formatAudioTime(currentTime)}</span> /{" "}
+                <span className="duration">{formatAudioTime(duration)}</span>
               </span>
             </div>
 
@@ -319,12 +485,13 @@ function MusicBlockView({ node, updateAttributes }: NodeViewProps) {
               <img src={NETEASE_DECORATION_IMG} alt="音乐装饰" />
             </div>
 
-            {/* 进度条（编辑器中仅作装饰） */}
-            <div className="music-progress-bar">
+            {/* 进度条 */}
+            <div className="music-progress-bar" onClick={handleSeek}>
               <div className="music-progress-track">
-                <div className="music-progress-fill" style={{ width: "0%" }} />
+                <div className="music-progress-fill" style={{ width: `${progressPercent}%` }} />
               </div>
             </div>
+            <audio ref={audioRef} className="music-audio-element" preload="none" />
           </div>
         </div>
       </div>
@@ -404,7 +571,7 @@ export const MusicBlock = Node.create({
     const pic = (node.attrs.pic as string) || "/static/img/music-vinyl-background.png";
     const color = (node.attrs.color as string) || "";
 
-    const musicData = JSON.stringify({ name, artist, pic, color });
+    const musicData = JSON.stringify({ neteaseId, name, artist, pic, color });
 
     const el = document.createElement("div");
     const attrs = mergeAttributes(HTMLAttributes, {

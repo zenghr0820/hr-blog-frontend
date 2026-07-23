@@ -18,7 +18,6 @@ import { Icon } from "@iconify/react";
 import { addToast, Button } from "@heroui/react";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
-import hljs from "highlight.js";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useCreateComment } from "@/hooks/queries";
@@ -186,10 +185,15 @@ export const CommentForm = forwardRef<CommentFormHandle, CommentFormProps>(funct
   useEffect(() => {
     if (!isPreview || !previewRef.current) return;
     const blocks = previewRef.current.querySelectorAll("pre code");
-    blocks.forEach(block => {
-      if ((block as HTMLElement).dataset.highlighted === "yes") return;
-      hljs.highlightElement(block as HTMLElement);
-      (block as HTMLElement).dataset.highlighted = "yes";
+    if (blocks.length === 0) return;
+    // 懒加载 highlight.js，避免阻塞初始渲染
+    import("highlight.js").then(mod => {
+      const hljs = mod.default;
+      blocks.forEach(block => {
+        if ((block as HTMLElement).dataset.highlighted === "yes") return;
+        hljs.highlightElement(block as HTMLElement);
+        (block as HTMLElement).dataset.highlighted = "yes";
+      });
     });
   }, [previewHtml, isPreview]);
 

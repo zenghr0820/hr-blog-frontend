@@ -30,6 +30,10 @@
   max-width: 100%;
 }
 
+.noCategories .randomBanner {
+  height: 100%;
+}
+
 /* 随机 Banner */
 .randomBanner {
   position: relative;
@@ -126,7 +130,8 @@
   box-shadow: 0 2px 16px -3px rgb(0 0 0 / 15%);
 }
 
-.tagsGroupIcon img {
+.tagsGroupIcon img,
+.tagsGroupIcon .creativityIconGraphic {
   width: 60px;
   height: 60px;
   object-fit: contain;

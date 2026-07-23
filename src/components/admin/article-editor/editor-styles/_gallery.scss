@@ -9,6 +9,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    margin: 0;
+    box-shadow: none;
   }
 
   .editor-gallery-empty-item {
@@ -62,12 +64,62 @@
       cursor: pointer;
       transition: all 0.2s;
       margin-top: 2px;
+      font-family: inherit;
 
       svg {
         width: 13px;
         height: 13px;
         opacity: 0.7;
       }
+    }
+
+    .editor-gallery-upload-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+    }
+  }
+
+  .editor-video-upload-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: end;
+  }
+
+  .editor-video-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 96px;
+    height: 33px;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--anzhiyu-theme, #3b82f6);
+    background: color-mix(in srgb, var(--anzhiyu-theme, #3b82f6) 6%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--anzhiyu-theme, #3b82f6) 22%, transparent);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-family: inherit;
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--anzhiyu-theme, #3b82f6) 12%, transparent);
+      border-color: color-mix(in srgb, var(--anzhiyu-theme, #3b82f6) 40%, transparent);
+    }
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
     }
   }
 
@@ -104,5 +156,224 @@
   .editor-gallery-empty-item.is-dragover {
     border-color: var(--anzhiyu-theme, #3b82f6);
     background: color-mix(in srgb, var(--anzhiyu-theme, #3b82f6) 8%, transparent);
+  }
+
+  // ---- 视频画廊 ----
+  .video-gallery-container {
+    --video-gallery-gap: 16px;
+    --video-gallery-ratio: 56.25%; // 默认 16:9
+    display: grid;
+    gap: var(--video-gallery-gap);
+    margin: 1.5rem 0;
+
+    // 列数配置
+    &.video-gallery-cols-1,
+    &.video-cols-1 {
+      grid-template-columns: repeat(1, 1fr);
+    }
+    &.video-gallery-cols-2,
+    &.video-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &.video-gallery-cols-3,
+    &.video-cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    &.video-gallery-cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    &.video-gallery-count-1 {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    &.video-gallery-count-2:not(.video-gallery-cols-1):not(.video-cols-1) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    &.video-gallery-count-3.video-gallery-cols-4 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    &:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-gallery-item:only-child),
+    &:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-item:only-child) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    &:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):not(.video-gallery-cols-1):not(.video-cols-1):has(> .video-gallery-item:nth-child(2):last-child),
+    &:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):not(.video-gallery-cols-1):not(.video-cols-1):has(> .video-item:nth-child(2):last-child) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    &.video-gallery-cols-4:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-gallery-item:nth-child(3):last-child),
+    &.video-gallery-cols-4:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-item:nth-child(3):last-child) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .video-gallery-item,
+    .video-item {
+      position: relative;
+      overflow: visible;
+      border-radius: 12px;
+      background: transparent;
+      min-height: 120px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: none;
+
+        .video-gallery-play-overlay {
+          opacity: 1;
+          background: rgba(0, 0, 0, 0.5);
+
+          .play-icon {
+            transform: scale(1.1);
+          }
+        }
+
+        .video-gallery-caption {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+
+    .video-gallery-poster {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 0;
+      box-shadow: none;
+    }
+
+    .video-gallery-video-wrapper,
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: var(--video-gallery-ratio);
+      overflow: hidden;
+      background: var(--anzhiyu-card-bg, #fff);
+      border-radius: 12px;
+    }
+
+    .video-gallery-video,
+    .video-wrapper video,
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 12px;
+      border: none;
+    }
+
+    .video-gallery-play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+
+      .play-icon {
+        width: 64px;
+        height: 64px;
+        color: rgba(255, 255, 255, 0.9);
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+        transition: transform 0.3s ease;
+      }
+    }
+
+    .video-gallery-caption {
+      position: static;
+      padding: 10px 8px 0;
+      color: var(--anzhiyu-secondtext, #6b7280);
+      text-align: center;
+      background: transparent;
+      opacity: 1;
+      transform: none;
+      transition: color 0.3s ease;
+      pointer-events: auto;
+    }
+
+    .video-gallery-title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1.6;
+      color: inherit;
+      text-shadow: none;
+    }
+
+    .video-gallery-desc {
+      margin-top: 4px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: inherit;
+      opacity: 0.9;
+      text-shadow: none;
+    }
+
+    .video-caption {
+      padding: 10px 8px 0;
+      color: var(--anzhiyu-secondtext, #6b7280);
+      background: transparent;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    // 当视频播放时隐藏覆盖层
+    .video-gallery-video:not([paused]) ~ .video-gallery-play-overlay {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .video-gallery-container {
+      --video-gallery-gap: 18px;
+      margin: 1rem 0 1.25rem;
+
+      &.video-gallery-cols-2,
+      &.video-gallery-cols-3,
+      &.video-gallery-cols-4,
+      &.video-cols-2,
+      &.video-cols-3,
+      &.video-gallery-count-2:not(.video-gallery-cols-1):not(.video-cols-1),
+      &.video-gallery-count-3.video-gallery-cols-4,
+      &:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):not(.video-gallery-cols-1):not(.video-cols-1):has(> .video-gallery-item:nth-child(2):last-child),
+      &:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):not(.video-gallery-cols-1):not(.video-cols-1):has(> .video-item:nth-child(2):last-child),
+      &.video-gallery-cols-4:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-gallery-item:nth-child(3):last-child),
+      &.video-gallery-cols-4:not(.video-gallery-count-1):not(.video-gallery-count-2):not(.video-gallery-count-3):not(.video-gallery-count-4):has(> .video-item:nth-child(3):last-child) {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .video-gallery-caption,
+      .video-caption {
+        padding-top: 8px;
+      }
+
+      .video-gallery-title {
+        font-size: 0.9rem;
+      }
+
+      .video-gallery-desc {
+        font-size: 0.82rem;
+      }
+    }
+
+    .editor-video-upload-row {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+    }
+
+    .editor-video-upload-btn {
+      width: 100%;
+    }
   }
 }

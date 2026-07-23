@@ -3,7 +3,6 @@
  * 每个函数接收 Document 对象，对 HTML DOM 执行特定的规范化处理。
  * 这些处理器通过 pipeline.ts 组合成保存管道和编辑器清理管道。
  */
-
 import { addAnchorToHeading } from "./utils";
 
 /** 为所有 h1-h6 标题添加锚点链接，用于目录跳转 */

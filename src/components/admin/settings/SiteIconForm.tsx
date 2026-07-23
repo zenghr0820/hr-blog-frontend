@@ -87,9 +87,11 @@ export function SiteIconForm({ values, onChange, loading }: SiteIconFormProps) {
         <FormImageUpload
           value={values[KEY_ICON_URL]}
           onValueChange={v => onChange(KEY_ICON_URL, v)}
-          placeholder="favicon.ico 地址"
-          description="扩展名为 ico 的小图标地址。"
+          placeholder="favicon 图标地址"
+          description="用于浏览器标签页的小图标地址，支持 png、svg、ico 格式。"
           previewSize="sm"
+          accept="image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon,.png,.svg,.ico"
+          disableImageStyle
         />
       </SettingsSection>
 
