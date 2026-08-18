@@ -83,11 +83,11 @@ export const albumApi = {
 
   /**
    * 批量删除相册图片
-   * DELETE /api/albums/batch-delete
+   * POST /api/albums/batch-delete
    */
   async batchDelete(ids: number[]): Promise<number> {
-    const response = await apiClient.delete<{ deleted: number }>("/api/albums/batch-delete", {
-      data: { ids },
+    const response = await apiClient.post<{ deleted: number }>("/api/albums/batch-delete", {
+      ids,
     });
     if (response.code === 200 && response.data) {
       return response.data.deleted;

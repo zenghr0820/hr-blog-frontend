@@ -69,7 +69,7 @@ export const essayApi = {
   },
 
   async batchDelete(ids: number[]): Promise<void> {
-    const response = await apiClient.delete("/api/moments/batch", { data: { ids } });
+    const response = await apiClient.post("/api/moments/batch-delete", { ids });
     if (response.code < 200 || response.code >= 300) {
       throw new Error(response.message || "批量删除失败");
     }

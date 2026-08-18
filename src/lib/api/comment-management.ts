@@ -48,11 +48,11 @@ export const commentManagementApi = {
 
   /**
    * 批量删除评论
-   * DELETE /api/comments
+   * POST /api/comments/delete
    */
   async deleteComments(ids: string[]): Promise<void> {
-    const response = await apiClient.delete<unknown>("/api/comments", {
-      data: { ids },
+    const response = await apiClient.post<unknown>("/api/comments/delete", {
+      ids,
     });
     if (response.code !== 200) {
       throw new Error(response.message || "删除评论失败");

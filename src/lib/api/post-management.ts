@@ -89,9 +89,9 @@ export const postManagementApi = {
   },
 
   async batchDeleteArticles(articleIds: string[]): Promise<void> {
-    const response = await apiClient.delete<unknown>("/api/articles/batch", {
-      data: { ids: articleIds } as BatchDeleteRequest,
-    });
+    const response = await apiClient.post<unknown>("/api/articles/batch-delete", {
+      ids: articleIds,
+    } as BatchDeleteRequest);
     if (response.code !== 200) {
       throw new Error(response.message || "批量删除文章失败");
     }

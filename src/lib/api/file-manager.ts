@@ -109,7 +109,7 @@ export const validateUploadSessionApi = (
 };
 
 export const deleteFilesApi = (ids: string[]): Promise<BaseResponse<unknown>> => {
-  return apiClient.delete<unknown>(apiPath("file"), { data: { ids } });
+  return apiClient.post<unknown>(apiPath("file/delete"), { ids });
 };
 
 export const renameFileApi = (id: string, newName: string): Promise<BaseResponse<unknown>> => {
