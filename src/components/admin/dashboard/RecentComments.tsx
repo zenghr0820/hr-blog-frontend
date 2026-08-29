@@ -126,7 +126,7 @@ export function RecentComments({ comments, onApprove, onReject, className, isLoa
                     {/* 来源文章 */}
                     <div className="flex items-center justify-between">
                       <Link
-                        href={`/admin/post-management/${comment.article_id}`}
+                        href={`/posts/${comment.article_id}`}
                         className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 truncate max-w-[200px]"
                       >
                         <Icon icon="ri:article-line" className="w-3 h-3 shrink-0" />
