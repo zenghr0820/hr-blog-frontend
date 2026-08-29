@@ -53,6 +53,22 @@ function getRandomFishingPrefix(): string {
   return FISHING_PREFIXES[index];
 }
 
+const UNKNOWN_LINK: LinkInfo = {
+  id: 0,
+  name: "未知博主",
+  url: "",
+  logo: "",
+  description: "",
+  status: "INVALID",
+  siteshot: "",
+  email: "",
+  type: "",
+};
+
+function getMomentLink(moment: FCircleMoment): LinkInfo {
+  return moment.link ?? { ...UNKNOWN_LINK, id: moment.link_id };
+}
+
 const STORAGE_KEY = "fcircle_fishing_data";
 const ANTI_SPAM_WINDOW_MS = 10000;
 const ANTI_SPAM_TRIGGER_COUNT = 3;
@@ -309,7 +325,7 @@ export function FcirclePageClient() {
     try {
       const moment = await fcircleApi.getRandomPost();
       setTimeout(() => {
-        setRandomPost({ ...moment, fishingPrefix });
+        setRandomPost({ ...moment, link: moment.link ?? { ...UNKNOWN_LINK, id: moment.link_id }, fishingPrefix });
         setIsFishing(false);
       }, 500);
     } catch (err) {
@@ -366,7 +382,7 @@ export function FcirclePageClient() {
               ) : randomPost ? (
                 <div>
                   {randomPost.fishingPrefix || "为了抗议世间的不公，割破手指写下了"} 来自友链{" "}
-                  <b>{randomPost.link.name}</b> 的文章：
+                  <b>{getMomentLink(randomPost).name}</b> 的文章：
                   <a
                     className={styles.randomFriendsPost}
                     target="_blank"
@@ -405,10 +421,10 @@ export function FcirclePageClient() {
                   </a>
                   <div className={styles.momentSummary}>{moment.post_summary}</div>
                   <div className={styles.momentBottom}>
-                    {moment.link.logo ? (
+                    {getMomentLink(moment).logo ? (
                       <Image
-                        src={moment.link.logo}
-                        alt={moment.link.name}
+                        src={getMomentLink(moment).logo}
+                        alt={getMomentLink(moment).name}
                         width={24}
                         height={24}
                         className={styles.momentAvatar}
@@ -416,16 +432,16 @@ export function FcirclePageClient() {
                       />
                     ) : (
                       <div className={styles.momentAvatarPlaceholder}>
-                        {moment.link.name[0]}
+                        {getMomentLink(moment).name[0]}
                       </div>
                     )}
                     <button
                       type="button"
                       className={styles.momentAuthor}
-                      aria-label={`查看 ${moment.link.name} 更多文章`}
-                      onClick={() => handleAuthorClick(moment.link)}
+                      aria-label={`查看 ${getMomentLink(moment).name} 更多文章`}
+                      onClick={() => handleAuthorClick(getMomentLink(moment))}
                     >
-                      {moment.link.name}
+                      {getMomentLink(moment).name}
                     </button>
                     <span className={styles.momentTime}>
                       <Icon icon="ri:time-fill" width={12} height={12} />

@@ -20,7 +20,7 @@ export interface FCircleMoment {
   fetched_at: string;
   created_at: string;
   updated_at: string;
-  link: LinkInfo;
+  link?: LinkInfo | null;
   fishingPrefix?: string;
 }
 
